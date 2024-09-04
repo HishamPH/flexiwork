@@ -390,154 +390,154 @@
 
 //======================================================================================================================
 
-import {useState} from "react";
-import {
-  IconButton,
-  Typography,
-  List,
-  ListItem,
-  ListItemPrefix,
-  ListItemSuffix,
-  Chip,
-  Accordion,
-  AccordionHeader,
-  AccordionBody,
-  Alert,
-  Input,
-  Drawer,
-  Card,
-} from "@material-tailwind/react";
-import {
-  PresentationChartBarIcon,
-  ShoppingBagIcon,
-  UserCircleIcon,
-  Cog6ToothIcon,
-  InboxIcon,
-  PowerIcon,
-} from "@heroicons/react/24/solid";
-import {
-  ChevronRightIcon,
-  ChevronDownIcon,
-  CubeTransparentIcon,
-  MagnifyingGlassIcon,
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-import NavBar from "../components/NavBar";
+// import {useState} from "react";
+// import {
+//   IconButton,
+//   Typography,
+//   List,
+//   ListItem,
+//   ListItemPrefix,
+//   ListItemSuffix,
+//   Chip,
+//   Accordion,
+//   AccordionHeader,
+//   AccordionBody,
+//   Alert,
+//   Input,
+//   Drawer,
+//   Card,
+// } from "@material-tailwind/react";
+// import {
+//   PresentationChartBarIcon,
+//   ShoppingBagIcon,
+//   UserCircleIcon,
+//   Cog6ToothIcon,
+//   InboxIcon,
+//   PowerIcon,
+// } from "@heroicons/react/24/solid";
+// import {
+//   ChevronRightIcon,
+//   ChevronDownIcon,
+//   CubeTransparentIcon,
+//   MagnifyingGlassIcon,
+//   Bars3Icon,
+//   XMarkIcon,
+// } from "@heroicons/react/24/outline";
+// import NavBar from "../components/NavBar";
 
-export default function Hello() {
-  const [open, setOpen] = useState(0);
-  const [openAlert, setOpenAlert] = useState(true);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+// export default function Hello() {
+//   const [open, setOpen] = useState(0);
+//   const [openAlert, setOpenAlert] = useState(true);
+//   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const handleOpen = (value) => {
-    setOpen(open === value ? 0 : value);
-  };
+//   const handleOpen = (value) => {
+//     setOpen(open === value ? 0 : value);
+//   };
 
-  const openDrawer = () => setIsDrawerOpen(true);
-  const closeDrawer = () => setIsDrawerOpen(false);
+//   const openDrawer = () => setIsDrawerOpen(true);
+//   const closeDrawer = () => setIsDrawerOpen(false);
 
-  return (
-    <>
-    <NavBar />
-      <IconButton variant="text" size="lg" onClick={openDrawer}>
-        {isDrawerOpen ? (
-          <XMarkIcon className="h-8 w-8 stroke-2 md:hidden" />
-        ) : (
-          <Bars3Icon className="h-8 w-8 stroke-2 md:hidden" />
-        )}
-      </IconButton>
-      <Drawer open={isDrawerOpen} onClose={closeDrawer} className="w-62 md:hidden" overlay={false}>
-        <Card
-          color="transparent"
-          shadow={false}
-          className="h-auto w-full p-1"
-        >
+//   return (
+//     <>
+//     <NavBar />
+//       <IconButton variant="text" size="lg" onClick={openDrawer}>
+//         {isDrawerOpen ? (
+//           <XMarkIcon className="h-8 w-8 stroke-2 md:hidden" />
+//         ) : (
+//           <Bars3Icon className="h-8 w-8 stroke-2 md:hidden" />
+//         )}
+//       </IconButton>
+//       <Drawer open={isDrawerOpen} onClose={closeDrawer} className="w-62 md:hidden" overlay={false}>
+//         <Card
+//           color="transparent"
+//           shadow={false}
+//           className="h-auto w-full p-1"
+//         >
 
-          <List>
-            <ListItem>
-              <ListItemPrefix>
-                <InboxIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Inbox
-              <ListItemSuffix>
-                <Chip
-                  value="14"
-                  size="sm"
-                  variant="ghost"
-                  color="blue-gray"
-                  className="rounded-full"
-                />
-              </ListItemSuffix>
-            </ListItem>
-            <ListItem>
-              <ListItemPrefix>
-                <UserCircleIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Profile
-            </ListItem>
-            <ListItem>
-              <ListItemPrefix>
-                <Cog6ToothIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Settings
-            </ListItem>
-            <ListItem>
-              <ListItemPrefix>
-                <PowerIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Log Out
-            </ListItem>
-          </List>
-          
-        </Card>
-      </Drawer>
-      <div className="hidden md:block w-64"> {/* Hidden on small screens, visible on medium and up */}
-        <Card
-          color="white"
-          shadow={true}
-          className="h-auto p-1 left-0"
-        >
-          <List>
-            <ListItem>
-              <ListItemPrefix>
-                <InboxIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Inbox
-              <ListItemSuffix>
-                <Chip
-                  value="14"
-                  size="sm"
-                  variant="ghost"
-                  color="blue-gray"
-                  className="rounded-full"
-                />
-              </ListItemSuffix>
-            </ListItem>
-            <ListItem>
-              <ListItemPrefix>
-                <UserCircleIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Profile
-            </ListItem>
-            <ListItem>
-              <ListItemPrefix>
-                <Cog6ToothIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Settings
-            </ListItem>
-            <ListItem>
-              <ListItemPrefix>
-                <PowerIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Log Out
-            </ListItem>
-          </List>
-        </Card>
-      </div>
-    </>
-  );
-}
+//           <List>
+//             <ListItem>
+//               <ListItemPrefix>
+//                 <InboxIcon className="h-5 w-5" />
+//               </ListItemPrefix>
+//               Inbox
+//               <ListItemSuffix>
+//                 <Chip
+//                   value="14"
+//                   size="sm"
+//                   variant="ghost"
+//                   color="blue-gray"
+//                   className="rounded-full"
+//                 />
+//               </ListItemSuffix>
+//             </ListItem>
+//             <ListItem>
+//               <ListItemPrefix>
+//                 <UserCircleIcon className="h-5 w-5" />
+//               </ListItemPrefix>
+//               Profile
+//             </ListItem>
+//             <ListItem>
+//               <ListItemPrefix>
+//                 <Cog6ToothIcon className="h-5 w-5" />
+//               </ListItemPrefix>
+//               Settings
+//             </ListItem>
+//             <ListItem>
+//               <ListItemPrefix>
+//                 <PowerIcon className="h-5 w-5" />
+//               </ListItemPrefix>
+//               Log Out
+//             </ListItem>
+//           </List>
+
+//         </Card>
+//       </Drawer>
+//       <div className="hidden md:block w-64"> {/* Hidden on small screens, visible on medium and up */}
+//         <Card
+//           color="white"
+//           shadow={true}
+//           className="h-auto p-1 left-0"
+//         >
+//           <List>
+//             <ListItem>
+//               <ListItemPrefix>
+//                 <InboxIcon className="h-5 w-5" />
+//               </ListItemPrefix>
+//               Inbox
+//               <ListItemSuffix>
+//                 <Chip
+//                   value="14"
+//                   size="sm"
+//                   variant="ghost"
+//                   color="blue-gray"
+//                   className="rounded-full"
+//                 />
+//               </ListItemSuffix>
+//             </ListItem>
+//             <ListItem>
+//               <ListItemPrefix>
+//                 <UserCircleIcon className="h-5 w-5" />
+//               </ListItemPrefix>
+//               Profile
+//             </ListItem>
+//             <ListItem>
+//               <ListItemPrefix>
+//                 <Cog6ToothIcon className="h-5 w-5" />
+//               </ListItemPrefix>
+//               Settings
+//             </ListItem>
+//             <ListItem>
+//               <ListItemPrefix>
+//                 <PowerIcon className="h-5 w-5" />
+//               </ListItemPrefix>
+//               Log Out
+//             </ListItem>
+//           </List>
+//         </Card>
+//       </div>
+//     </>
+//   );
+// }
 
 //=======================================================================================================================
 
@@ -560,7 +560,6 @@ export default function Hello() {
 //   Bars3Icon,
 // } from "@heroicons/react/24/outline";
 // import NavBar from "../components/NavBar";
-
 
 // export default function Hello() {
 //   const [isOpen, setIsOpen] = useState(true);
@@ -643,3 +642,120 @@ export default function Hello() {
 //     </>
 //   );
 // }
+
+//=================================================================================================
+
+// import React from "react";
+// import { CloseOutlined } from "@ant-design/icons";
+// import { Button, Card, Form, Input, Space, Typography } from "antd";
+// const Hello = () => {
+//   const [form] = Form.useForm();
+//   return (
+//     <Form
+//       labelCol={{
+//         span: 6,
+//       }}
+//       wrapperCol={{
+//         span: 18,
+//       }}
+//       form={form}
+//       name="dynamic_form_complex"
+//       style={{
+//         maxWidth: 600,
+//       }}
+//       autoComplete="off"
+//       initialValues={{
+//         items: [{}],
+//       }}
+//     >
+//       <Form.List name="items">
+//         {(fields, { add, remove }) => (
+//           <div
+//             style={{
+//               display: "flex",
+//               rowGap: 16,
+//               flexDirection: "column",
+//             }}
+//           >
+//             {fields.map((field) => (
+//               <Card
+//                 size="small"
+//                 title={`Item ${field.name + 1}`}
+//                 key={field.key}
+//                 extra={
+//                   <CloseOutlined
+//                     onClick={() => {
+//                       remove(field.name);
+//                     }}
+//                   />
+//                 }
+//               >
+//                 <Form.Item label="Name" name={[field.name, "name"]}>
+//                   <Input />
+//                 </Form.Item>
+
+//                 {/* Nest Form.List */}
+//                 <Form.Item label="List">
+//                   <Form.List name={[field.name, "list"]}>
+//                     {(subFields, subOpt) => (
+//                       <div
+//                         style={{
+//                           display: "flex",
+//                           flexDirection: "column",
+//                           rowGap: 16,
+//                         }}
+//                       >
+//                         {subFields.map((subField) => (
+//                           <Space key={subField.key}>
+//                             <Form.Item noStyle name={[subField.name, "first"]}>
+//                               <Input placeholder="first" />
+//                             </Form.Item>
+//                             <Form.Item noStyle name={[subField.name, "second"]}>
+//                               <Input placeholder="second" />
+//                             </Form.Item>
+//                             <CloseOutlined
+//                               onClick={() => {
+//                                 subOpt.remove(subField.name);
+//                               }}
+//                             />
+//                           </Space>
+//                         ))}
+//                         <Button
+//                           type="dashed"
+//                           onClick={() => subOpt.add()}
+//                           block
+//                         >
+//                           + Add Sub Item
+//                         </Button>
+//                       </div>
+//                     )}
+//                   </Form.List>
+//                 </Form.Item>
+//               </Card>
+//             ))}
+
+//             <Button type="dashed" onClick={() => add()} block>
+//               + Add Item
+//             </Button>
+//           </div>
+//         )}
+//       </Form.List>
+
+//       {/* <Form.Item noStyle shouldUpdate>
+//         {() => (
+//           <Typography>
+//             <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+//           </Typography>
+//         )}
+//       </Form.Item> */}
+//     </Form>
+//   );
+// };
+// export default Hello;
+
+//=============================================================================================================
+
+const Hello = () => {
+  return <div className="flex bg-black"></div>;
+};
+export default Hello;

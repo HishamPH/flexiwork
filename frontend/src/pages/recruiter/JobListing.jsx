@@ -16,6 +16,7 @@ import RecruiterLayout from "../../Layouts/RecruiterLayout";
 import JobModal from "../../components/recruiter/JobModal";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Loader from "../../helper/Loader";
 
 const TABLE_HEAD = [
   "JobName",
@@ -27,6 +28,7 @@ const TABLE_HEAD = [
 ];
 
 const JobListing = () => {
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [jobs, setJobs] = useState([]);
   const { userInfo } = useSelector((state) => state.user);
@@ -36,9 +38,10 @@ const JobListing = () => {
         const res = await axios.get(
           `/api/user/recruiter/get-jobs/${recruiterId}`
         );
-        console.log(res.data.result);
         setJobs(res.data.result);
+        setLoading(false);
       };
+
       fetchRecruiterJobs(userInfo._id);
     }
   }, [open]);
@@ -49,6 +52,9 @@ const JobListing = () => {
       day: "numeric",
     });
   };
+  if (loading) {
+    return <Loader />;
+  }
   return (
     <>
       <div className="flex justify-between py-4">
@@ -93,17 +99,17 @@ const JobListing = () => {
 
                   return (
                     <tr key={_id}>
-                      <Link to={`/recruiter/jobs/applicants/${_id}`}>
-                        <td className={classes}>
+                      <td className={classes}>
+                        <Link to={`/recruiter/jobs/applicants/${_id}`}>
                           <Typography
-                            variant="large"
+                            variant="small"
                             color="blue-gray"
                             className="font-normal"
                           >
                             {jobName}
                           </Typography>
-                        </td>
-                      </Link>
+                        </Link>
+                      </td>
 
                       <td className={classes}>
                         <div className="w-max">
@@ -121,6 +127,7 @@ const JobListing = () => {
                           color="blue-gray"
                           className="font-normal"
                         >
+                          {jobName}
                           {postDate?.slice(0, 10)}
                         </Typography>
                       </td>
@@ -130,6 +137,7 @@ const JobListing = () => {
                           color="blue-gray"
                           className="font-normal"
                         >
+                          {jobName}
                           {dueDate?.slice(0, 10)}
                         </Typography>
                       </td>

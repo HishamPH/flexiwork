@@ -183,7 +183,7 @@ export default function RecruiterSidebar() {
       <div className="hidden md:block w-64">
         {" "}
         {/* Hidden on small screens, visible on medium and up */}
-        <Card color="black" shadow={true} className="h-full p-1 left-0">
+        <Card color="transparent" shadow={true} className="h-full p-1 left-0">
           <List>
             <NavItem
               to={"home"}
@@ -201,7 +201,7 @@ export default function RecruiterSidebar() {
               icon={<UserCircleIcon className="h-5 w-5" />}
             />
             <NavItem
-              to={""}
+              to={"chats"}
               text={"Chat"}
               icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}
               chipValue={14}
