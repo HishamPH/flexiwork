@@ -6,6 +6,7 @@ import CreateJobsPage from "../pages/recruiter/CreateJobsPage";
 import JobListing from "../pages/recruiter/JobListing";
 import ViewApplicants from "../pages/recruiter/ViewApplicants";
 import RecruiterLayout from "../Layouts/RecruiterLayout";
+import RecruiterChat from "../pages/recruiter/RecruiterChat";
 
 const RecruiterRouter = () => {
   return (
@@ -15,6 +16,7 @@ const RecruiterRouter = () => {
         <Route path="profile" element={<RecruiterProfilePage />} />
         <Route path="jobs" element={<JobListing />} />
         <Route path="jobs/applicants/:id" element={<ViewApplicants />} />
+        <Route path="chats" element={<RecruiterChat />} />
       </Route>
     </Routes>
   );
