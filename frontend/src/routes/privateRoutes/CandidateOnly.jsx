@@ -2,21 +2,15 @@ import { useSelector } from "react-redux";
 import { Outlet, Navigate } from "react-router-dom";
 
 const CandidateOnly = () => {
-    const { currentUser, loading } = useSelector((state) => state.user);
+  const { userInfo } = useSelector((state) => state.user);
 
-    if (loading) {
-      return (
-        <div className="w-full h-screen flex items-center justify-center">
-          <img className="w-[60px]" src={spinner} alt="spinner" />
-        </div>
-      );
-    }
-  
-    return currentUser && currentUser.data.role === "admin" ? (
-      <Outlet />
-    ) : (
-      <Navigate to="/login" />
-    );
-}
+  if (userInfo && userInfo.role === "candidate") {
+    return <Outlet />;
+  } else if (userInfo && userInfo.role === "recruiter") {
+    return <Navigate to="/recruiter/home" />;
+  } else {
+    return <Navigate to="/login" />;
+  }
+};
 
-export default CandidateOnly
+export default CandidateOnly;

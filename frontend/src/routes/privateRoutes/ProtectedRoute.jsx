@@ -2,17 +2,15 @@ import { useSelector } from "react-redux";
 import { Outlet, Navigate } from "react-router-dom";
 
 const ProtectedRoute = () => {
-  const { currentUser, loading } = useSelector((state) => state.user);
+  const { userInfo } = useSelector((state) => state.user);
 
-  if (loading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <img className="w-[60px]" src={spinner} alt="spinner" />
-      </div>
-    );
+  if (userInfo && userInfo.role === "candidate") {
+    return <Navigate to="/candidate/home" />;
+  } else if (userInfo && userInfo.role === "recruiter") {
+    return <Navigate to="/recruiter/home" />;
+  } else {
+    return <Outlet />;
   }
-
-  return currentUser ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;
