@@ -68,7 +68,7 @@ const NavBar = () => {
                   src={`/api/images/user.png`}
                 />
               </MenuHandler>
-              <MenuList className="p-1">
+              <MenuList className="p-1 bg-white">
                 <Link to={`/${profilePath}/profile`}>
                   <MenuItem className="flex items-center gap-2 m-0">
                     <UserCircleIcon className="h-6 w-6" />
