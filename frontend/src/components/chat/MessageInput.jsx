@@ -2,8 +2,15 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import {
+  MainContainer,
+  ChatContainer,
+  MessageList,
+  Message,
+  MessageInput,
+} from "@chatscope/chat-ui-kit-react";
 
-const MessageInput = ({ addMessage }) => {
+const MessageInput1 = ({ addMessage }) => {
   let { userInfo } = useSelector((state) => state.user);
   let [message, setMessage] = useState("");
   let { id } = useParams();
@@ -31,24 +38,31 @@ const MessageInput = ({ addMessage }) => {
   const handleChange = (e) => {
     setMessage(e.target.value);
   };
+
+  const handleMClick = (e) => {
+    console.log(e.target.value);
+  };
   return (
-    <div className="flex w-full rounded-md mt-4">
-      <form onSubmit={handleSubmit} className="flex w-full rounded-sm">
-        <input
-          type="text"
-          className="w-full me-2 rounded-full ps-5"
-          value={message}
-          onChange={handleChange}
-        />
-        <button
-          type="submit"
-          className="py-2 px-4 bg-black text-white rounded-full"
-        >
-          send
-        </button>
-      </form>
+    <div>
+      <div className="flex w-full rounded-md mt-4">
+        <form onSubmit={handleSubmit} className="flex w-full rounded-sm">
+          <input
+            type="text"
+            className="w-full me-2 rounded-full ps-5"
+            value={message}
+            onChange={handleChange}
+          />
+          <button
+            type="submit"
+            className="py-2 px-4 bg-black text-white rounded-full"
+          >
+            send
+          </button>
+        </form>
+      </div>
+      <MessageInput onClick={handleMClick} />
     </div>
   );
 };
 
-export default MessageInput;
+export default MessageInput1;

@@ -54,7 +54,7 @@ class ChatUseCase {
         senderId,
         receiverId
       );
-      console.log("this is chat use case get message");
+      console.log("this is chat use case get message inside something");
       return {
         status: true,
         statusCode: 200,

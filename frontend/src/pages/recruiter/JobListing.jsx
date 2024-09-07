@@ -66,7 +66,7 @@ const JobListing = () => {
         </button>
       </div>
       <Card className="w-full">
-        <CardBody className="px-0 w-full h-[500px] overflow-y-scroll">
+        <CardBody className="px-0 w-full h-[500px] overflow-y-scroll ">
           <table className="w-full  mt-4 overflow-y-scroll">
             <thead>
               <tr>

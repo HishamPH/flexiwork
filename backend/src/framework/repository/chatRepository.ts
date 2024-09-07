@@ -61,10 +61,24 @@ export default class ChatRepository implements IChatRepsoitory {
         .populate("messages");
 
       if (chat) return chat.toObject();
-      else return null;
+      else return { messages: [] };
     } catch (err) {
       console.log(err);
       return null;
     }
   }
 }
+
+// const result = await db
+//   .collection("yourCollectionName")
+//   .find({
+//     participants: { $in: [userId] },
+//   })
+//   .toArray();
+
+// const result = await db
+//   .collection("yourCollectionName")
+//   .find({
+//     participants: { $elemMatch: { _id: userId } },
+//   })
+//   .toArray();

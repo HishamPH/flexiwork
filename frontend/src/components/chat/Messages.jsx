@@ -6,7 +6,7 @@ const Messages = ({ messages }) => {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
   }, [messages]);
 
   return (

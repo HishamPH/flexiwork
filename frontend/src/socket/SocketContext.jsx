@@ -4,28 +4,49 @@ import { io } from "socket.io-client";
 
 const SocketContext = createContext();
 
-export const useSocketContext = () => {
-  return useContext(SocketContext);
+const useSocketContext = () => {
+  const context = useContext(SocketContext);
+  if (!context) {
+    console.log("Socket context is not initialized yet");
+    return {};
+  }
+  return context;
 };
 
 const SocketProvider = ({ children }) => {
-  const [socket, setSocket] = useState(null);
   const { userInfo } = useSelector((state) => state.user);
 
+  const [socket, setSocket] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   useEffect(() => {
     if (userInfo) {
       const socketUrl = "http://localhost:3000";
-      const socketInstance = io(socketUrl);
-      setSocket(socketInstance);
+      const socket = io(socketUrl, {
+        query: {
+          userId: userInfo._id,
+        },
+      });
+
+      setSocket(socket);
+
+      socket.on("getOnlineUsers", (users) => {
+        setOnlineUsers(users);
+      });
       return () => {
-        socketInstance.close();
+        socket.close();
       };
+    } else {
+      if (socket) {
+        socket.close();
+        setSocket(null);
+      }
     }
   }, [userInfo]);
-
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, onlineUsers }}>
+      {children}
+    </SocketContext.Provider>
   );
 };
 
-export { SocketProvider, SocketContext };
+export { SocketProvider, SocketContext, useSocketContext };

@@ -24,9 +24,14 @@ io.on("connection", (socket) => {
 
   const userId: any = socket.handshake.query.userId as string | undefined;
   if (userId != "undefined") userSocketMap[userId] = socket.id;
+  console.log(userSocketMap);
+
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
     console.log("disconnected the socket with id ", socket.id);
+    delete userSocketMap[userId];
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
 

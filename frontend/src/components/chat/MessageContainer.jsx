@@ -1,49 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { Failed } from "../../helper/popup";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
-import MessageInput from "./MessageInput";
+import MessageInput1 from "./MessageInput";
 import Messages from "./Messages";
 
-import { io } from "socket.io-client";
+import Loader from "../../helper/Loader";
+
+import { useSocketContext } from "../../socket/SocketContext";
 
 const MessageContainer = () => {
+  const { socket } = useSocketContext();
   const [messages, setMessages] = useState([]);
-  const [socket, setSocket] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const { userInfo } = useSelector((state) => state.user);
   const { id } = useParams();
+  const fetchRef = useRef(false);
 
   useEffect(() => {
-    if (userInfo) {
-      const userId = userInfo._id;
-      const socket = io("http://localhost:3000", {
-        query: {
-          userId: userId,
-        },
-      });
-      setSocket(socket);
-      socket.on("newMessage", (newMessage) => {
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-      });
+    socket?.on("newMessage", (newMessage) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
 
-      return () => {
-        socket.close();
-      };
-    } else {
-      if (socket) {
-        socket.close();
-        setSocket(null);
-      }
-    }
-  }, []);
+    return () => socket?.off("newMessage");
+  }, [messages, setMessages, socket]);
 
   useEffect(() => {
     const getMessages = async () => {
+      if (!userInfo || !id || fetchRef.current) return; // Prevent the second call in Strict Mode
+      fetchRef.current = true;
       try {
+        setLoading(true);
         const res = await axios.post(
           `/api/user/chat/get-messages/${id}`,
           { senderId: userInfo._id },
@@ -53,25 +43,34 @@ const MessageContainer = () => {
             },
           }
         );
-        console.log(res.data);
         setMessages(res.data.messages);
+        setLoading(false);
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
         console.log(err.message);
       }
     };
     getMessages();
-  }, [setMessages]);
+    return () => {};
+  }, [id]);
 
   const addMessage = (message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
+    setMessages((prevMessages) => {
+      return [...prevMessages, message];
+    });
   };
   return (
     <>
-      <div className="flex-col w-full bg-blue-gray-300 h-[620px]">
-        <Messages messages={messages} />
-        <MessageInput addMessage={addMessage} />
-      </div>
+      {loading ? (
+        <div className="flex-col w-full bg-blue-gray-300 h-[620px]">
+          <Loader />
+        </div>
+      ) : (
+        <div className="flex-col w-full bg-blue-gray-100 h-[620px]">
+          <Messages messages={messages} />
+          <MessageInput1 addMessage={addMessage} />
+        </div>
+      )}
     </>
   );
 };

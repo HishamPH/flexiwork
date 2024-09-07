@@ -11,7 +11,6 @@ class ChatController {
     try {
       const receiverId = req.params.id;
       const { message, senderId } = req.body;
-      console.log(message, senderId, receiverId);
       const messageData = await this.chatCase.sendMessage(
         senderId,
         receiverId,
@@ -35,7 +34,6 @@ class ChatController {
   }
   async getMessages(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log(req.body);
       const receiverId = req.params.id;
       const { senderId } = req.body;
       const messages = await this.chatCase.getMessages(senderId, receiverId);

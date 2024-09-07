@@ -14,6 +14,7 @@ import "./App.css";
 
 import SignUp from "./pages/SignUp";
 import "react-toastify/dist/ReactToastify.css";
+import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 import CandidateRouter from "./routes/CandidateRouter";
 import AdminRouter from "./routes/AdminRouter";
