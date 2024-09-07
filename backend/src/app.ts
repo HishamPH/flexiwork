@@ -1,28 +1,25 @@
-import express from 'express';
-import createServer from './framework/config/server';
-import { connectDB } from './framework/config/connectDB';
-import path from 'path';
-import http from 'http';
-import { config } from 'dotenv';
+import createServer from "./framework/config/server";
+import { connectDB } from "./framework/config/connectDB";
+import { server } from "./framework/services/socketIo";
+
+import http from "http";
+import { config } from "dotenv";
 config();
 
-
-
-const startServer = async()=>{
+const startServer = async () => {
   try {
     await connectDB();
     const app = createServer();
-   
-    const server = http.createServer(app);
+
     const port = process.env.PORT;
 
-    server?.listen(port,()=>{
-      console.log('server is running at port ',port);
+    server?.listen(port, () => {
+      console.log("server is running at port ", port);
     });
   } catch (error) {
     console.log(error);
   }
-}
+};
 startServer();
 // const app = express();
 // app.use(express.json());

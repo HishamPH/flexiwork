@@ -1,48 +1,3 @@
-// import React from 'react';
-// import {
-//   HomeIcon,
-//   BriefcaseIcon,
-//   UsersIcon,
-//   CalendarIcon,
-// //   ChatIcon,
-//   CogIcon,
-// } from '@heroicons/react/24/outline';
-// import { Link,NavLink } from 'react-router-dom';
-// import {FaUser,FaUserCircle,FaUsers,FaSuitcase,} from 'react-icons/fa'
-// import { GiHamburgerMenu } from 'react-icons/gi';
-// import { MdDashboard } from "react-icons/md";
-
-// const RecruiterSidebar = () => {
-//   const NavItem = ({ icon, text, to }) => (
-//     <NavLink
-//       to={to}
-//       className={({ isActive }) =>
-//         `flex items-center py-2 px-4 transition-colors duration-200 ${
-//           isActive
-//             ? 'bg-indigo-100 text-black'
-//             : 'text-white hover:bg-indigo-800'
-//         }`
-//       }
-//     >
-//       {icon}
-//       <span className="ml-3">{text}</span>
-//     </NavLink>
-//   );
-//   return (
-//     <div className=" w-60 text-white flex flex-col bg-slate-800">
-//       <nav className="flex flex-col mt-10">
-//         <NavItem to="/recruiter/home" text={'Dashboard'} icon={<HomeIcon className="h-6 w-6 mr-2" />} />
-//         <NavItem to="/recruiter/jobs" text='Job Listings' icon={<BriefcaseIcon className="h-6 w-6 mr-2" />} />
-//         <NavItem to="/recruiter/candidates" text='Candidates' icon={<UsersIcon className="h-6 w-6 mr-2" />} />
-//         <NavItem to="/recruiter/interviews" text='Interviews' icon={<CalendarIcon className="h-6 w-6 mr-2" />} />
-//         <NavItem to="/recruiter/settings" text='settings' icon={<CogIcon className="h-6 w-6 mr-2" />} />
-//       </nav>
-//     </div>
-//   )
-// }
-
-// export default RecruiterSidebar
-
 import { useState } from "react";
 import {
   IconButton,
@@ -61,8 +16,6 @@ import {
   Card,
 } from "@material-tailwind/react";
 import {
-  PresentationChartBarIcon,
-  ShoppingBagIcon,
   UserCircleIcon,
   Cog6ToothIcon,
   InboxIcon,
@@ -72,15 +25,9 @@ import {
   HomeIcon,
   BriefcaseIcon,
   ChatBubbleLeftRightIcon,
-  ChatBubbleBottomCenterTextIcon,
-  ChevronRightIcon,
-  ChevronDownIcon,
-  CubeTransparentIcon,
-  MagnifyingGlassIcon,
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import NavBar from "../NavBar";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 export default function RecruiterSidebar() {
@@ -201,7 +148,7 @@ export default function RecruiterSidebar() {
               icon={<UserCircleIcon className="h-5 w-5" />}
             />
             <NavItem
-              to={"chats"}
+              to={"chats/:id"}
               text={"Chat"}
               icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}
               chipValue={14}

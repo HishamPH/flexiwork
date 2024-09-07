@@ -16,7 +16,7 @@ const RecruiterRouter = () => {
         <Route path="profile" element={<RecruiterProfilePage />} />
         <Route path="jobs" element={<JobListing />} />
         <Route path="jobs/applicants/:id" element={<ViewApplicants />} />
-        <Route path="chats" element={<RecruiterChat />} />
+        <Route path="chats/:id" element={<RecruiterChat />} />
       </Route>
     </Routes>
   );

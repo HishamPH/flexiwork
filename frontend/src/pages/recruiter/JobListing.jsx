@@ -65,9 +65,9 @@ const JobListing = () => {
           Post Job
         </button>
       </div>
-      <Card className="h-auto w-auto">
-        <CardBody className="px-0">
-          <table className="mt-4 w-full min-w-max table-auto ">
+      <Card className="w-full">
+        <CardBody className="px-0 w-full h-[500px] overflow-y-scroll">
+          <table className="w-full  mt-4 overflow-y-scroll">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head) => (
@@ -86,7 +86,8 @@ const JobListing = () => {
                 ))}
               </tr>
             </thead>
-            <tbody>
+
+            <tbody className="h-[500px] overflow-y-scroll">
               {jobs.map(
                 (
                   { jobName, status, postDate, dueDate, isBlocked, _id },
@@ -94,12 +95,12 @@ const JobListing = () => {
                 ) => {
                   const isLast = index === jobs.length - 1;
                   const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-blue-gray-50";
+                    ? "p-4 text-center"
+                    : "p-4 border-b border-blue-gray-50 text-center";
 
                   return (
                     <tr key={_id}>
-                      <td className={classes}>
+                      <td className="p-4 border-b border-blue-gray-50 ">
                         <Link to={`/recruiter/jobs/applicants/${_id}`}>
                           <Typography
                             variant="small"

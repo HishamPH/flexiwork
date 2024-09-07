@@ -98,4 +98,12 @@ userRouter.put("/candidate/apply-job/:id", uploadResume, (req, res, next) => {
   applicationController.applyJob(req, res, next);
 });
 
+userRouter.post("/chat/get-messages/:id", (req, res, next) => {
+  chatController.getMessages(req, res, next);
+});
+
+userRouter.post("/chat/send-message/:id", (req, res, next) => {
+  chatController.sendMessage(req, res, next);
+});
+
 export default userRouter;

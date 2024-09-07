@@ -72,7 +72,7 @@ const NavBar = () => {
                 <Link to={`/${profilePath}/profile`}>
                   <MenuItem className="flex items-center gap-2 m-0">
                     <UserCircleIcon className="h-6 w-6" />
-                    <Typography variant="medium" className="font-medium">
+                    <Typography variant="h6" className="font-medium">
                       Profile
                     </Typography>
                   </MenuItem>
@@ -83,7 +83,7 @@ const NavBar = () => {
                   onClick={handleLogout}
                 >
                   <ArrowRightStartOnRectangleIcon className="h-6 w-6" />
-                  <Typography variant="medium" className="font-medium ">
+                  <Typography variant="h6" className="font-medium ">
                     Sign Out
                   </Typography>
                 </MenuItem>

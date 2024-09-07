@@ -1,30 +1,25 @@
-import { MessageList } from "react-chat-elements";
+import { useRef, useEffect } from "react";
 
-import React from "react";
+import Message from "./Message";
 
-const Messages = () => {
+const Messages = ({ messages }) => {
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <>
-      <MessageList
-        className="message-list w-3/4 bg-black"
-        lockable={true}
-        toBottomHeight={"100%"}
-        dataSource={[
-          {
-            position: "left",
-            type: "text",
-            title: "Kursat",
-            text: "Give me a message list example !",
-          },
-          {
-            position: "right",
-            type: "text",
-            title: "Emre",
-            text: "That's all.",
-          },
-        ]}
-      />
-    </>
+    <div className="h-4/5 overflow-y-scroll">
+      {messages?.map((message, index) => {
+        return (
+          <div key={index}>
+            <Message message={message} />
+          </div>
+        );
+      })}
+      <div ref={bottomRef} />
+    </div>
   );
 };
 

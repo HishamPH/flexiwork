@@ -1,10 +1,10 @@
 import PeopleList from "./chat/PeopleList";
-import Messages from "./chat/Messages";
+import MessageContainer from "./chat/MessageContainer";
 const Chat = () => {
   return (
-    <div className="flex">
-      <PeopleList />
-      <Messages />
+    <div className="flex h-3/5">
+      {/* <PeopleList /> */}
+      <MessageContainer />
     </div>
   );
 };

@@ -20,6 +20,7 @@ const chatSchema: Schema<IChat> = new mongoose.Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Message",
+        default: [],
       },
     ],
   },

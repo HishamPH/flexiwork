@@ -1,0 +1,28 @@
+/* Styles for sender's message */
+.rce-mbox.rce-mbox-right {
+  background-color: #DCF8C6;
+  /* Light green for sender */
+}
+
+/* Styles for receiver's message */
+.rce-mbox:not(.rce-mbox-right) {
+  background-color: #FFFFFF;
+  /* White for receiver */
+}
+
+/* Text color for both sender and receiver */
+.rce-mbox-text {
+  color: #000000;
+  /* Black text for both */
+}
+
+/* Optional: Customize the tail color */
+.rce-mbox-right-notch {
+  fill: #DCF8C6;
+  /* Match sender background */
+}
+
+.rce-mbox-left-notch {
+  fill: #FFFFFF;
+  /* Match receiver background */
+}

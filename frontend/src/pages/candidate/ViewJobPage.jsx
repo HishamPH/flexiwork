@@ -14,6 +14,7 @@ import { Success, Failed } from "../../helper/popup";
 import CustomButton from "../../components/CustomButton";
 import TextInput from "../../components/TextInput";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const UserForm = ({ open, setOpen, jobId }) => {
   const { userInfo } = useSelector((state) => state.user);
@@ -163,13 +164,21 @@ const ViewJobPage = () => {
           <div className="flex items-center">
             <h1 className="ml-4 text-2xl font-bold">{job.jobName}</h1>
           </div>
-          <button
-            className="text-sm px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-400 disabled:bg-indigo-400"
-            onClick={() => setOpen(true)}
-            disabled={buttonStat}
-          >
-            Apply
-          </button>
+          <div>
+            <Link to={`/candidate/chat/${job.recruiterId}`}>
+              <button className="text-sm px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-400 disabled:bg-indigo-400">
+                chat
+              </button>
+            </Link>
+
+            <button
+              className="text-sm px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-400 disabled:bg-indigo-400"
+              onClick={() => setOpen(true)}
+              disabled={buttonStat}
+            >
+              Apply
+            </button>
+          </div>
         </div>
 
         <div className="flex">
