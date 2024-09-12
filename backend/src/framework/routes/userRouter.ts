@@ -82,12 +82,24 @@ userRouter.post("/recruiter/edit-job/:id", userAuth, (req, res, next) => {
   jobController.editJob(req, res, next);
 });
 
+userRouter.post("/recruiter/delete-job", userAuth, (req, res, next) => {
+  jobController.deleteJob(req, res, next);
+});
+
+userRouter.post("/recruiter/block-job", userAuth, (req, res, next) => {
+  jobController.blockJob(req, res, next);
+});
+
 userRouter.get("/recruiter/get-jobs/:id", userAuth, (req, res, next) => {
   jobController.getRecruiterJobs(req, res, next);
 });
 
 userRouter.get("/recruiter/get-applicants/:id", userAuth, (req, res, next) => {
   jobController.getApplicants(req, res, next);
+});
+
+userRouter.post("/recruiter/application-status", userAuth, (req, res, next) => {
+  applicationController.changeStatus(req, res, next);
 });
 
 userRouter.get("/candidate/job-detail/:id", userAuth, (req, res, next) => {
@@ -114,5 +126,13 @@ userRouter.post("/chat/get-conversations", userAuth, (req, res, next) => {
 userRouter.post("/chat/send-message/:id", userAuth, (req, res, next) => {
   chatController.sendMessage(req, res, next);
 });
+
+userRouter.get(
+  "/candidate/get-applications/:id",
+  userAuth,
+  (req, res, next) => {
+    applicationController.getApplications(req, res, next);
+  }
+);
 
 export default userRouter;

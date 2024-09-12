@@ -29,7 +29,7 @@ const PDFViewer = ({ isOpen, onClose, pdfFile }) => {
     <>
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg p-4 max-w-3xl w-full">
+          <div className="bg-white rounded-lg p-4 w-[900px] h-[700px]">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">PDF Viewer</h2>
               <button onClick={onClose} className="text-red-500">
@@ -37,14 +37,19 @@ const PDFViewer = ({ isOpen, onClose, pdfFile }) => {
               </button>
             </div>
             {/* PDF Viewer */}
-            <Document
+            <iframe
+              src={`/api/images/${pdfFile}`}
+              frameborder="0"
+              className="w-full h-[600px]"
+            ></iframe>
+            {/* <Document
               file={`/api/images${pdfFile}`}
               onLoadSuccess={onDocumentLoadSuccess}
             >
               {Array.from(new Array(numPages), (el, index) => (
                 <Page key={`page_${index + 1}`} pageNumber={index + 1} />
               ))}
-            </Document>
+            </Document> */}
           </div>
         </div>
       )}

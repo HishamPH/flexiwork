@@ -23,23 +23,30 @@ import PostJobModal from "../../components/recruiter/PostJobModal";
 import PDFViewer from "../../components/PDFViewer";
 
 import { pdfjs } from "react-pdf";
+import axiosInstance from "../../../interceptors/axiosInterceptors";
+
+import ApplicantProfileModal from "../../components/recruiter/ApplicantProfileModal";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
 ).toString();
 
+import { Failed, Success } from "../../helper/popup";
+
 const TABLE_HEAD = ["Applicant", "Status", "Application", "Profile", "Chats"];
 
 const ViewApplicants = () => {
   const [open, setOpen] = useState(false);
-  const [currentPdf, setCurrentPdf] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [currentPdf, setCurrentPdf] = useState("");
+  const [currentUser, setCurrentUser] = useState({});
   const [applicants, setApplicants] = useState([]);
   let { id } = useParams();
   useEffect(() => {
     const fetchApplicants = async (jobId) => {
-      const res = await axios.get(
-        `/api/user/recruiter/get-applicants/${jobId}`
+      const res = await axiosInstance.get(
+        `/user/recruiter/get-applicants/${jobId}`
       );
       console.log(res.data.result);
       setApplicants(res.data.result);
@@ -47,7 +54,23 @@ const ViewApplicants = () => {
     fetchApplicants(id);
   }, []);
 
-  const handleStatusChange = async (applicationId) => {};
+  const handleStatusChange = async (applicationId, status) => {
+    try {
+      const res = await axiosInstance.post(
+        "/user/recruiter/application-status",
+        { applicationId, status },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      Success(res.data.message);
+    } catch (err) {
+      Failed(err.response ? err.response.data.message : err.message);
+      console.log(err.message);
+    }
+  };
 
   const openModal = (pdfPath) => {
     setCurrentPdf(pdfPath);
@@ -57,6 +80,12 @@ const ViewApplicants = () => {
   const closeModal = () => {
     setOpen(false);
     setCurrentPdf(null);
+  };
+
+  const openProfileModal = async (user) => {
+    console.log(user);
+    setCurrentUser(user);
+    setProfileOpen(true);
   };
 
   return (
@@ -106,7 +135,7 @@ const ViewApplicants = () => {
                           <Select
                             className="text-black rounded-sm"
                             value={status}
-                            onChange={handleStatusChange(_id)}
+                            onChange={(value) => handleStatusChange(_id, value)}
                           >
                             <Option value="Applied">Applied</Option>
                             <Option value="Reviewed">Reviewed</Option>
@@ -125,7 +154,11 @@ const ViewApplicants = () => {
                         </Button>
                       </td>
                       <td className={classes}>
-                        <Button variant="outlined" className="rounded-sm">
+                        <Button
+                          onClick={() => openProfileModal(candidateId)}
+                          variant="outlined"
+                          className="rounded-sm"
+                        >
                           View Profile
                         </Button>
                       </td>
@@ -159,6 +192,11 @@ const ViewApplicants = () => {
       </Card>
       {/* <JobModal open={open} setOpen={setOpen} /> */}
       <PDFViewer isOpen={open} onClose={closeModal} pdfFile={currentPdf} />
+      <ApplicantProfileModal
+        open={profileOpen}
+        setOpen={setProfileOpen}
+        user={currentUser}
+      />
     </div>
   );
 };

@@ -6,7 +6,7 @@ const CandidateChat = () => {
   return (
     <div>
       <NavBar />
-      <div className="container mx-auto mt-16 px-4">
+      <div className="container mx-auto mt-7 px-4">
         <Chat />
       </div>
     </div>

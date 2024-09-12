@@ -12,9 +12,12 @@ import Loader from "../../helper/Loader";
 
 import { useSocketContext } from "../../socket/SocketContext";
 
+import { Avatar } from "@material-tailwind/react";
+
 const MessageContainer = () => {
   const { socket } = useSocketContext();
   const [messages, setMessages] = useState([]);
+  const [receiver, setReceiver] = useState({});
   const [loading, setLoading] = useState(false);
   const { userInfo } = useSelector((state) => state.user);
   const { id } = useParams();
@@ -43,6 +46,7 @@ const MessageContainer = () => {
           }
         );
         setMessages(res.data.messages);
+        setReceiver(res.data.participants[0]);
         setLoading(false);
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
@@ -65,7 +69,16 @@ const MessageContainer = () => {
           <Loader />
         </div>
       ) : (
-        <div className="flex-col w-full bg-blue-gray-100 h-[620px]">
+        <div className="flex-col w-full bg-blue-gray-100 h-full">
+          <div className="h-[60px] bg-blue-gray-200">
+            <Avatar
+              variant="circular"
+              alt="tania andrew"
+              src={`/api/images/${receiver?.profilePic || "user.png"}`}
+              className="mx-2 mt-1"
+            />
+            {receiver.name}
+          </div>
           <Messages messages={messages} />
           <MessageInput1 addMessage={addMessage} />
         </div>

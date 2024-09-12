@@ -27,6 +27,6 @@ export const loginValidation=Yup.object({
 });
 
 
-// export const jobValidation=Yup.object({
-//   jobName:Yup.string
-// })
+export const jobValidation=Yup.object({
+  jobName:Yup.string().required('job name is required')
+})

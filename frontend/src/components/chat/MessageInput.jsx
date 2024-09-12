@@ -39,9 +39,6 @@ const MessageInput1 = ({ addMessage }) => {
     setMessage(e.target.value);
   };
 
-  const handleMClick = (e) => {
-    console.log(e.target.value);
-  };
   return (
     <div>
       <div className="flex w-full rounded-md mt-4">
@@ -60,7 +57,6 @@ const MessageInput1 = ({ addMessage }) => {
           </button>
         </form>
       </div>
-      <MessageInput onClick={handleMClick} />
     </div>
   );
 };

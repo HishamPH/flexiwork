@@ -13,4 +13,38 @@ export default class ApplicationRepository implements IApplicationRepository {
       return null;
     }
   }
+
+  async getApplications(userId: string): Promise<{} | null> {
+    try {
+      const applications = await applicationModel
+        .find({ candidateId: userId })
+        .populate("jobId")
+        .select("-__v");
+
+      if (applications) return applications;
+      else return null;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async changeStatus(
+    applicationId: string,
+    status: string
+  ): Promise<{} | null> {
+    try {
+      const application = await applicationModel.findByIdAndUpdate(
+        applicationId,
+        {
+          status: status,
+        },
+        { new: true }
+      );
+      return application;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
 }

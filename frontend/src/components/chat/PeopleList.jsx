@@ -24,9 +24,7 @@ const PeopleList = () => {
             },
           }
         );
-        console.log(res.data.result);
         setConversations(res.data.result);
-        console.log(conversations);
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
         console.log(err.message);
@@ -43,15 +41,16 @@ const PeopleList = () => {
       <div className="flex-col">
         {conversations.map((item) => {
           const isAcive = item._id === id;
+
           return (
             // <NavLink to={`/${userInfo.role}/chats/${item._id}}`}>
             <ChatItem
               key={item._id}
               onClick={() => handleClick(item._id)}
-              avatar={item.profilePic}
+              avatar={`/api/images/${item.profilePic}`}
               title={item.name}
               date={item.createdAt}
-              className={`chat-list`}
+              className={`${isAcive ? "text-green-600" : ""}`}
             />
             // </NavLink>
           );

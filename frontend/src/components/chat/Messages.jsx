@@ -10,7 +10,7 @@ const Messages = ({ messages }) => {
   }, [messages]);
 
   return (
-    <div className="h-4/5 overflow-y-scroll">
+    <div className="h-[480px] overflow-y-scroll">
       {messages?.map((message, index) => {
         return (
           <div key={index}>

@@ -58,7 +58,12 @@ export default class ChatRepository implements IChatRepsoitory {
         .findOne({
           participants: { $all: [senderId, receiverId] },
         })
-        .populate("messages");
+        .populate("messages")
+        .populate({
+          path: "participants",
+          match: { _id: receiverId },
+          select: "-password -__v", // Exclude the password field
+        });
       if (!chat) {
         const newChat = await chatModel.create({
           participants: [senderId, receiverId],

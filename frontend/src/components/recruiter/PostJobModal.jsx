@@ -15,6 +15,7 @@ import {
 import CustomButton from "../CustomButton";
 import TextInput from "../TextInput";
 import { Success, Failed } from "../../helper/popup";
+import { jobValidation } from "../../validations/validation";
 
 const PostJobModal = ({ open, setOpen, job }) => {
   const { userInfo } = useSelector((state) => state.user);
@@ -48,6 +49,7 @@ const PostJobModal = ({ open, setOpen, job }) => {
   } = useFormik({
     initialValues,
     enableReinitialize: true,
+    validationSchema: jobValidation,
     onSubmit: async (values, action) => {
       let path = "";
       if (job) {
@@ -134,6 +136,9 @@ const PostJobModal = ({ open, setOpen, job }) => {
                           //     errors.firstName ? errors.firstName?.message : ""
                           //   }
                         />
+                        {errors.jobName && touched.jobName ? (
+                          <div className="text-red-700">{errors.jobName}</div>
+                        ) : null}
                       </div>
 
                       <div className="flex flex-col">

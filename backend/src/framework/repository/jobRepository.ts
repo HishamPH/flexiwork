@@ -100,6 +100,7 @@ export default class JobRepository implements IJobRepsoitory {
       if (remote === true) {
         queryObj.remote = remote;
       }
+      queryObj.isActive = true;
 
       const totalDocuments = await jobModel.countDocuments(queryObj);
 
@@ -159,6 +160,31 @@ export default class JobRepository implements IJobRepsoitory {
         .find({ jobId: jobId })
         .populate({ path: "candidateId", select: "-password -__v" });
       return applicants;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async blockJob(jobId: string): Promise<{} | null> {
+    try {
+      const job = await jobModel.findById(jobId);
+      const updatedJob = await jobModel.findByIdAndUpdate(
+        jobId,
+        { isActive: !job?.isActive }, // Invert the boolean value
+        { new: true } // Return the updated document
+      );
+      return updatedJob;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async deleteJob(jobId: string): Promise<{} | null> {
+    try {
+      const job = await jobModel.findByIdAndDelete(jobId);
+      return job;
     } catch (err) {
       console.log(err);
       return null;

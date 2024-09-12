@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import axiosInstance from "../../../interceptors/axiosInterceptors";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   Card,
@@ -14,6 +15,8 @@ import PostJobModal from "../../components/recruiter/PostJobModal";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Loader from "../../helper/Loader";
+import Swal from "sweetalert2";
+import { Failed, Success } from "../../helper/popup";
 
 const JobListing = () => {
   let ITEMS_PER_PAGE = 6;
@@ -28,8 +31,8 @@ const JobListing = () => {
   useEffect(() => {
     if (!open) {
       const fetchRecruiterJobs = async (recruiterId) => {
-        const res = await axios.get(
-          `/api/user/recruiter/get-jobs/${recruiterId}`
+        const res = await axiosInstance.get(
+          `/user/recruiter/get-jobs/${recruiterId}`
         );
         setJobs(res.data.result);
         setTotalPages(Math.ceil(res.data.result.length / ITEMS_PER_PAGE));
@@ -38,7 +41,7 @@ const JobListing = () => {
 
       fetchRecruiterJobs(userInfo._id);
     }
-  }, [open]);
+  }, [open, handleDelete, handleBlock]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -57,9 +60,55 @@ const JobListing = () => {
     setOpen(true);
   };
 
-  const handleDelete = async (jobId) => {};
+  async function handleDelete(jobId) {
+    try {
+      Swal.fire({
+        title: `Do you want to Delete the user`,
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        confirmButtonColor: "red",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          let res = await axiosInstance.post(
+            "/user/recruiter/delete-job",
+            {
+              jobId,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log(res);
+          Swal.fire("", "job Deleted", "success");
+        }
+      });
+    } catch (err) {
+      Failed(err.response ? err.response.data.message : err.message);
+      console.log(err.message);
+    }
+  }
 
-  const handleBlock = async (jobId) => {};
+  async function handleBlock(jobId) {
+    try {
+      const res = await axiosInstance.post(
+        "/user/recruiter/block-job",
+        {
+          jobId,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      Success(res.data.message);
+    } catch (err) {
+      Failed(err.response ? err.response.data.message : err.message);
+      console.log(err.message);
+    }
+  }
 
   //=======================================================
 
@@ -83,14 +132,25 @@ const JobListing = () => {
         </Button>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-3 bg-white p-3 h-[525px]">
-        {currentJobs.map((job) => {
-          const { _id, jobName } = job;
+        {currentJobs.map(({ _id, jobName, isActive }) => {
           return (
-            <div className="flex-row justify-between" key={_id}>
+            <div key={_id} className="flex-row justify-between">
               <Card className="flex-row justify-between">
                 <div className="flex-col m-4 justify-between">
-                  <Typography variant="h5">{jobName}</Typography>
-                  <div></div>
+                  <Typography variant="h5" className="mb-5">
+                    {jobName}
+                  </Typography>
+                  <div>
+                    <Chip
+                      size="md"
+                      value={isActive ? `open` : `closed`}
+                      className={`w-max mb-3 rounded-sm ${
+                        isActive
+                          ? "text-green-800 bg-green-100"
+                          : "text-red-800 bg-red-100"
+                      }`}
+                    />
+                  </div>
                   <Link to={`/recruiter/jobs/applicants/${_id}`}>
                     <Button className="rounded-full">Applicants</Button>
                   </Link>
@@ -118,7 +178,21 @@ const JobListing = () => {
                     </Tooltip>
                   </div>
                   <div className="m-2">
-                    <Button>Block</Button>
+                    {isActive ? (
+                      <button
+                        onClick={() => handleBlock(_id)}
+                        className="bg-red-800 text-white px-3 py-1 rounded-sm hover:bg-red-400"
+                      >
+                        close
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleBlock(_id)}
+                        className="bg-green-800 text-white px-3 py-1 rounded-sm hover:bg-green-400"
+                      >
+                        open
+                      </button>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -128,7 +202,9 @@ const JobListing = () => {
       </div>
       <div className="flex items-center gap-2 justify-center mt-1">
         {Array.from({ length: totalPages }, (_, index) => (
-          <IconButton {...getItemProps(index + 1)}>{index + 1}</IconButton>
+          <IconButton key={index} {...getItemProps(index + 1)}>
+            {index + 1}
+          </IconButton>
         ))}
       </div>
       <PostJobModal open={open} setOpen={setOpen} job={selectedJob} />

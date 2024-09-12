@@ -17,10 +17,15 @@ class JobController {
     }
   }
   async editJob(req: Request, res: Response, next: NextFunction) {
-    const jobId = req.params.id;
-    const jobData = req.body;
-    const job = await this.jobCase.editJob(jobData, jobId);
-    return res.status(job?.statusCode).json({ ...job });
+    try {
+      const jobId = req.params.id;
+      const jobData = req.body;
+      const job = await this.jobCase.editJob(jobData, jobId);
+      return res.status(job?.statusCode).json({ ...job });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
   }
   async getRecruiterJobs(req: Request, res: Response, next: NextFunction) {
     try {
@@ -70,6 +75,28 @@ class JobController {
       const jobId = req.params.id;
       const result = await this.jobCase.getApplicants(jobId);
       return res.status(result?.statusCode).json({ ...result });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  async blockJob(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { jobId } = req.body;
+      const job = await this.jobCase.blockJob(jobId);
+      return res.status(job?.statusCode).json({ ...job });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  async deleteJob(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { jobId } = req.body;
+      const job = await this.jobCase.deleteJob(jobId);
+      return res.status(job?.statusCode).json({ ...job });
     } catch (err) {
       console.log(err);
       next(err);

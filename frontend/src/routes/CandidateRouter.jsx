@@ -6,6 +6,7 @@ import ViewJobPage from "../pages/candidate/ViewJobPage";
 import AppliedJobs from "../pages/candidate/AppliedJobs";
 import CandidateChat from "../pages/candidate/CandidateChat";
 import MessageContainer from "../components/chat/MessageContainer";
+import ApplicationsPage from "../pages/candidate/ApplicationsPage";
 import Chat from "../components/Chat";
 
 const CandidateRouter = () => {
@@ -18,6 +19,7 @@ const CandidateRouter = () => {
       <Route path="chats" element={<CandidateChat />}>
         <Route path=":id" element={<MessageContainer />} />
       </Route>
+      <Route path="applications" element={<ApplicationsPage />} />
     </Routes>
   );
 };

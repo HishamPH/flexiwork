@@ -19,5 +19,7 @@ interface IJobRepsoitory {
   applyJob(jobId: string, userId: string): Promise<{} | null>;
   getApplicants(jobId: string): Promise<{} | null>;
   isApplied(jobId: string, userId: string): Promise<boolean | null>;
+  blockJob(jobId: string): Promise<{} | null>;
+  deleteJob(jobId: string): Promise<{} | null>;
 }
 export default IJobRepsoitory;

@@ -158,6 +158,44 @@ class JobUseCase {
       };
     }
   }
+
+  async blockJob(jobId: string): Promise<ResponseType> {
+    try {
+      const result = await this.iJobRepository.blockJob(jobId);
+      return {
+        status: true,
+        statusCode: 200,
+        message: "job status changed",
+        result,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+
+  async deleteJob(jobId: string): Promise<ResponseType> {
+    try {
+      const result = await this.iJobRepository.deleteJob(jobId);
+      return {
+        status: true,
+        statusCode: 200,
+        message: "applied for the job",
+        result,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
 }
 
 export default JobUseCase;
