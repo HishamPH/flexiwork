@@ -3,7 +3,7 @@ import Message from "../entity/messageEntity";
 import IChatRepsoitory from "./interfaces/IChatRepository";
 interface ResponseType {
   _id?: string;
-  result?: Chat | {} | null;
+  result?: Chat | {} | null | Chat[];
   status?: boolean;
   statusCode: number;
   message?: string;
@@ -61,6 +61,37 @@ class ChatUseCase {
         message: "Here are the messages",
         ...result,
       };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+  async getConversations(senderId: string): Promise<ResponseType> {
+    try {
+      const chats = await this.iChatRepository.getConversations(senderId);
+      if (chats) {
+        const result = chats.flatMap((chat) =>
+          chat.participants.filter(
+            (participant) => participant._id.toString() !== senderId
+          )
+        );
+        return {
+          status: true,
+          statusCode: 200,
+          message: "Here are the messages",
+          result,
+        };
+      } else {
+        return {
+          status: true,
+          statusCode: 200,
+          message: "There is no conversation",
+        };
+      }
     } catch (err) {
       console.log(err);
       return {

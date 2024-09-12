@@ -9,8 +9,8 @@ import AdminLayout from "../Layouts/AdminLayout";
 const AdminRouter = () => {
   return (
     <Routes>
+      <Route path="/login" element={<AdminLogin />} />
       <Route path="/" element={<AdminLayout />}>
-        <Route index element={<AdminLogin />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="candidates" element={<AdminCandidatePage />} />
         <Route path="recruiters" element={<AdminRecruiterPage />} />

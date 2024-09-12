@@ -1,37 +1,30 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { PencilIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   Typography,
   Button,
-  CardBody,
   Chip,
-  CardFooter,
-  Avatar,
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
-import RecruiterLayout from "../../Layouts/RecruiterLayout";
-import JobModal from "../../components/recruiter/JobModal";
+
+import PostJobModal from "../../components/recruiter/PostJobModal";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Loader from "../../helper/Loader";
 
-const TABLE_HEAD = [
-  "JobName",
-  "status",
-  "post Date",
-  "Due Date",
-  "action",
-  "edit",
-];
-
 const JobListing = () => {
+  let ITEMS_PER_PAGE = 6;
+  const { userInfo } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [jobs, setJobs] = useState([]);
-  const { userInfo } = useSelector((state) => state.user);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
     if (!open) {
       const fetchRecruiterJobs = async (recruiterId) => {
@@ -39,144 +32,106 @@ const JobListing = () => {
           `/api/user/recruiter/get-jobs/${recruiterId}`
         );
         setJobs(res.data.result);
+        setTotalPages(Math.ceil(res.data.result.length / ITEMS_PER_PAGE));
         setLoading(false);
       };
 
       fetchRecruiterJobs(userInfo._id);
     }
   }, [open]);
-  const formattedDate = (date = Date.now()) => {
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long", // Use 'short' for abbreviated month name
-      day: "numeric",
-    });
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentJobs = jobs.slice(startIndex, endIndex);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
+
+  const handleEdit = async (job) => {
+    setSelectedJob(job);
+    setOpen(true);
+  };
+  const handlePost = async () => {
+    setSelectedJob(null);
+    setOpen(true);
+  };
+
+  const handleDelete = async (jobId) => {};
+
+  const handleBlock = async (jobId) => {};
+
+  //=======================================================
+
+  const getItemProps = (index) => ({
+    variant: currentPage === index ? "filled" : "text",
+    color: "gray",
+    onClick: () => setCurrentPage(index),
+  });
+
   if (loading) {
     return <Loader />;
   }
   return (
     <>
-      <div className="flex justify-between py-4">
-        <button
-          onClick={() => setOpen(true)}
-          className="bg-indigo-600 px-4 py-2 rounded-sm hover:bg-indigo-400 text-white"
+      <div className="flex justify-between py-3">
+        <Button
+          onClick={() => handlePost()}
+          className="bg-indigo-600 px-4 py-3 rounded-sm hover:bg-indigo-400 text-white"
         >
           Post Job
-        </button>
+        </Button>
       </div>
-      <Card className="w-full">
-        <CardBody className="px-0 w-full h-[500px] overflow-y-scroll ">
-          <table className="w-full  mt-4 overflow-y-scroll">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th
-                    key={head}
-                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-100"
-                    >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
+      <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-3 bg-white p-3 h-[525px]">
+        {currentJobs.map((job) => {
+          const { _id, jobName } = job;
+          return (
+            <div className="flex-row justify-between" key={_id}>
+              <Card className="flex-row justify-between">
+                <div className="flex-col m-4 justify-between">
+                  <Typography variant="h5">{jobName}</Typography>
+                  <div></div>
+                  <Link to={`/recruiter/jobs/applicants/${_id}`}>
+                    <Button className="rounded-full">Applicants</Button>
+                  </Link>
+                </div>
+                <div className="flex-col justify-end gap-3">
+                  <div>
+                    <Tooltip content="Edit Job">
+                      <IconButton
+                        variant="text"
+                        onClick={() => handleEdit(job)}
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
 
-            <tbody className="h-[500px] overflow-y-scroll">
-              {jobs.map(
-                (
-                  { jobName, status, postDate, dueDate, isBlocked, _id },
-                  index
-                ) => {
-                  const isLast = index === jobs.length - 1;
-                  const classes = isLast
-                    ? "p-4 text-center"
-                    : "p-4 border-b border-blue-gray-50 text-center";
-
-                  return (
-                    <tr key={_id}>
-                      <td className="p-4 border-b border-blue-gray-50 ">
-                        <Link to={`/recruiter/jobs/applicants/${_id}`}>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {jobName}
-                          </Typography>
-                        </Link>
-                      </td>
-
-                      <td className={classes}>
-                        <div className="w-max">
-                          <Chip
-                            variant="ghost"
-                            size="sm"
-                            value={isBlocked ? "online" : "offline"}
-                            color={isBlocked ? "green" : "blue-gray"}
-                          />
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {jobName}
-                          {postDate?.slice(0, 10)}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {jobName}
-                          {dueDate?.slice(0, 10)}
-                        </Typography>
-                      </td>
-
-                      <td className={classes}>
-                        <button className="bg-red-800 text-white px-3 py-1 rounded-sm hover:bg-red-400">
-                          block
-                        </button>
-                      </td>
-                      <td className={classes}>
-                        <Tooltip content="Edit User">
-                          <IconButton variant="text">
-                            <PencilIcon className="h-4 w-4" />
-                          </IconButton>
-                        </Tooltip>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
-            </tbody>
-          </table>
-        </CardBody>
-        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          <Typography variant="small" color="blue-gray" className="font-normal">
-            Page 1 of 10
-          </Typography>
-          <div className="flex gap-2">
-            <Button variant="outlined" size="sm">
-              Previous
-            </Button>
-            <Button variant="outlined" size="sm">
-              Next
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
-      <JobModal open={open} setOpen={setOpen} />
+                  <div>
+                    <Tooltip content="Delete Job">
+                      <IconButton
+                        variant="text"
+                        onClick={() => handleDelete(_id)}
+                      >
+                        <TrashIcon className="h-4 w-4 text-red-800" />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
+                  <div className="m-2">
+                    <Button>Block</Button>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex items-center gap-2 justify-center mt-1">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <IconButton {...getItemProps(index + 1)}>{index + 1}</IconButton>
+        ))}
+      </div>
+      <PostJobModal open={open} setOpen={setOpen} job={selectedJob} />
     </>
   );
 };

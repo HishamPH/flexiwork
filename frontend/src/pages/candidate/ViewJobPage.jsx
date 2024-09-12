@@ -109,6 +109,7 @@ const UserForm = ({ open, setOpen, jobId }) => {
                           <input
                             type="file"
                             name="resume"
+                            accept=".pdf"
                             onChange={(e) => {
                               setFieldValue("resume", e.target.files[0]);
                             }}
@@ -137,6 +138,7 @@ const UserForm = ({ open, setOpen, jobId }) => {
 
 const ViewJobPage = () => {
   const [open, setOpen] = useState(false);
+  const [isApplied, setIsApplied] = useState(false);
   const [job, setJob] = useState({});
   const { userInfo } = useSelector((state) => state.user);
   let { id } = useParams();
@@ -146,15 +148,12 @@ const ViewJobPage = () => {
       const res = await axios.get(`/api/user/candidate/job-detail/${jobId}`);
       console.log(res.data);
       setJob(res.data.result);
-      jobResponsibilities = job.responsibilities;
-      console.log(jobResponsibilities);
+      setIsApplied(res.data.isApplied);
     };
     fetchJob(id);
   }, [open]);
-  let buttonStat = false;
-  if (job && job.applicants) {
-    buttonStat = job.applicants.includes(userInfo._id);
-  }
+
+  console.log(job.responsibilities?.length);
   return (
     <>
       <NavBar />
@@ -165,7 +164,7 @@ const ViewJobPage = () => {
             <h1 className="ml-4 text-2xl font-bold">{job.jobName}</h1>
           </div>
           <div>
-            <Link to={`/candidate/chat/${job.recruiterId}`}>
+            <Link to={`/candidate/chats/${job.recruiterId}`}>
               <button className="text-sm px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-400 disabled:bg-indigo-400">
                 chat
               </button>
@@ -174,7 +173,7 @@ const ViewJobPage = () => {
             <button
               className="text-sm px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-400 disabled:bg-indigo-400"
               onClick={() => setOpen(true)}
-              disabled={buttonStat}
+              disabled={isApplied}
             >
               Apply
             </button>
@@ -193,19 +192,13 @@ const ViewJobPage = () => {
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-2">Responsibilities</h2>
               <ul className="list-disc pl-5 text-gray-700 space-y-2">
-                {/* {jobResponsibilities.map((item, index) => {
-                  <li key={index}>{item}</li>;
-                })} */}
-
-                <li>
-                  Focus on social media content development and publication
-                </li>
-                <li>Marketing and strategy support</li>
-                <li>
-                  Stay on top of trends on social media platforms, and suggest
-                  content ideas to the team
-                </li>
-                <li>Engage with online communities</li>
+                {job.responsibilities ? (
+                  job.responsibilities?.split(",").map((item, index) => {
+                    return <li key={index}>{item}</li>;
+                  })
+                ) : (
+                  <div>No Job Responsiblities Mentioned</div>
+                )}
               </ul>
             </div>
 
@@ -213,9 +206,13 @@ const ViewJobPage = () => {
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-2">Nice-To-Haves</h2>
               <ul className="list-disc pl-5 text-gray-700 space-y-2">
-                <li>Fluent in English</li>
-                <li>Project management skills</li>
-                <li>Copy editing skills</li>
+                {job.niceToHaves ? (
+                  job.niceToHaves?.split(",").map((item, index) => {
+                    return <li key={index}>{item}</li>;
+                  })
+                ) : (
+                  <div>No Job Responsiblities Mentioned</div>
+                )}
               </ul>
             </div>
           </div>
@@ -255,21 +252,20 @@ const ViewJobPage = () => {
                 <div>
                   <h2 className="font-semibold mb-2">Required Skills</h2>
                   <div className="flex flex-wrap gap-2">
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                      Project Management
-                    </span>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                      Copywriting
-                    </span>
-                    <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
-                      English
-                    </span>
-                    <span className="bg-pink-100 text-pink-800 px-2 py-1 rounded-full">
-                      Social Media Marketing
-                    </span>
-                    <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full">
-                      Copy Editing
-                    </span>
+                    {job.skills ? (
+                      job.skills?.split(",").map((item, index) => {
+                        return (
+                          <span
+                            key={index}
+                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                          >
+                            {item}
+                          </span>
+                        );
+                      })
+                    ) : (
+                      <div>No Job Responsiblities Mentioned</div>
+                    )}
                   </div>
                 </div>
               </div>

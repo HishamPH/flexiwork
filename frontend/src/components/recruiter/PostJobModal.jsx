@@ -1,6 +1,9 @@
-import React, { useState, Fragment } from "react";
-import { Success, Failed } from "../../helper/popup";
+import React, { Fragment, useEffect, useState } from "react";
 import { useFormik } from "formik";
+import { useSelector } from "react-redux";
+import axios from "axios";
+
+import { Select, Option, Checkbox } from "@material-tailwind/react";
 import {
   Dialog,
   DialogPanel,
@@ -8,28 +11,30 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
+
 import CustomButton from "../CustomButton";
 import TextInput from "../TextInput";
-import { Select, Option, Checkbox } from "@material-tailwind/react";
-import axios from "axios";
-import { useSelector } from "react-redux";
+import { Success, Failed } from "../../helper/popup";
 
-const JobModal = ({ open, setOpen, job }) => {
+const PostJobModal = ({ open, setOpen, job }) => {
   const { userInfo } = useSelector((state) => state.user);
+
   const initialValues = {
     jobName: job?.jobName ?? "",
     description: job?.description ?? "",
     responsibilities: job?.responsibilities ?? "",
     niceToHaves: job?.niceToHaves ?? "",
-    postDate: job?.jobName ?? "",
-    dueDate: job?.dueDate ?? "",
+    postDate: job?.postDate?.slice(0, 10) ?? "",
+    dueDate: job?.dueDate?.slice(0, 10) ?? "",
     jobType: job?.jobType ?? "",
     minSalary: job?.minSalary ?? "",
     maxSalary: job?.maxSalary ?? "",
     skills: job?.skills ?? "",
     location: job?.location ?? "",
     remote: job?.remote ?? false,
+    isActive: job?.isActive ?? true,
   };
+
   const {
     handleChange,
     values,
@@ -42,11 +47,20 @@ const JobModal = ({ open, setOpen, job }) => {
     setFieldValue,
   } = useFormik({
     initialValues,
+    enableReinitialize: true,
     onSubmit: async (values, action) => {
+      let path = "";
+      if (job) {
+        path = `edit-job/${job._id}`;
+      } else {
+        path = `add-job`;
+      }
       try {
+        console.log(path);
         const { ...rest } = values;
         rest.recruiterId = userInfo._id;
-        const res = await axios.post("/api/user/recruiter/add-job", rest, {
+        console.log(rest);
+        const res = await axios.post(`/api/user/recruiter/${path}`, rest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -99,7 +113,7 @@ const JobModal = ({ open, setOpen, job }) => {
                       as="h2"
                       className="text-2xl font-semibold leading-6 text-gray-900"
                     >
-                      {job?.length == 0 ? "Edit Job" : "Add job"}
+                      {job ? "Edit Job" : "Add job"}
                     </DialogTitle>
                     <form
                       className="w-full mt-2 flex flex-col gap-5"
@@ -178,6 +192,7 @@ const JobModal = ({ open, setOpen, job }) => {
                           name="remote"
                           label="Remote"
                           value={values.remote}
+                          defaultChecked={values.remote}
                           onChange={handleChange}
                         />
                       </div>
@@ -189,12 +204,6 @@ const JobModal = ({ open, setOpen, job }) => {
                           type="text"
                           value={values.location}
                           onChange={handleChange}
-                          //   register={register("firstName", {
-                          //     required: "First Name is required",
-                          //   })}
-                          //   error={
-                          //     errors.firstName ? errors.firstName?.message : ""
-                          //   }
                         />
                       </div>
                       <div className="w-full">
@@ -205,12 +214,6 @@ const JobModal = ({ open, setOpen, job }) => {
                           type="number"
                           value={values.minSalary}
                           onChange={handleChange}
-                          //   register={register("firstName", {
-                          //     required: "First Name is required",
-                          //   })}
-                          //   error={
-                          //     errors.firstName ? errors.firstName?.message : ""
-                          //   }
                         />
                       </div>
 
@@ -222,12 +225,6 @@ const JobModal = ({ open, setOpen, job }) => {
                           type="number"
                           value={values.maxSalary}
                           onChange={handleChange}
-                          //   register={register("firstName", {
-                          //     required: "First Name is required",
-                          //   })}
-                          //   error={
-                          //     errors.firstName ? errors.firstName?.message : ""
-                          //   }
                         />
                       </div>
                       <div className="w-full">
@@ -238,12 +235,6 @@ const JobModal = ({ open, setOpen, job }) => {
                           type="date"
                           value={values.postDate}
                           onChange={handleChange}
-                          //   register={register("firstName", {
-                          //     required: "First Name is required",
-                          //   })}
-                          //   error={
-                          //     errors.firstName ? errors.firstName?.message : ""
-                          //   }
                         />
                       </div>
                       <div className="w-full">
@@ -254,12 +245,6 @@ const JobModal = ({ open, setOpen, job }) => {
                           type="date"
                           value={values.dueDate}
                           onChange={handleChange}
-                          //   register={register("firstName", {
-                          //     required: "First Name is required",
-                          //   })}
-                          //   error={
-                          //     errors.firstName ? errors.firstName?.message : ""
-                          //   }
                         />
                       </div>
                       <div className="flex flex-col">
@@ -295,4 +280,4 @@ const JobModal = ({ open, setOpen, job }) => {
   );
 };
 
-export default JobModal;
+export default PostJobModal;

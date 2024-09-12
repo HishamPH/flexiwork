@@ -7,6 +7,8 @@ import JobListing from "../pages/recruiter/JobListing";
 import ViewApplicants from "../pages/recruiter/ViewApplicants";
 import RecruiterLayout from "../Layouts/RecruiterLayout";
 import RecruiterChat from "../pages/recruiter/RecruiterChat";
+import MessageContainer from "../components/chat/MessageContainer";
+import Chat from "../components/Chat";
 
 const RecruiterRouter = () => {
   return (
@@ -16,7 +18,9 @@ const RecruiterRouter = () => {
         <Route path="profile" element={<RecruiterProfilePage />} />
         <Route path="jobs" element={<JobListing />} />
         <Route path="jobs/applicants/:id" element={<ViewApplicants />} />
-        <Route path="chats/:id" element={<RecruiterChat />} />
+        <Route path="chats" element={<RecruiterChat />}>
+          <Route path=":id" element={<MessageContainer />} />
+        </Route>
       </Route>
     </Routes>
   );

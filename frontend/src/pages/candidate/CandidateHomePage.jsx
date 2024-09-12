@@ -3,31 +3,81 @@ import NavBar from "../../components/NavBar";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../../interceptors/axiosInterceptors";
+import RCSlider from "../../components/candidate/RCSlider";
+import { MagnifyingGlassIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import { Select, Option, Checkbox } from "@material-tailwind/react";
+import { IconButton } from "@material-tailwind/react";
 
 const CandidateHomePage = () => {
-  const [jobs, setJobs] = useState([]);
   let { userInfo } = useSelector((state) => state.user);
+
+  const [jobs, setJobs] = useState([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchLocation, setSearchLocation] = useState("");
+  const [employmentType, setEmploymentType] = useState("All");
+  const [isRemote, setIsRemote] = useState(false);
+  const [range, setRange] = useState([30000, 400000]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const jobsPerPage = 4;
+
   useEffect(() => {
     const fetchAllJobs = async () => {
-      const res = await axios.get("/api/user/get-all-jobs");
-      setJobs(res.data.result);
+      const res = await axiosInstance.get("/user/get-all-jobs", {
+        params: {
+          page: currentPage,
+          limit: jobsPerPage,
+          name: searchName,
+          location: searchLocation,
+          type: employmentType,
+          remote: isRemote,
+          minSalary: range[0],
+          maxSalary: range[1],
+        },
+      });
+      setJobs(res.data.jobs);
+      setTotalPages(res.data.totalPages);
     };
     fetchAllJobs();
-  }, []);
-  console.log(jobs);
+  }, [
+    searchName,
+    searchLocation,
+    employmentType,
+    isRemote,
+    range,
+    currentPage,
+  ]);
 
-  const handleClick = (e)=>{
+  const getItemProps = (index) => ({
+    variant: currentPage === index ? "filled" : "text",
+    color: "gray",
+    onClick: () => setCurrentPage(index),
+  });
+
+  const handleClick = (e) => {
     e.stopPropogation();
-    console.log('hello');
-  }
+    console.log("hello");
+  };
+
+  const handleSearchNameChange = (e) => {
+    setSearchName(e.target.value);
+  };
+
+  const handleSearchLocationChange = (e) => {
+    setSearchLocation(e.target.value);
+  };
+
+  const handleRemoteChange = (e) => {
+    setIsRemote(e.target.checked);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <NavBar />
-      {/* Navbar */}
 
-      {/* Main content */}
-      <main className="container mx-auto mt-16 px-4">
+      <main className="container mx-auto mt-10 px-4">
         <h1 className="text-4xl font-bold mb-2 text-center">
           Find your{" "}
           <span className="text-blue-500 relative">
@@ -42,66 +92,24 @@ const CandidateHomePage = () => {
         {/* Search form */}
         <div className="flex mb-6 shadow-lg rounded-lg overflow-hidden">
           <div className="flex-grow flex items-center bg-white pl-4">
-            <svg
-              className="w-5 h-5 text-gray-400 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+            <MagnifyingGlassIcon className="h-6 w-6" />
             <input
               type="text"
               placeholder="Job title or keyword"
+              value={searchName}
+              onChange={handleSearchNameChange}
               className="w-full p-4 outline-none"
             />
           </div>
           <div className="w-64 flex items-center bg-white border-l">
-            <svg
-              className="w-5 h-5 text-gray-400 ml-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
+            <MapPinIcon className="w-5 h-5 ms-4" />
             <input
               type="text"
               placeholder="Florence, Italy"
+              value={searchLocation}
+              onChange={handleSearchLocationChange}
               className="w-full p-4 outline-none"
             />
-            <svg
-              className="w-5 h-5 text-gray-400 mr-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
           </div>
           <button className="bg-indigo-600 text-white px-8 py-4 font-medium">
             Search
@@ -113,100 +121,50 @@ const CandidateHomePage = () => {
         </div>
 
         {/* Job listings */}
-        <div className="flex">
+        <div className="w-full lg:flex">
           {/* Filters */}
-          <div className="w-1/4 pr-8 bg-white shadow-lg mx-5 p-4 mb-auto">
+          <div className="w-full lg:w-1/4 pr-8 bg-white shadow-lg mx-5 p-4 mb-auto">
             <div className="mb-6">
               <h2 className="font-bold mb-2 flex items-center justify-between">
                 Type of Employment
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
-                  />
-                </svg>
               </h2>
               <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox text-indigo-600 mr-2"
-                  />
-                  <span className="text-gray-700">Part-Time (5)</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox text-indigo-600 mr-2"
-                  />
-                  <span className="text-gray-700">Remote (2)</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox text-indigo-600 mr-2"
-                  />
-                  <span className="text-gray-700">Contract (3)</span>
-                </label>
+                <Select
+                  className="text-black rounded-sm"
+                  value={employmentType}
+                  onChange={(val) => setEmploymentType(val)}
+                >
+                  <Option value="All">All</Option>
+                  <Option value="Full Time">Full Time</Option>
+                  <Option value="Part Time">Part Time</Option>
+                  <Option value="Freelance">Freelance</Option>
+                  <Option value="Internship">Internship</Option>
+                </Select>
               </div>
             </div>
-
+            <Checkbox
+              name="remote"
+              label="Remote"
+              checked={isRemote}
+              onChange={handleRemoteChange}
+            />
             <div>
-              <h2 className="font-bold mb-2 flex items-center justify-between">
-                Categories
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
-                  />
-                </svg>
-              </h2>
-              <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox text-indigo-600 mr-2"
-                  />
-                  <span className="text-gray-700">Design (24)</span>
-                </label>
-                {/* Add more categories here */}
-              </div>
+              <RCSlider
+                range={range}
+                setRange={setRange}
+                max={400000}
+                min={30000}
+                step={10000}
+              />
             </div>
           </div>
 
           {/* Job list */}
-          <div className="w-3/4 bg-white shadow-lg mx-5 p-7">
-            {/* <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">All Jobs</h2>
-              <div className="flex items-center">
-                <span className="text-gray-500 mr-2">Sort by:</span>
-                <select className="bg-white border rounded-md px-2 py-1">
-                  <option>Most relevant</option>
-                </select>
-              </div>
-            </div>
-            <p className="text-gray-500 mb-6">Showing 73 results</p> */}
-
+          <div className="w-full lg:w-3/4  bg-white shadow-lg mx-5 p-7">
             {/* Job item */}
-            {jobs.map(({ _id, jobName,location,jobType,skills }) => {
+            {jobs?.map(({ _id, jobName, location, jobType, skills }) => {
               return (
-                <Link to={`/candidate/job-detail/${_id}`}>
+                <Link to={`/candidate/job-detail/${_id}`} key={_id}>
                   <div
                     className=" p-6 mb-6 bg-gray-300 hover:bg-gray-100 shadow-md"
                     key={_id}
@@ -214,12 +172,8 @@ const CandidateHomePage = () => {
                     <div className="flex justify-between items-start">
                       <div className="flex">
                         <div>
-                          <h3 className="font-bold text-lg mb-1">
-                            {jobName}
-                          </h3>
-                          <p className="text-gray-800 mb-2">
-                            {location}
-                          </p>
+                          <h3 className="font-bold text-lg mb-1">{jobName}</h3>
+                          <p className="text-gray-800 mb-2">{location}</p>
                           <div className="space-x-2">
                             <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded text-sm">
                               {jobType}
@@ -233,9 +187,10 @@ const CandidateHomePage = () => {
                           </div>
                         </div>
                       </div>
-                      <button 
-                      onClick={handleClick}
-                      className="bg-indigo-600 hover:bg-indigo-400 text-white px-6 py-2 rounded-sm font-medium">
+                      <button
+                        onClick={handleClick}
+                        className="bg-indigo-600 hover:bg-indigo-400 text-white px-6 py-2 rounded-sm font-medium"
+                      >
                         Apply
                       </button>
                     </div>
@@ -246,6 +201,13 @@ const CandidateHomePage = () => {
           </div>
         </div>
       </main>
+      <div className="flex items-center gap-2 justify-center mt-1">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <IconButton {...getItemProps(index + 1)} key={index}>
+            {index + 1}
+          </IconButton>
+        ))}
+      </div>
     </div>
   );
 };

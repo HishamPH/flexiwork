@@ -10,5 +10,6 @@ interface IChatRepsoitory {
     message: string
   ): Promise<{} | null>;
   getMessages(senderId: string, receiverId: string): Promise<{} | null>;
+  getConversations(senderId: string): Promise<Chat[] | null>;
 }
 export default IChatRepsoitory;

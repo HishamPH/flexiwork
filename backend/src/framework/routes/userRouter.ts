@@ -62,47 +62,56 @@ userRouter.post("/signin", (req, res, next) => {
   authController.loginUser(req, res, next);
 });
 
-userRouter.post("/update-profile", uploadImage, (req, res, next) => {
+userRouter.post("/update-profile", userAuth, uploadImage, (req, res, next) => {
   userController.updateProfile(req, res, next);
 });
 
-userRouter.get("/get-user/:id", (req, res, next) => {
+userRouter.get("/get-user/:id", userAuth, (req, res, next) => {
   userController.getUser(req, res, next);
 });
 
-userRouter.get("/get-all-jobs", (req, res, next) => {
+userRouter.get("/get-all-jobs", userAuth, (req, res, next) => {
   jobController.getAllJobs(req, res, next);
 });
 
-userRouter.post("/recruiter/add-job", (req, res, next) => {
+userRouter.post("/recruiter/add-job", userAuth, (req, res, next) => {
   jobController.addJob(req, res, next);
 });
 
-userRouter.post("/recruiter/edit-job/:id", (req, res, next) => {
+userRouter.post("/recruiter/edit-job/:id", userAuth, (req, res, next) => {
   jobController.editJob(req, res, next);
 });
 
-userRouter.get("/recruiter/get-jobs/:id", (req, res, next) => {
+userRouter.get("/recruiter/get-jobs/:id", userAuth, (req, res, next) => {
   jobController.getRecruiterJobs(req, res, next);
 });
 
-userRouter.get("/recruiter/get-applicants/:id", (req, res, next) => {
+userRouter.get("/recruiter/get-applicants/:id", userAuth, (req, res, next) => {
   jobController.getApplicants(req, res, next);
 });
 
-userRouter.get("/candidate/job-detail/:id", (req, res, next) => {
+userRouter.get("/candidate/job-detail/:id", userAuth, (req, res, next) => {
   jobController.getJob(req, res, next);
 });
 
-userRouter.put("/candidate/apply-job/:id", uploadResume, (req, res, next) => {
-  applicationController.applyJob(req, res, next);
-});
+userRouter.put(
+  "/candidate/apply-job/:id",
+  userAuth,
+  uploadResume,
+  (req, res, next) => {
+    applicationController.applyJob(req, res, next);
+  }
+);
 
-userRouter.post("/chat/get-messages/:id", (req, res, next) => {
+userRouter.post("/chat/get-messages/:id", userAuth, (req, res, next) => {
   chatController.getMessages(req, res, next);
 });
 
-userRouter.post("/chat/send-message/:id", (req, res, next) => {
+userRouter.post("/chat/get-conversations", userAuth, (req, res, next) => {
+  chatController.getConversations(req, res, next);
+});
+
+userRouter.post("/chat/send-message/:id", userAuth, (req, res, next) => {
   chatController.sendMessage(req, res, next);
 });
 

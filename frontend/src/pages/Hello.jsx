@@ -755,7 +755,232 @@
 
 //=============================================================================================================
 
+// import React, { useState, useEffect, useRef } from "react";
+// import { Typography } from "@material-tailwind/react";
+
+// const DualRangeSlider = ({
+//   min,
+//   max,
+//   step,
+//   defaultLow,
+//   defaultHigh,
+//   onChange,
+// }) => {
+//   const [lowValue, setLowValue] = useState(defaultLow || min);
+//   const [highValue, setHighValue] = useState(defaultHigh || max);
+//   const sliderRef = useRef(null);
+//   const [isDragging, setIsDragging] = useState(null);
+
+//   useEffect(() => {
+//     onChange({
+//       low: Math.min(lowValue, highValue),
+//       high: Math.max(lowValue, highValue),
+//     });
+//   }, [lowValue, highValue, onChange]);
+
+//   const handleChange = (newValue, isLow) => {
+//     if (isLow) {
+//       setLowValue(newValue);
+//     } else {
+//       setHighValue(newValue);
+//     }
+//   };
+
+//   const handleMouseDown = (e, isLow) => {
+//     e.preventDefault();
+//     setIsDragging(isLow ? "low" : "high");
+//   };
+
+//   const handleMouseUp = () => {
+//     setIsDragging(null);
+//   };
+
+//   const handleMouseMove = (e) => {
+//     if (!isDragging || !sliderRef.current) return;
+
+//     const sliderRect = sliderRef.current.getBoundingClientRect();
+//     const newPosition = (e.clientX - sliderRect.left) / sliderRect.width;
+//     const newValue =
+//       Math.round((min + (max - min) * newPosition) / step) * step;
+
+//     handleChange(Math.max(min, Math.min(newValue, max)), isDragging === "low");
+//   };
+
+//   const handleSliderClick = (e) => {
+//     if (!sliderRef.current) return;
+//     const sliderRect = sliderRef.current.getBoundingClientRect();
+//     const clickPosition = (e.clientX - sliderRect.left) / sliderRect.width;
+//     const newValue =
+//       Math.round((min + (max - min) * clickPosition) / step) * step;
+
+//     if (Math.abs(newValue - lowValue) < Math.abs(newValue - highValue)) {
+//       setLowValue(newValue);
+//     } else {
+//       setHighValue(newValue);
+//     }
+//   };
+
+//   useEffect(() => {
+//     document.addEventListener("mousemove", handleMouseMove);
+//     document.addEventListener("mouseup", handleMouseUp);
+//     return () => {
+//       document.removeEventListener("mousemove", handleMouseMove);
+//       document.removeEventListener("mouseup", handleMouseUp);
+//     };
+//   }, [isDragging]);
+
+//   const getTrackStyle = () => {
+//     const lowPercent = ((lowValue - min) / (max - min)) * 100;
+//     const highPercent = ((highValue - min) / (max - min)) * 100;
+//     return {
+//       background: `linear-gradient(to right, #e5e7eb ${lowPercent}%, #3b82f6 ${lowPercent}%, #3b82f6 ${highPercent}%, #e5e7eb ${highPercent}%)`,
+//     };
+//   };
+
+//   const getHandleStyle = (value) => ({
+//     left: `calc(${((value - min) / (max - min)) * 100}% - 8px)`,
+//   });
+
+//   return (
+//     <div
+//       className="w-full relative pt-6 pb-4"
+//       ref={sliderRef}
+//       onClick={handleSliderClick}
+//     >
+//       <div
+//         className="absolute w-full h-2 bg-blue-gray-200 rounded-lg cursor-pointer"
+//         style={getTrackStyle()}
+//       ></div>
+//       <div
+//         className="absolute w-4 h-4 bg-blue-500 rounded-full top-5 cursor-pointer"
+//         style={getHandleStyle(lowValue)}
+//         onMouseDown={(e) => handleMouseDown(e, true)}
+//       ></div>
+//       <div
+//         className="absolute w-4 h-4 bg-blue-500 rounded-full top-5 cursor-pointer"
+//         style={getHandleStyle(highValue)}
+//         onMouseDown={(e) => handleMouseDown(e, false)}
+//       ></div>
+//       <div className="flex justify-between mt-6">
+//         <Typography variant="small" color="blue-gray">
+//           ${min.toLocaleString()}
+//         </Typography>
+//         <Typography variant="small" color="blue-gray" className="font-medium">
+//           ${Math.min(lowValue, highValue).toLocaleString()} - $
+//           {Math.max(lowValue, highValue).toLocaleString()}
+//         </Typography>
+//         <Typography variant="small" color="blue-gray">
+//           ${max.toLocaleString()}
+//         </Typography>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const Hello = () => {
+//   const handleSalaryChange = ({ low, high }) => {
+//     console.log(`Salary range changed to: $${low} - $${high}`);
+//     // You can perform any action with the new salary range here
+//   };
+//   return (
+//     <div className="w-full max-w-md mx-auto p-6">
+//       <Typography variant="h6" color="blue-gray" className="mb-4">
+//         Select Salary Range
+//       </Typography>
+//       <DualRangeSlider
+//         min={30000}
+//         max={200000}
+//         step={10000}
+//         defaultLow={50000}
+//         defaultHigh={150000}
+//         onChange={handleSalaryChange}
+//       />
+//     </div>
+//   );
+// };
+// export default Hello;
+
+// import { useEffect, useState } from "react";
+// import RangeSlider from "react-range-slider-input";
+// import "react-range-slider-input/dist/style.css";
+
+// const Hello = () => {
+//   const [value, setValue] = useState([30, 60]);
+//   useEffect(() => {
+//     console.log(value);
+//   }, [value]);
+//   return (
+//     <div className="flex-col justify-center">
+//       <div>
+//         <RangeSlider value={value} onInput={setValue} step={10} />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Hello;
+
+import React from "react";
+import Slider from "rc-slider";
+import { Typography } from "@material-tailwind/react";
+import "rc-slider/assets/index.css";
+
 const Hello = () => {
-  return <div className="flex bg-black"></div>;
+  const [range, setRange] = React.useState([50000, 150000]);
+  const min = 30000;
+  const max = 200000;
+  const step = (max - min) / 4;
+  const marks = {};
+  for (let i = 0; i <= 4; i++) {
+    const value = min + i * step;
+    marks[value] = {
+      style: {
+        transform: "translateX(-50%)",
+        whiteSpace: "nowrap",
+      },
+      label: `$${Math.round(value / 1000).toLocaleString()}k`,
+    };
+  }
+
+  const handleChange = (newRange) => {
+    setRange(newRange);
+    //console.log(`Salary range changed to: $${newRange[0]} - $${newRange[1]}`);
+    // You can perform any action with the new salary range here
+  };
+
+  return (
+    <div className="w-full max-w-md mx-auto p-6">
+      <Typography variant="h6" color="blue-gray" className="mb-4">
+        Select Salary Range
+      </Typography>
+      <Slider
+        range
+        min={30000}
+        max={200000}
+        step={5000}
+        value={range}
+        marks={marks}
+        onChange={handleChange}
+        railStyle={{ backgroundColor: "#e5e7eb", height: 4 }}
+        trackStyle={[{ backgroundColor: "#3b82f6", height: 4 }]}
+        handleStyle={[
+          { backgroundColor: "#3b82f6", borderColor: "#3b82f6", opacity: 1 },
+          { backgroundColor: "#3b82f6", borderColor: "#3b82f6", opacity: 1 },
+        ]}
+      />
+      <div className="flex justify-between mt-4">
+        <Typography variant="small" color="blue-gray">
+          {"30000".toLocaleString()}
+        </Typography>
+        <Typography variant="small" color="blue-gray" className="font-medium">
+          ${range[0].toLocaleString()} - ${range[1].toLocaleString()}
+        </Typography>
+        <Typography variant="small" color="blue-gray">
+          {"200000".toLocaleString()}
+        </Typography>
+      </div>
+    </div>
+  );
 };
+
 export default Hello;

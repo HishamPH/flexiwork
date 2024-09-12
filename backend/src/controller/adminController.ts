@@ -55,7 +55,8 @@ class AdminController {
 
   async blockUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.adminCase.blockUser(req);
+      const { userId, action } = req.body;
+      const result = await this.adminCase.blockUser(userId, action);
       res.status(result.statusCode).json({ ...result });
     } catch (error) {
       console.log(error);

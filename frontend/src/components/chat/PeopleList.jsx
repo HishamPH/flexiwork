@@ -1,21 +1,62 @@
-import { ChatList } from "react-chat-elements";
+import { ChatItem } from "react-chat-elements";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useSocketContext } from "../../socket/SocketContext";
 
 const PeopleList = () => {
+  const { userInfo } = useSelector((state) => state.user);
+  const [conversations, setConversations] = useState([]);
+  const { socket } = useSocketContext();
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const res = await axios.post(
+          `/api/user/chat/get-conversations`,
+          { senderId: userInfo._id },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(res.data.result);
+        setConversations(res.data.result);
+        console.log(conversations);
+      } catch (err) {
+        Failed(err.response ? err.response.data.message : err.message);
+        console.log(err.message);
+      }
+    };
+    getConversations();
+  }, [setConversations, socket]);
+  const handleClick = (userId) => {
+    navigate(`/${userInfo.role}/chats/${userId}`);
+  };
+
   return (
     <>
-      <ChatList
-        className="chat-list w-1/2 bg-blue-gray-500"
-        dataSource={[
-          {
-            avatar: "https://avatars.githubusercontent.com/u/80540635?v=4",
-            alt: "kursat_avatar",
-            title: "Kursat",
-            subtitle: "Why don't we go to the No Way Home movie this weekend ?",
-            date: new Date(),
-            unread: 3,
-          },
-        ]}
-      />
+      <div className="flex-col">
+        {conversations.map((item) => {
+          const isAcive = item._id === id;
+          return (
+            // <NavLink to={`/${userInfo.role}/chats/${item._id}}`}>
+            <ChatItem
+              key={item._id}
+              onClick={() => handleClick(item._id)}
+              avatar={item.profilePic}
+              title={item.name}
+              date={item.createdAt}
+              className={`chat-list`}
+            />
+            // </NavLink>
+          );
+        })}
+      </div>
     </>
   );
 };

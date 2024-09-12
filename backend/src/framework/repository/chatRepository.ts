@@ -59,26 +59,31 @@ export default class ChatRepository implements IChatRepsoitory {
           participants: { $all: [senderId, receiverId] },
         })
         .populate("messages");
-
-      if (chat) return chat.toObject();
-      else return { messages: [] };
+      if (!chat) {
+        const newChat = await chatModel.create({
+          participants: [senderId, receiverId],
+        });
+        return newChat.toObject();
+      } else return chat.toObject();
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+  async getConversations(senderId: string): Promise<Chat[] | null> {
+    try {
+      const chats = await chatModel
+        .find({ participants: senderId })
+        .populate({
+          path: "participants",
+          select: "-password -__v", // Exclude the password field
+        })
+        .select("-messages")
+        .exec();
+      return chats;
     } catch (err) {
       console.log(err);
       return null;
     }
   }
 }
-
-// const result = await db
-//   .collection("yourCollectionName")
-//   .find({
-//     participants: { $in: [userId] },
-//   })
-//   .toArray();
-
-// const result = await db
-//   .collection("yourCollectionName")
-//   .find({
-//     participants: { $elemMatch: { _id: userId } },
-//   })
-//   .toArray();

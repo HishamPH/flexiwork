@@ -148,7 +148,7 @@ export default function RecruiterSidebar() {
               icon={<UserCircleIcon className="h-5 w-5" />}
             />
             <NavItem
-              to={"chats/:id"}
+              to={"chats"}
               text={"Chat"}
               icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}
               chipValue={14}

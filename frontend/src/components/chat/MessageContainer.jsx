@@ -30,10 +30,9 @@ const MessageContainer = () => {
 
   useEffect(() => {
     const getMessages = async () => {
-      if (!userInfo || !id || fetchRef.current) return; // Prevent the second call in Strict Mode
-      fetchRef.current = true;
       try {
         setLoading(true);
+
         const res = await axios.post(
           `/api/user/chat/get-messages/${id}`,
           { senderId: userInfo._id },
@@ -52,7 +51,7 @@ const MessageContainer = () => {
     };
     getMessages();
     return () => {};
-  }, [id]);
+  }, [id, setMessages]);
 
   const addMessage = (message) => {
     setMessages((prevMessages) => {

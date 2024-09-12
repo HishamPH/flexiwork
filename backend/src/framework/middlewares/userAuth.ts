@@ -14,7 +14,7 @@ interface DecodedToken {
 declare global {
   namespace Express {
     interface Request {
-      user: {};
+      user: DecodedToken;
     }
   }
 }
@@ -24,53 +24,57 @@ export const userAuth = async (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers["authorization"];
-  const bearerToken = authHeader && authHeader.split(" ")[1];
+  // const authHeader = req.headers["authorization"];
+  // const bearerToken = authHeader && authHeader.split(" ")[1];
 
-  if (!bearerToken) {
-    return res.status(401).json({ message: "Token missing" });
-  }
   try {
+    const accessToken = req.cookies.accessToken;
+    if (!accessToken) {
+      throw new TokenExpiredError("access Token expires", new Date());
+    }
     const decoded = jwt.verify(
-      bearerToken,
+      accessToken,
       process.env.ACCESS_TOKEN_SECRET as Secret
     ) as DecodedToken;
-
     req.user = decoded;
-    const userId = decoded.id;
-    console.log(userId);
     next();
   } catch (error) {
     if (error instanceof TokenExpiredError) {
       try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) {
-          return res
-            .status(401)
-            .json({ message: "Refresh Token not Available" });
+          return res.status(401).json({
+            message: "Refresh Token not Available",
+            tokenExpired: true,
+          });
         }
         const decoded = jwt.verify(
           refreshToken,
           process.env.REFRESH_TOKEN_SECRET as Secret
         ) as DecodedToken;
+        const { id, role } = decoded;
 
-        const user = {
-          role: decoded.role,
-          id: decoded.id,
-        };
-
-        const newAccessToken = await jwtToken.SignInAccessToken(user);
+        const newAccessToken = await jwtToken.SignInAccessToken({ id, role });
+        res.cookie("accessToken", newAccessToken, {
+          httpOnly: true,
+          maxAge: 30 * 60 * 1000,
+        });
         req.user = decoded;
 
-        return res.status(401).json({
-          accessToken: newAccessToken,
-          message: "AccessToken Expired",
-        });
+        console.log("this is the code for refreshing the accessToken", decoded);
+        next();
+        // return res.status(200).json({
+        //   accessToken: newAccessToken,
+        //   message: "new Accesss token",
+        // });
       } catch (error) {
         console.log(error);
 
         if (error instanceof TokenExpiredError) {
-          return res.status(401).json({ message: "RefreshToken Expired" });
+          return res.status(401).json({
+            message: "RefreshToken Expired Login again",
+            tokenExpired: true,
+          });
         }
       }
     }

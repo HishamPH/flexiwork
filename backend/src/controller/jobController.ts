@@ -17,7 +17,10 @@ class JobController {
     }
   }
   async editJob(req: Request, res: Response, next: NextFunction) {
-    let jobId = req.params.id;
+    const jobId = req.params.id;
+    const jobData = req.body;
+    const job = await this.jobCase.editJob(jobData, jobId);
+    return res.status(job?.statusCode).json({ ...job });
   }
   async getRecruiterJobs(req: Request, res: Response, next: NextFunction) {
     try {
@@ -29,38 +32,40 @@ class JobController {
       next(err);
     }
   }
-  async getAllJobs(req:Request,res:Response,next:NextFunction){
+  async getAllJobs(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.jobCase.getAllJobs();
+      const query = req.query;
+      const result = await this.jobCase.getAllJobs(query);
       return res.status(result?.statusCode).json({ ...result });
     } catch (err) {
       console.log(err);
       next(err);
     }
   }
-  async getJob(req:Request,res:Response,next:NextFunction){
+  async getJob(req: Request, res: Response, next: NextFunction) {
     try {
       const jobId = req.params.id;
-      const result = await this.jobCase.getJob(jobId);
+      const userId = req.user.id;
+      const result = await this.jobCase.getJob(jobId, userId);
       return res.status(result?.statusCode).json({ ...result });
     } catch (err) {
       console.log(err);
       next(err);
     }
   }
-  async applyJob(req:Request,res:Response,next:NextFunction){
+  async applyJob(req: Request, res: Response, next: NextFunction) {
     try {
       const jobId = req.params.id;
-      const {userId} = req.body;
+      const { userId } = req.body;
       console.log(req.file);
-      const result = await this.jobCase.applyJob(jobId,userId);
+      const result = await this.jobCase.applyJob(jobId, userId);
       return res.status(result?.statusCode).json({ ...result });
     } catch (err) {
       console.log(err);
       next(err);
     }
   }
-  async getApplicants(req:Request,res:Response,next:NextFunction){
+  async getApplicants(req: Request, res: Response, next: NextFunction) {
     try {
       const jobId = req.params.id;
       const result = await this.jobCase.getApplicants(jobId);

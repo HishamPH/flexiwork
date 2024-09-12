@@ -38,6 +38,14 @@ class ChatController {
       const { senderId } = req.body;
       const messages = await this.chatCase.getMessages(senderId, receiverId);
       return res.status(messages?.statusCode).json({ ...messages });
+    } catch (err) {}
+  }
+  async getConversations(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { senderId } = req.body;
+      const conversations = await this.chatCase.getConversations(senderId);
+      console.log(conversations);
+      return res.status(conversations?.statusCode).json({ ...conversations });
     } catch (err) {
       console.log(err);
       next(err);

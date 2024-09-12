@@ -8,4 +8,7 @@ const store = configureStore({
   devTools:true
 })
 
+
+export const dispatch = store.dispatch
+
 export default store;
