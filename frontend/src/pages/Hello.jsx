@@ -920,65 +920,479 @@
 
 // export default Hello;
 
-import React from "react";
-import Slider from "rc-slider";
-import { Typography } from "@material-tailwind/react";
-import "rc-slider/assets/index.css";
+// import React from "react";
+// import Slider from "rc-slider";
+// import { Typography } from "@material-tailwind/react";
+// import "rc-slider/assets/index.css";
+
+// const Hello = () => {
+//   const [range, setRange] = React.useState([50000, 150000]);
+//   const min = 30000;
+//   const max = 200000;
+//   const step = (max - min) / 4;
+//   const marks = {};
+//   for (let i = 0; i <= 4; i++) {
+//     const value = min + i * step;
+//     marks[value] = {
+//       style: {
+//         transform: "translateX(-50%)",
+//         whiteSpace: "nowrap",
+//       },
+//       label: `$${Math.round(value / 1000).toLocaleString()}k`,
+//     };
+//   }
+
+//   const handleChange = (newRange) => {
+//     setRange(newRange);
+//     //console.log(`Salary range changed to: $${newRange[0]} - $${newRange[1]}`);
+//     // You can perform any action with the new salary range here
+//   };
+
+//   return (
+//     <div className="w-full max-w-md mx-auto p-6">
+//       <Typography variant="h6" color="blue-gray" className="mb-4">
+//         Select Salary Range
+//       </Typography>
+//       <Slider
+//         range
+//         min={30000}
+//         max={200000}
+//         step={5000}
+//         value={range}
+//         marks={marks}
+//         onChange={handleChange}
+//         railStyle={{ backgroundColor: "#e5e7eb", height: 4 }}
+//         trackStyle={[{ backgroundColor: "#3b82f6", height: 4 }]}
+//         handleStyle={[
+//           { backgroundColor: "#3b82f6", borderColor: "#3b82f6", opacity: 1 },
+//           { backgroundColor: "#3b82f6", borderColor: "#3b82f6", opacity: 1 },
+//         ]}
+//       />
+//       <div className="flex justify-between mt-4">
+//         <Typography variant="small" color="blue-gray">
+//           {"30000".toLocaleString()}
+//         </Typography>
+//         <Typography variant="small" color="blue-gray" className="font-medium">
+//           ${range[0].toLocaleString()} - ${range[1].toLocaleString()}
+//         </Typography>
+//         <Typography variant="small" color="blue-gray">
+//           {"200000".toLocaleString()}
+//         </Typography>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Hello;
+
+//=========================================================================================================================
+
+// import React, { useState } from "react";
+// import {
+//   Card,
+//   CardHeader,
+//   CardBody,
+//   Typography,
+//   Input,
+//   Textarea,
+//   Button,
+// } from "@material-tailwind/react";
+
+// const Hello = () => {
+//   const [personalInfo, setPersonalInfo] = useState({
+//     name: "",
+//     email: "",
+//     phone: "",
+//   });
+//   const [resume, setResume] = useState(null);
+//   const [workExperience, setWorkExperience] = useState([]);
+//   const [education, setEducation] = useState([]);
+
+//   const handlePersonalInfoChange = (e) => {
+//     setPersonalInfo({ ...personalInfo, [e.target.name]: e.target.value });
+//   };
+
+//   const handleResumeUpload = (e) => {
+//     setResume(e.target.files[0]);
+//   };
+
+//   const addWorkExperience = () => {
+//     setWorkExperience([
+//       ...workExperience,
+//       { company: "", position: "", duration: "" },
+//     ]);
+//   };
+
+//   const updateWorkExperience = (index, field, value) => {
+//     const updatedExperience = [...workExperience];
+//     updatedExperience[index][field] = value;
+//     setWorkExperience(updatedExperience);
+//   };
+
+//   const removeWorkExperience = (index) => {
+//     setWorkExperience(workExperience.filter((_, i) => i !== index));
+//   };
+
+//   const addEducation = () => {
+//     setEducation([...education, { institution: "", degree: "", year: "" }]);
+//   };
+
+//   const updateEducation = (index, field, value) => {
+//     const updatedEducation = [...education];
+//     updatedEducation[index][field] = value;
+//     setEducation(updatedEducation);
+//   };
+
+//   const removeEducation = (index) => {
+//     setEducation(education.filter((_, i) => i !== index));
+//   };
+
+//   return (
+//     <div className="max-w-4xl mx-auto p-4">
+//       <Card className="mb-6">
+//         <CardHeader color="blue" className="relative h-16">
+//           <Typography variant="h5" color="white">
+//             Personal Information
+//           </Typography>
+//         </CardHeader>
+//         <CardBody>
+//           <div className="mb-4">
+//             <Input
+//               label="Full Name"
+//               name="name"
+//               value={personalInfo.name}
+//               onChange={handlePersonalInfoChange}
+//             />
+//           </div>
+//           <div className="mb-4">
+//             <Input
+//               label="Email"
+//               name="email"
+//               type="email"
+//               value={personalInfo.email}
+//               onChange={handlePersonalInfoChange}
+//             />
+//           </div>
+//           <div className="mb-4">
+//             <Input
+//               label="Phone"
+//               name="phone"
+//               type="tel"
+//               value={personalInfo.phone}
+//               onChange={handlePersonalInfoChange}
+//             />
+//           </div>
+//         </CardBody>
+//       </Card>
+
+//       <Card className="mb-6">
+//         <CardHeader color="blue" className="relative h-16">
+//           <Typography variant="h5" color="white">
+//             Resume
+//           </Typography>
+//         </CardHeader>
+//         <CardBody>
+//           <Input type="file" onChange={handleResumeUpload} />
+//           {resume && (
+//             <Typography className="mt-2">Uploaded: {resume.name}</Typography>
+//           )}
+//         </CardBody>
+//       </Card>
+
+//       <Card className="mb-6">
+//         <CardHeader color="blue" className="relative h-16">
+//           <Typography variant="h5" color="white">
+//             Work Experience
+//           </Typography>
+//         </CardHeader>
+//         <CardBody>
+//           {workExperience.map((exp, index) => (
+//             <div key={index} className="mb-4 p-4 border rounded">
+//               <Input
+//                 className="mb-2"
+//                 label="Company"
+//                 value={exp.company}
+//                 onChange={(e) =>
+//                   updateWorkExperience(index, "company", e.target.value)
+//                 }
+//               />
+//               <Input
+//                 className="mb-2"
+//                 label="Position"
+//                 value={exp.position}
+//                 onChange={(e) =>
+//                   updateWorkExperience(index, "position", e.target.value)
+//                 }
+//               />
+//               <Input
+//                 className="mb-2"
+//                 label="Duration"
+//                 value={exp.duration}
+//                 onChange={(e) =>
+//                   updateWorkExperience(index, "duration", e.target.value)
+//                 }
+//               />
+//               <Button color="red" onClick={() => removeWorkExperience(index)}>
+//                 Remove
+//               </Button>
+//             </div>
+//           ))}
+//           <Button onClick={addWorkExperience}>Add Work Experience</Button>
+//         </CardBody>
+//       </Card>
+
+//       <Card className="mb-6">
+//         <CardHeader color="blue" className="relative h-16">
+//           <Typography variant="h5" color="white">
+//             Education
+//           </Typography>
+//         </CardHeader>
+//         <CardBody>
+//           {education.map((edu, index) => (
+//             <div key={index} className="mb-4 p-4 border rounded">
+//               <Input
+//                 className="mb-2"
+//                 label="Institution"
+//                 value={edu.institution}
+//                 onChange={(e) =>
+//                   updateEducation(index, "institution", e.target.value)
+//                 }
+//               />
+//               <Input
+//                 className="mb-2"
+//                 label="Degree"
+//                 value={edu.degree}
+//                 onChange={(e) =>
+//                   updateEducation(index, "degree", e.target.value)
+//                 }
+//               />
+//               <Input
+//                 className="mb-2"
+//                 label="Year"
+//                 value={edu.year}
+//                 onChange={(e) => updateEducation(index, "year", e.target.value)}
+//               />
+//               <Button color="red" onClick={() => removeEducation(index)}>
+//                 Remove
+//               </Button>
+//             </div>
+//           ))}
+//           <Button onClick={addEducation}>Add Education</Button>
+//         </CardBody>
+//       </Card>
+
+//       <Button className="w-full" color="blue">
+//         Save Profile
+//       </Button>
+//     </div>
+//   );
+// };
+
+// export default Hello;
+
+//============================================================================================================================
+
+import React, { useState } from "react";
+import {
+  Card,
+  CardBody,
+  Typography,
+  Input,
+  Button,
+} from "@material-tailwind/react";
 
 const Hello = () => {
-  const [range, setRange] = React.useState([50000, 150000]);
-  const min = 30000;
-  const max = 200000;
-  const step = (max - min) / 4;
-  const marks = {};
-  for (let i = 0; i <= 4; i++) {
-    const value = min + i * step;
-    marks[value] = {
-      style: {
-        transform: "translateX(-50%)",
-        whiteSpace: "nowrap",
-      },
-      label: `$${Math.round(value / 1000).toLocaleString()}k`,
-    };
-  }
+  const [personalInfo, setPersonalInfo] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const [resume, setResume] = useState(null);
+  const [workExperience, setWorkExperience] = useState([]);
+  const [education, setEducation] = useState([]);
 
-  const handleChange = (newRange) => {
-    setRange(newRange);
-    //console.log(`Salary range changed to: $${newRange[0]} - $${newRange[1]}`);
-    // You can perform any action with the new salary range here
+  const handlePersonalInfoChange = (e) => {
+    setPersonalInfo({ ...personalInfo, [e.target.name]: e.target.value });
+  };
+
+  const handleResumeUpload = (e) => {
+    setResume(e.target.files[0]);
+  };
+
+  const addWorkExperience = () => {
+    setWorkExperience([
+      ...workExperience,
+      { company: "", position: "", duration: "" },
+    ]);
+  };
+
+  const updateWorkExperience = (index, field, value) => {
+    const updatedExperience = [...workExperience];
+    updatedExperience[index][field] = value;
+    setWorkExperience(updatedExperience);
+  };
+
+  const removeWorkExperience = (index) => {
+    setWorkExperience(workExperience.filter((_, i) => i !== index));
+  };
+
+  const addEducation = () => {
+    setEducation([...education, { institution: "", degree: "", year: "" }]);
+  };
+
+  const updateEducation = (index, field, value) => {
+    const updatedEducation = [...education];
+    updatedEducation[index][field] = value;
+    setEducation(updatedEducation);
+  };
+
+  const removeEducation = (index) => {
+    setEducation(education.filter((_, i) => i !== index));
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6">
-      <Typography variant="h6" color="blue-gray" className="mb-4">
-        Select Salary Range
-      </Typography>
-      <Slider
-        range
-        min={30000}
-        max={200000}
-        step={5000}
-        value={range}
-        marks={marks}
-        onChange={handleChange}
-        railStyle={{ backgroundColor: "#e5e7eb", height: 4 }}
-        trackStyle={[{ backgroundColor: "#3b82f6", height: 4 }]}
-        handleStyle={[
-          { backgroundColor: "#3b82f6", borderColor: "#3b82f6", opacity: 1 },
-          { backgroundColor: "#3b82f6", borderColor: "#3b82f6", opacity: 1 },
-        ]}
-      />
-      <div className="flex justify-between mt-4">
-        <Typography variant="small" color="blue-gray">
-          {"30000".toLocaleString()}
-        </Typography>
-        <Typography variant="small" color="blue-gray" className="font-medium">
-          ${range[0].toLocaleString()} - ${range[1].toLocaleString()}
-        </Typography>
-        <Typography variant="small" color="blue-gray">
-          {"200000".toLocaleString()}
-        </Typography>
-      </div>
+    <div className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+      <Card className="mb-6">
+        <CardBody>
+          <Typography variant="h4" className="mb-4 text-blue-500">
+            Personal Information
+          </Typography>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input
+              label="Full Name"
+              name="name"
+              value={personalInfo.name}
+              onChange={handlePersonalInfoChange}
+            />
+            <Input
+              label="Email"
+              name="email"
+              type="email"
+              value={personalInfo.email}
+              onChange={handlePersonalInfoChange}
+            />
+            <Input
+              label="Phone"
+              name="phone"
+              type="tel"
+              value={personalInfo.phone}
+              onChange={handlePersonalInfoChange}
+            />
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card className="mb-6">
+        <CardBody>
+          <Typography variant="h4" className="mb-4 text-blue-500">
+            Resume
+          </Typography>
+          <Input type="file" onChange={handleResumeUpload} />
+          {resume && (
+            <Typography variant="small" className="mt-2 text-gray-500">
+              Uploaded: {resume.name}
+            </Typography>
+          )}
+        </CardBody>
+      </Card>
+
+      <Card className="mb-6">
+        <CardBody>
+          <Typography variant="h4" className="mb-4 text-blue-500">
+            Work Experience
+          </Typography>
+          {workExperience.map((exp, index) => (
+            <div key={index} className="mb-4 border p-4 rounded-lg bg-gray-100">
+              <div className="grid gap-2 md:grid-cols-3">
+                <Input
+                  label="Company"
+                  value={exp.company}
+                  onChange={(e) =>
+                    updateWorkExperience(index, "company", e.target.value)
+                  }
+                />
+                <Input
+                  label="Position"
+                  value={exp.position}
+                  onChange={(e) =>
+                    updateWorkExperience(index, "position", e.target.value)
+                  }
+                />
+                <Input
+                  label="Duration"
+                  value={exp.duration}
+                  onChange={(e) =>
+                    updateWorkExperience(index, "duration", e.target.value)
+                  }
+                />
+              </div>
+              <Button
+                variant="outlined"
+                color="red"
+                size="sm"
+                className="mt-2"
+                onClick={() => removeWorkExperience(index)}
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+          <Button color="blue" onClick={addWorkExperience}>
+            Add Work Experience
+          </Button>
+        </CardBody>
+      </Card>
+
+      <Card className="mb-6">
+        <CardBody>
+          <Typography variant="h4" className="mb-4 text-blue-500">
+            Education
+          </Typography>
+          {education.map((edu, index) => (
+            <div key={index} className="mb-4 border p-4 rounded-lg bg-gray-100">
+              <div className="grid gap-2 md:grid-cols-3">
+                <Input
+                  label="Institution"
+                  value={edu.institution}
+                  onChange={(e) =>
+                    updateEducation(index, "institution", e.target.value)
+                  }
+                />
+                <Input
+                  label="Degree"
+                  value={edu.degree}
+                  onChange={(e) =>
+                    updateEducation(index, "degree", e.target.value)
+                  }
+                />
+                <Input
+                  label="Year"
+                  value={edu.year}
+                  onChange={(e) =>
+                    updateEducation(index, "year", e.target.value)
+                  }
+                />
+              </div>
+              <Button
+                variant="outlined"
+                color="red"
+                size="sm"
+                className="mt-2"
+                onClick={() => removeEducation(index)}
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+          <Button color="blue" onClick={addEducation}>
+            Add Education
+          </Button>
+        </CardBody>
+      </Card>
+
+      <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+        Save Profile
+      </Button>
     </div>
   );
 };

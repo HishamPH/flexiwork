@@ -28,7 +28,7 @@ const MessageInput1 = ({ addMessage }) => {
         }
       );
       const { message: text, senderId, receiverId, createdAt } = res.data;
-      addMessage({ message: text, senderId, receiverId, createdAt });
+      //addMessage({ message: text, senderId, receiverId, createdAt });
       setMessage("");
     } catch (err) {
       console.log(err.message);

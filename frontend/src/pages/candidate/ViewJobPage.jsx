@@ -153,7 +153,6 @@ const ViewJobPage = () => {
     fetchJob(id);
   }, [open]);
 
-  console.log(job.responsibilities?.length);
   return (
     <>
       <NavBar />

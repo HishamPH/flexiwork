@@ -21,7 +21,7 @@ const CandidateHomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const jobsPerPage = 4;
+  const jobsPerPage = 2;
 
   useEffect(() => {
     const fetchAllJobs = async () => {
@@ -62,15 +62,23 @@ const CandidateHomePage = () => {
   };
 
   const handleSearchNameChange = (e) => {
+    setCurrentPage(1);
     setSearchName(e.target.value);
   };
 
   const handleSearchLocationChange = (e) => {
+    setCurrentPage(1);
     setSearchLocation(e.target.value);
   };
 
   const handleRemoteChange = (e) => {
+    setCurrentPage(1);
     setIsRemote(e.target.checked);
+  };
+
+  const handleEmploymentTypeChange = (val) => {
+    setCurrentPage(1);
+    setEmploymentType(val);
   };
 
   return (
@@ -132,7 +140,7 @@ const CandidateHomePage = () => {
                 <Select
                   className="text-black rounded-sm"
                   value={employmentType}
-                  onChange={(val) => setEmploymentType(val)}
+                  onChange={(val) => handleEmploymentTypeChange(val)}
                 >
                   <Option value="All">All</Option>
                   <Option value="Full Time">Full Time</Option>
@@ -160,7 +168,7 @@ const CandidateHomePage = () => {
           </div>
 
           {/* Job list */}
-          <div className="w-full lg:w-3/4  bg-white shadow-lg mx-5 p-7">
+          <div className="w-full lg:w-3/4  bg-white shadow-lg mx-5 p-7 h-[400px]">
             {/* Job item */}
             {jobs?.map(({ _id, jobName, location, jobType, skills }) => {
               return (
@@ -198,16 +206,16 @@ const CandidateHomePage = () => {
                 </Link>
               );
             })}
+            <div className="flex items-center gap-2 justify-center mt-1">
+              {Array.from({ length: totalPages }, (_, index) => (
+                <IconButton {...getItemProps(index + 1)} key={index}>
+                  {index + 1}
+                </IconButton>
+              ))}
+            </div>
           </div>
         </div>
       </main>
-      <div className="flex items-center gap-2 justify-center mt-1">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <IconButton {...getItemProps(index + 1)} key={index}>
-            {index + 1}
-          </IconButton>
-        ))}
-      </div>
     </div>
   );
 };

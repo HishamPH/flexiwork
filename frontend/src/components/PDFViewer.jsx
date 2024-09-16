@@ -39,7 +39,7 @@ const PDFViewer = ({ isOpen, onClose, pdfFile }) => {
             {/* PDF Viewer */}
             <iframe
               src={`/api/images/${pdfFile}`}
-              frameborder="0"
+              frameBorder="0"
               className="w-full h-[600px]"
             ></iframe>
             {/* <Document

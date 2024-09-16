@@ -22,6 +22,7 @@ import RecruiterRouter from "./routes/RecruiterRouter";
 
 import ProtectedRoute from "./routes/privateRoutes/ProtectedRoute";
 import CandidateOnly from "./routes/privateRoutes/CandidateOnly";
+import RecruiterOnly from "./routes/privateRoutes/RecruiterOnly";
 
 import NotFound from "./pages/NotFound";
 import Hello from "./pages/Hello";
@@ -38,8 +39,10 @@ const router = createBrowserRouter(
       <Route element={<CandidateOnly />}>
         <Route path="/candidate/*" element={<CandidateRouter />} />
       </Route>
+      <Route element={<RecruiterOnly />}>
+        <Route path="/recruiter/*" element={<RecruiterRouter />} />
+      </Route>
 
-      <Route path="/recruiter/*" element={<RecruiterRouter />} />
       <Route path="/admin/*" element={<AdminRouter />} />
       <Route path="*" element={<NotFound />} />
     </Route>
