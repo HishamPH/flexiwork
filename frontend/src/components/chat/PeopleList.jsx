@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useSocketContext } from "../../socket/SocketContext";
+import axiosInstance from "../../../interceptors/axiosInterceptors";
+import { Failed } from "../../helper/popup";
 
 const PeopleList = () => {
   const { userInfo } = useSelector((state) => state.user);
@@ -15,8 +17,8 @@ const PeopleList = () => {
   useEffect(() => {
     const getConversations = async () => {
       try {
-        const res = await axios.post(
-          `/api/user/chat/get-conversations`,
+        const res = await axiosInstance.post(
+          `/user/chat/get-conversations`,
           { senderId: userInfo._id },
           {
             headers: {

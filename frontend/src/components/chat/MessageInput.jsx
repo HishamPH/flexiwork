@@ -9,6 +9,7 @@ import {
   Message,
   MessageInput,
 } from "@chatscope/chat-ui-kit-react";
+import axiosInstance from "../../../interceptors/axiosInterceptors";
 
 const MessageInput1 = ({ addMessage }) => {
   let { userInfo } = useSelector((state) => state.user);
@@ -18,8 +19,8 @@ const MessageInput1 = ({ addMessage }) => {
     e.preventDefault();
     if (message.length === 0) return;
     try {
-      const res = await axios.post(
-        `/api/user/chat/send-message/${id}`,
+      const res = await axiosInstance.post(
+        `/user/chat/send-message/${id}`,
         { message, senderId: userInfo._id },
         {
           headers: {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import NavBar from "../../components/NavBar";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -11,7 +11,7 @@ import { IconButton } from "@material-tailwind/react";
 
 const CandidateHomePage = () => {
   let { userInfo } = useSelector((state) => state.user);
-
+  const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [searchName, setSearchName] = useState("");
   const [searchLocation, setSearchLocation] = useState("");
@@ -61,10 +61,10 @@ const CandidateHomePage = () => {
     console.log("hello");
   };
 
-  const handleSearchNameChange = (e) => {
+  const handleSearchNameChange = useCallback((e) => {
     setCurrentPage(1);
     setSearchName(e.target.value);
-  };
+  }, []);
 
   const handleSearchLocationChange = (e) => {
     setCurrentPage(1);
@@ -168,45 +168,49 @@ const CandidateHomePage = () => {
           </div>
 
           {/* Job list */}
-          <div className="w-full lg:w-3/4  bg-white shadow-lg mx-5 p-7 h-[400px]">
-            {/* Job item */}
-            {jobs?.map(({ _id, jobName, location, jobType, skills }) => {
-              return (
-                <Link to={`/candidate/job-detail/${_id}`} key={_id}>
-                  <div
-                    className=" p-6 mb-6 bg-gray-300 hover:bg-gray-100 shadow-md"
-                    key={_id}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex">
-                        <div>
-                          <h3 className="font-bold text-lg mb-1">{jobName}</h3>
-                          <p className="text-gray-800 mb-2">{location}</p>
-                          <div className="space-x-2">
-                            <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded text-sm">
-                              {jobType}
-                            </span>
-                            <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded text-sm">
-                              Marketing
-                            </span>
-                            <span className="bg-indigo-100 text-indigo-600 px-2 py-1 rounded text-sm">
-                              Design
-                            </span>
+          <div className="flex-col w-full lg:w-3/4">
+            <div className="   bg-white shadow-lg mx-5 p-7">
+              {/* Job item */}
+              {jobs?.map(({ _id, jobName, location, jobType, skills }) => {
+                return (
+                  <Link to={`/candidate/job-detail/${_id}`} key={_id}>
+                    <div
+                      className=" p-6 mb-6 bg-gray-300 hover:bg-gray-100 shadow-md"
+                      key={_id}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex">
+                          <div>
+                            <h3 className="font-bold text-lg mb-1">
+                              {jobName}
+                            </h3>
+                            <p className="text-gray-800 mb-2">{location}</p>
+                            <div className="space-x-2">
+                              <span className="bg-emerald-100 text-emerald-600 px-2 py-1 rounded text-sm">
+                                {jobType}
+                              </span>
+                              <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded text-sm">
+                                Marketing
+                              </span>
+                              <span className="bg-indigo-100 text-indigo-600 px-2 py-1 rounded text-sm">
+                                Design
+                              </span>
+                            </div>
                           </div>
                         </div>
+                        <button
+                          onClick={handleClick}
+                          className="bg-indigo-600 hover:bg-indigo-400 text-white px-6 py-2 rounded-sm font-medium"
+                        >
+                          Apply
+                        </button>
                       </div>
-                      <button
-                        onClick={handleClick}
-                        className="bg-indigo-600 hover:bg-indigo-400 text-white px-6 py-2 rounded-sm font-medium"
-                      >
-                        Apply
-                      </button>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-            <div className="flex items-center gap-2 justify-center mt-1">
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-2 justify-center mt-1 ">
               {Array.from({ length: totalPages }, (_, index) => (
                 <IconButton {...getItemProps(index + 1)} key={index}>
                   {index + 1}

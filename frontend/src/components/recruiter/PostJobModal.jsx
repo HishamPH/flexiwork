@@ -16,6 +16,7 @@ import CustomButton from "../CustomButton";
 import TextInput from "../TextInput";
 import { Success, Failed } from "../../helper/popup";
 import { jobValidation } from "../../validations/validation";
+import axiosInstance from "../../../interceptors/axiosInterceptors";
 
 const PostJobModal = ({ open, setOpen, job }) => {
   const { userInfo } = useSelector((state) => state.user);
@@ -62,7 +63,7 @@ const PostJobModal = ({ open, setOpen, job }) => {
         const { ...rest } = values;
         rest.recruiterId = userInfo._id;
         console.log(rest);
-        const res = await axios.post(`/api/user/recruiter/${path}`, rest, {
+        const res = await axiosInstance.post(`/user/recruiter/${path}`, rest, {
           headers: {
             "Content-Type": "application/json",
           },

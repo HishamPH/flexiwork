@@ -41,15 +41,11 @@ const JobListing = () => {
 
       fetchRecruiterJobs(userInfo._id);
     }
-  }, [open, handleDelete, handleBlock]);
+  }, [open]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentJobs = jobs.slice(startIndex, endIndex);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
 
   const handleEdit = async (job) => {
     setSelectedJob(job);
@@ -63,7 +59,7 @@ const JobListing = () => {
   async function handleDelete(jobId) {
     try {
       Swal.fire({
-        title: `Do you want to Delete the user`,
+        title: `Do you want to Delete the Job`,
         showCancelButton: true,
         confirmButtonText: "Yes",
         confirmButtonColor: "red",
@@ -81,6 +77,7 @@ const JobListing = () => {
             }
           );
           console.log(res);
+          setJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
           Swal.fire("", "job Deleted", "success");
         }
       });
@@ -102,6 +99,11 @@ const JobListing = () => {
             "Content-Type": "application/json",
           },
         }
+      );
+      setJobs((prevJobs) =>
+        prevJobs.map((job) =>
+          job._id === jobId ? { ...job, isActive: !job.isActive } : job
+        )
       );
       Success(res.data.message);
     } catch (err) {
@@ -132,7 +134,8 @@ const JobListing = () => {
         </Button>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-3 bg-white p-3 h-[525px]">
-        {currentJobs.map(({ _id, jobName, isActive }) => {
+        {currentJobs.map((job) => {
+          const { _id, jobName, isActive } = job;
           return (
             <div key={_id} className="flex-row justify-between">
               <Card className="flex-row justify-between">

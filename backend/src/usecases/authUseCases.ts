@@ -197,15 +197,14 @@ class AuthUseCase {
             id: emailExists._id,
             role: emailExists.role,
           });
-          const { name, email, role } = emailExists;
-          const result = { name, email, role };
+          const { name, email, role, profilePic, _id } = emailExists;
+          const result = { name, email, role, profilePic, _id };
           return {
             statusCode: 200,
             accessToken,
             refreshToken,
             ...result,
             message: "User logged success fully",
-            _id: emailExists._id,
           };
         } else {
           return {

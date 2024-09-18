@@ -10,6 +10,7 @@ import { Success, Failed } from "../helper/popup";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slices/userAuth";
 import { Button } from "@material-tailwind/react";
+import axiosInstance from "../../interceptors/axiosInterceptors";
 
 const initialValues = {
   email: "",
@@ -36,7 +37,7 @@ const LoginPage = () => {
       const { ...rest } = values;
       rest.role = selectedRole;
       try {
-        const res = await axios.post("/api/user/signin", rest, {
+        const res = await axiosInstance.post("/user/signin", rest, {
           headers: {
             "Content-Type": "application/json",
           },

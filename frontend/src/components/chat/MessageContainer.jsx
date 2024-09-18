@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
+import axiosInstance from "../../../interceptors/axiosInterceptors";
+
 import MessageInput1 from "./MessageInput";
 import Messages from "./Messages";
 
@@ -36,8 +38,8 @@ const MessageContainer = () => {
       try {
         setLoading(true);
 
-        const res = await axios.post(
-          `/api/user/chat/get-messages/${id}`,
+        const res = await axiosInstance.post(
+          `/user/chat/get-messages/${id}`,
           { senderId: userInfo._id },
           {
             headers: {

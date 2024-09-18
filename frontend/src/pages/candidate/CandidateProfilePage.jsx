@@ -6,19 +6,22 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
-// import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { HiLocationMarker } from "react-icons/hi";
 import { AiOutlineMail } from "react-icons/ai";
 import { FiPhoneCall } from "react-icons/fi";
+import { Avatar } from "@material-tailwind/react";
+
 import CustomButton from "../../components/CustomButton";
 import TextInput from "../../components/TextInput";
-
 import NavBar from "../../components/NavBar";
 import { useFormik } from "formik";
 import axios from "axios";
 import { Success, Failed } from "../../helper/popup";
 import { setUser } from "../../redux/slices/userAuth";
+
+import TextField from "@mui/material/TextField";
+import axiosInstance from "../../../interceptors/axiosInterceptors";
 
 const UserForm = ({ open, setOpen }) => {
   const { userInfo } = useSelector((state) => state.user);
@@ -44,9 +47,10 @@ const UserForm = ({ open, setOpen }) => {
     initialValues,
     onSubmit: async (values, action) => {
       const { ...rest } = values;
+      console.log(values);
       rest._id = userInfo._id;
       try {
-        const res = await axios.post("/api/user/update-profile", rest, {
+        const res = await axiosInstance.post("/user/update-profile", rest, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -182,9 +186,12 @@ const UserForm = ({ open, setOpen }) => {
                             type="file"
                             name="profilePic"
                             onChange={(e) => {
-                              setFieldValue("profilePic", e.target.files[0]);
+                              console.log("hello");
+                              return setFieldValue(
+                                "profilePic",
+                                e.target.files[0]
+                              );
                             }}
-                            //   onChange={(e) => setProfileImage(e.target.files[0])}
                           />
                         </div>
 
@@ -238,27 +245,41 @@ const CandidateProfilePage = () => {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
 
-  // useEffect(()=>{
-  //   const fetchUser = async(userId)=>{
-  //     try {
-  //       let res = await axios.get(`/api/user/get-user/${userId}`,{
-  //         headers:{
-  //           "Content-Type":"application/json",
-  //         },
-  //       })
-  //       let data = res.data;
-
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   }
-  //   fetchUser(userInfo._id);
-  // },[])
+  useEffect(() => {
+    const fetchUser = async (userId) => {
+      try {
+        let res = await axiosInstance.get(`/user/get-user/${userId}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        let data = res.data;
+        setProfile(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchUser(userInfo._id);
+  }, [open]);
   return (
     <div className="">
       <NavBar />
       <div className="container w-full justify-end shadow-lg mx-auto mt-10">
         <div className="w-full bg-white shadow-lg p-10 pb-20 rounded-lg">
+          <div className="flex items-center">
+            <Avatar
+              src={`/api/images/${profile.profilePic}`}
+              alt="avatar"
+              size="xxl"
+            />
+            <TextField
+              required
+              id="outlined-required"
+              label="Required"
+              defaultValue="Hello World"
+            />
+          </div>
+
           <div className="flex flex-col items-center justify-center mb-4">
             <h1 className="text-4xl font-semibold text-slate-600">
               {userInfo?.name}

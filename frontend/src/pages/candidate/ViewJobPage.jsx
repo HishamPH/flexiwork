@@ -15,6 +15,7 @@ import CustomButton from "../../components/CustomButton";
 import TextInput from "../../components/TextInput";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../../interceptors/axiosInterceptors";
 
 const UserForm = ({ open, setOpen, jobId }) => {
   const { userInfo } = useSelector((state) => state.user);
@@ -38,8 +39,8 @@ const UserForm = ({ open, setOpen, jobId }) => {
       const { ...rest } = values;
       rest.candidateId = userInfo._id;
       try {
-        const res = await axios.put(
-          `/api/user/candidate/apply-job/${jobId}`,
+        const res = await axiosInstance.put(
+          `/user/candidate/apply-job/${jobId}`,
           rest,
           {
             headers: {
@@ -145,7 +146,9 @@ const ViewJobPage = () => {
   let jobResponsibilities;
   useEffect(() => {
     const fetchJob = async (jobId) => {
-      const res = await axios.get(`/api/user/candidate/job-detail/${jobId}`);
+      const res = await axiosInstance.get(
+        `/user/candidate/job-detail/${jobId}`
+      );
       console.log(res.data);
       setJob(res.data.result);
       setIsApplied(res.data.isApplied);

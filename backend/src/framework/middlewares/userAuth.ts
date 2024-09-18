@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { Secret, TokenExpiredError } from "jsonwebtoken";
 import JwtTokenService from "../services/JwtToken";
+import userModel from "../databases/userModel";
 
 const jwtToken = new JwtTokenService();
 
@@ -37,6 +38,13 @@ export const userAuth = async (
       process.env.ACCESS_TOKEN_SECRET as Secret
     ) as DecodedToken;
     req.user = decoded;
+    let user = await userModel.findById(decoded.id);
+    if (user && user.isBlocked) {
+      return res.status(401).json({
+        message: "The user is blocked by Admin",
+        tokenExpired: true,
+      });
+    }
     next();
   } catch (error) {
     if (error instanceof TokenExpiredError) {
@@ -63,13 +71,8 @@ export const userAuth = async (
 
         console.log("this is the code for refreshing the accessToken", decoded);
         next();
-        // return res.status(200).json({
-        //   accessToken: newAccessToken,
-        //   message: "new Accesss token",
-        // });
       } catch (error) {
         console.log(error);
-
         if (error instanceof TokenExpiredError) {
           return res.status(401).json({
             message: "RefreshToken Expired Login again",

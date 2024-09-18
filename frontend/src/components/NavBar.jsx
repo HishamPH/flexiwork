@@ -68,7 +68,7 @@ const NavBar = () => {
                     variant="circular"
                     alt="tania andrew"
                     className="cursor-pointer"
-                    src={`/api/images/user.png`}
+                    src={`/api/images/${userInfo.profilePic}`}
                   />
                 </MenuHandler>
                 <MenuList className="p-1 bg-white">
@@ -101,7 +101,7 @@ const NavBar = () => {
                     variant="circular"
                     alt="tania andrew"
                     className="cursor-pointer"
-                    src={`/api/images/user.png`}
+                    src={`/api/images/${userInfo.profilePic}`}
                   />
                 </MenuHandler>
                 <MenuList className="p-1 bg-white">
