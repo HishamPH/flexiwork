@@ -23,8 +23,8 @@ export default class UserRepository implements IUserRepository {
         .select("-password -__v")
         .lean();
       return updatedUser;
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
       return null;
     }
   }
@@ -35,8 +35,18 @@ export default class UserRepository implements IUserRepository {
         .select("-password -__v")
         .lean()) as User;
       return user;
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async isBlocked(userId: string): Promise<User | null> {
+    try {
+      const user = await userModel.findById(userId);
+      return user;
+    } catch (err) {
+      console.log(err);
       return null;
     }
   }

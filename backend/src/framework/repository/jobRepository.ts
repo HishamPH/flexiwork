@@ -11,7 +11,7 @@ interface JobQuery {
   location?: string; // Optional, location to filter by
   minSalary?: number; // Optional, minimum salary for filtering
   maxSalary?: number; // Optional, maximum salary for filtering
-  remote?: boolean; // Optional, filter for remote jobs
+  remote?: boolean | string; // Optional, filter for remote jobs
 }
 
 export default class JobRepository implements IJobRepsoitory {
@@ -73,7 +73,6 @@ export default class JobRepository implements IJobRepsoitory {
         maxSalary,
         remote,
       } = query;
-      console.log(remote);
       const queryObj: any = {};
       if (name) {
         queryObj.jobName = { $regex: name, $options: "i" };
@@ -97,7 +96,7 @@ export default class JobRepository implements IJobRepsoitory {
         }
       }
 
-      if (remote === true) {
+      if (remote === "true") {
         queryObj.remote = remote;
       }
       queryObj.isActive = true;

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { Secret, TokenExpiredError } from "jsonwebtoken";
 import JwtTokenService from "../services/JwtToken";
 import userModel from "../databases/userModel";
+import UserRepository from "../repository/userRepository";
 
 const jwtToken = new JwtTokenService();
 
@@ -29,6 +30,7 @@ export const userAuth = async (
   // const bearerToken = authHeader && authHeader.split(" ")[1];
 
   try {
+    const userRepository = new UserRepository();
     const accessToken = req.cookies.accessToken;
     if (!accessToken) {
       throw new TokenExpiredError("access Token expires", new Date());
@@ -38,7 +40,7 @@ export const userAuth = async (
       process.env.ACCESS_TOKEN_SECRET as Secret
     ) as DecodedToken;
     req.user = decoded;
-    let user = await userModel.findById(decoded.id);
+    let user = await userRepository.isBlocked(decoded.id);
     if (user && user.isBlocked) {
       return res.status(401).json({
         message: "The user is blocked by Admin",
@@ -80,6 +82,8 @@ export const userAuth = async (
           });
         }
       }
+    } else {
+      console.log(error);
     }
   }
 };

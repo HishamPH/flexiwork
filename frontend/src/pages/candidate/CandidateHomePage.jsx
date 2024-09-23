@@ -24,6 +24,7 @@ const CandidateHomePage = () => {
   const jobsPerPage = 2;
 
   useEffect(() => {
+    console.log("home page mounted");
     const fetchAllJobs = async () => {
       const res = await axiosInstance.get("/user/get-all-jobs", {
         params: {
@@ -41,6 +42,8 @@ const CandidateHomePage = () => {
       setTotalPages(res.data.totalPages);
     };
     fetchAllJobs();
+
+    return () => console.log("home page unmounted");
   }, [
     searchName,
     searchLocation,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import axiosInstance from "../../../interceptors/axiosInterceptors";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
@@ -47,14 +47,14 @@ const JobListing = () => {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentJobs = jobs.slice(startIndex, endIndex);
 
-  const handleEdit = async (job) => {
+  const handleEdit = useCallback(async (job) => {
     setSelectedJob(job);
     setOpen(true);
-  };
-  const handlePost = async () => {
+  });
+  const handlePost = useCallback(async () => {
     setSelectedJob(null);
     setOpen(true);
-  };
+  });
 
   async function handleDelete(jobId) {
     try {

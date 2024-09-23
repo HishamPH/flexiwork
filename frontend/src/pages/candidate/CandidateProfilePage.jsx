@@ -260,6 +260,7 @@ const CandidateProfilePage = () => {
       }
     };
     fetchUser(userInfo._id);
+    return () => console.log("profile page unmounted");
   }, [open]);
   return (
     <div className="">
@@ -270,14 +271,33 @@ const CandidateProfilePage = () => {
             <Avatar
               src={`/api/images/${profile.profilePic}`}
               alt="avatar"
-              size="xxl"
+              className="w-40 h-40"
             />
             <TextField
-              required
-              id="outlined-required"
-              label="Required"
-              defaultValue="Hello World"
+              id="outlined-read-only-input"
+              label="Name"
+              defaultValue={userInfo.name}
+              className="border-lime-100"
+              slotProps={{
+                input: {
+                  readOnly: true,
+                },
+              }}
             />
+            <TextField
+              id="filled-read-only-input"
+              label="name"
+              defaultValue={userInfo.name}
+              variant="filled"
+              slotProps={{
+                input: {
+                  readOnly: true,
+                },
+              }}
+            />
+            <div className="ms-4">
+              <TextField variant="filled" />
+            </div>
           </div>
 
           <div className="flex flex-col items-center justify-center mb-4">

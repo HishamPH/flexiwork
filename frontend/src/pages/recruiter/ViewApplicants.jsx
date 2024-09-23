@@ -14,6 +14,7 @@ import {
   Tooltip,
   Select,
   Option,
+  Input,
 } from "@material-tailwind/react";
 import RecruiterLayout from "../../Layouts/RecruiterLayout";
 
@@ -42,6 +43,13 @@ const ViewApplicants = () => {
   const [currentPdf, setCurrentPdf] = useState("");
   const [currentUser, setCurrentUser] = useState({});
   const [applicants, setApplicants] = useState([]);
+
+  const [filteredApplicants, setFilteredApplicants] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+
   let { id } = useParams();
   useEffect(() => {
     const fetchApplicants = async (jobId) => {
@@ -66,11 +74,46 @@ const ViewApplicants = () => {
         }
       );
       Success(res.data.message);
+
+      const updatedApplicants = applicants.map((applicant) =>
+        applicant._id === applicationId ? { ...applicant, status } : applicant
+      );
+      setApplicants(updatedApplicants);
     } catch (err) {
       Failed(err.response ? err.response.data.message : err.message);
       console.log(err.message);
     }
   };
+
+  useEffect(() => {
+    const results = applicants.filter((applicant) =>
+      applicant.candidateId.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+    setFilteredApplicants(results);
+    setCurrentPage(1);
+  }, [searchTerm, applicants]);
+
+  useEffect(() => {
+    let results = applicants;
+    if (statusFilter !== "All") {
+      results = applicants.filter(
+        (applicant) => applicant.status === statusFilter
+      );
+    }
+    setFilteredApplicants(results);
+    setCurrentPage(1);
+  }, [statusFilter, applicants]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredApplicants.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const openModal = (pdfPath) => {
     setCurrentPdf(pdfPath);
@@ -92,6 +135,36 @@ const ViewApplicants = () => {
     <div>
       <Card className="h-auto">
         <CardBody className="px-0">
+          <div className="flex justify-between items-center mb-4 px-4">
+            <div className="w-1/4">
+              <Input
+                type="text"
+                placeholder="Search applicants..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-1/4"
+              />
+            </div>
+
+            <div className="w-1/4 border-red-600">
+              <Select
+                value={statusFilter}
+                onChange={(value) => setStatusFilter(value)}
+                menuProps={{
+                  className: "text-white bg-gray-700 rounded-sm font-bold",
+                }}
+                containerProps={{ className: " rounded-0 font-bold" }}
+                labelProps={{ className: "text-red-300" }}
+                className=""
+              >
+                <Option value="All">All</Option>
+                <Option value="Applied">Applied</Option>
+                <Option value="Reviewed">Reviewed</Option>
+                <Option value="Hired">Hired</Option>
+                <Option value="Rejected">Rejected</Option>
+              </Select>
+            </div>
+          </div>
           <table className="mt-4 w-full min-w-max table-auto text-left">
             <thead>
               <tr>
@@ -112,7 +185,7 @@ const ViewApplicants = () => {
               </tr>
             </thead>
             <tbody>
-              {applicants.map(
+              {currentItems.map(
                 ({ _id, candidateId, jobId, resume, status }, index) => {
                   const isLast = index === applicants.length - 1;
                   const classes = isLast
@@ -178,6 +251,31 @@ const ViewApplicants = () => {
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
           <Typography variant="small" color="blue-gray" className="font-normal">
+            Page {currentPage} of{" "}
+            {Math.ceil(filteredApplicants.length / itemsPerPage)}
+          </Typography>
+          <div className="flex gap-2">
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={() => paginate(currentPage + 1)}
+              disabled={
+                currentPage ===
+                Math.ceil(filteredApplicants.length / itemsPerPage)
+              }
+            >
+              Next
+            </Button>
+          </div>
+          {/* <Typography variant="small" color="blue-gray" className="font-normal">
             Page 1 of 10
           </Typography>
           <div className="flex gap-2">
@@ -187,7 +285,7 @@ const ViewApplicants = () => {
             <Button variant="outlined" size="sm">
               Next
             </Button>
-          </div>
+          </div> */}
         </CardFooter>
       </Card>
       {/* <JobModal open={open} setOpen={setOpen} /> */}

@@ -1,7 +1,6 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, memo } from "react";
 import { useFormik } from "formik";
 import { useSelector } from "react-redux";
-import axios from "axios";
 
 import { Select, Option, Checkbox } from "@material-tailwind/react";
 import {
@@ -81,7 +80,9 @@ const PostJobModal = ({ open, setOpen, job }) => {
       }
     },
   });
-  const closeModal = () => setOpen(false);
+  const closeModal = () => {
+    setOpen(false);
+  };
 
   return (
     <>
@@ -130,12 +131,11 @@ const PostJobModal = ({ open, setOpen, job }) => {
                           type="text"
                           value={values.jobName}
                           onChange={handleChange}
-                          //   register={register("firstName", {
-                          //     required: "First Name is required",
-                          //   })}
-                          //   error={
-                          //     errors.firstName ? errors.firstName?.message : ""
-                          //   }
+                          error={
+                            errors.jobName && touched.jobName
+                              ? errors.jobName?.message
+                              : ""
+                          }
                         />
                         {errors.jobName && touched.jobName ? (
                           <div className="text-red-700">{errors.jobName}</div>
@@ -197,8 +197,8 @@ const PostJobModal = ({ open, setOpen, job }) => {
                         <Checkbox
                           name="remote"
                           label="Remote"
-                          value={values.remote}
-                          defaultChecked={values.remote}
+                          // defaultChecked={values.remote}
+                          checked={values.remote}
                           onChange={handleChange}
                         />
                       </div>
