@@ -135,4 +135,8 @@ userRouter.get(
   }
 );
 
+userRouter.post("/logout", (req, res, next) => {
+  authController.logoutUser(req, res, next);
+});
+
 export default userRouter;

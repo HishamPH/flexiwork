@@ -1,5 +1,4 @@
-import React from 'react';
-import RecruiterLayout from '../../Layouts/RecruiterLayout';
+import React from "react";
 
 const RecruiterHomePage = () => {
   return (
@@ -20,7 +19,7 @@ const RecruiterHomePage = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default RecruiterHomePage
+export default RecruiterHomePage;

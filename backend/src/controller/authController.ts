@@ -94,29 +94,18 @@ class AuthController {
       next(error);
     }
   }
-  // tokenRefresh = async (req: Request, res: Response, next: NextFunction) => {
-  //   const refreshToken = req.cookies.refreshToken;
-  //   if (!refreshToken) {
-  //     return {
-  //       statusCode:401,
-  //       status:false,
-  //       message:'there is not refresh token'
-  //     }
-  //   }
 
-  //   try {
-  //     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-  //     const newAccessToken = jwt.sign(
-  //       { id: decoded.id, role: decoded.role },
-  //       process.env.JWT_ACCESS_SECRET,
-  //       { expiresIn: "5m" }
-  //     );
-
-  //     res.status(200).json({ success: true, accessToken: newAccessToken });
-  //   } catch (err) {
-  //     return next(error);
-  //   }
-  // };
+  async logoutUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      console.log("logout");
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+      res.status(200).json({ message: "User LogOut success fully" });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }
 
 export default AuthController;

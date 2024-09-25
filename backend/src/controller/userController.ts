@@ -14,7 +14,6 @@ class UserController {
         userData.profilePic = req.file.filename;
       }
       const user = await this.userCase.updateProfile(userData);
-      console.log(user);
       return res.status(user?.statusCode).json({ ...user });
     } catch (err) {
       console.log(err);

@@ -1,38 +1,69 @@
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  Transition,
-  TransitionChild,
-} from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { HiLocationMarker } from "react-icons/hi";
-import { AiOutlineMail } from "react-icons/ai";
-import { FiPhoneCall } from "react-icons/fi";
-import { Avatar } from "@material-tailwind/react";
-
-import CustomButton from "../../components/CustomButton";
-import TextInput from "../../components/TextInput";
-import NavBar from "../../components/NavBar";
 import { useFormik } from "formik";
-import axios from "axios";
+
+import {
+  Button,
+  IconButton,
+  Tooltip,
+  Card,
+  CardBody,
+  Typography,
+  Input,
+  Avatar,
+} from "@material-tailwind/react";
+import { PencilIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
+import TextField from "@mui/material/TextField";
+
+import NavBar from "../../components/NavBar";
 import { Success, Failed } from "../../helper/popup";
 import { setUser } from "../../redux/slices/userAuth";
-
-import TextField from "@mui/material/TextField";
 import axiosInstance from "../../../interceptors/axiosInterceptors";
 
-const UserForm = ({ open, setOpen }) => {
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const CandidateProfilePage = () => {
   const { userInfo } = useSelector((state) => state.user);
-  const initialValues = {
-    name: userInfo.name ?? "",
-    contact: userInfo.contact ?? "",
-    location: userInfo.location ?? "",
-    profilePic: userInfo.profilePic ?? null,
-    education: userInfo.education ?? "",
-  };
+
+  const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState({});
+  const [edit, setEdit] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
   const dispatch = useDispatch();
+
+  // const renderCountRef = useRef(0);
+  // useEffect(() => {
+  //   renderCountRef.current += 1;
+  // });
+  // console.log(renderCountRef.current);
+
+  useEffect(() => {
+    const fetchUser = async (userId) => {
+      try {
+        let res = await axiosInstance.get(`/user/get-user/${userId}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        let data = res.data;
+        setProfile(data);
+        setPreviewUrl(`/api/images/${data.profilePic}`);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchUser(userInfo._id);
+    return () => console.log("profile page unmounted");
+  }, [edit]);
+
+  const initialValues = {
+    name: profile?.name ?? "",
+    contact: profile?.contact ?? "",
+    location: profile?.location ?? "",
+    profilePic: profile?.profilePic ?? null,
+    education: profile?.education ?? [],
+  };
   const {
     handleChange,
     values,
@@ -45,11 +76,15 @@ const UserForm = ({ open, setOpen }) => {
     setFieldValue,
   } = useFormik({
     initialValues,
+    enableReinitialize: true,
     onSubmit: async (values, action) => {
+      setLoading(true);
       const { ...rest } = values;
-      console.log(values);
+
       rest._id = userInfo._id;
+      console.log(rest);
       try {
+        //await delay(3000);
         const res = await axiosInstance.post("/user/update-profile", rest, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -60,7 +95,8 @@ const UserForm = ({ open, setOpen }) => {
         dispatch(setUser({ ...userInfo, ...data }));
         action.resetForm();
         Success(data.message);
-        setOpen(false);
+        setEdit((prev) => !prev);
+        setLoading(false);
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
         console.log(err.message);
@@ -69,290 +105,242 @@ const UserForm = ({ open, setOpen }) => {
       }
     },
   });
-  const closeModal = () => setOpen(false);
 
-  return (
-    <>
-      <div className="flex-1 w-auto justify-center">
-        <Transition appear show={open ?? false} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={closeModal}>
-            <TransitionChild
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-black bg-opacity-25" />
-            </TransitionChild>
+  const addEducation = () => {
+    setFieldValue("education", [
+      ...values.education,
+      { college: "", degree: "", from: "", to: "" },
+    ]);
+  };
 
-            <div className="fixed inset-0 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center p-4 text-center">
-                <TransitionChild
-                  as={Fragment}
-                  enter="ease-out duration-300"
-                  enterFrom="opacity-0 scale-95"
-                  enterTo="opacity-100 scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-100 scale-100"
-                  leaveTo="opacity-0 scale-95"
-                >
-                  <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                    <DialogTitle
-                      as="h3"
-                      className="text-lg font-semibold leading-6 text-gray-900"
-                    >
-                      Edit Profile
-                    </DialogTitle>
-                    <form
-                      className="w-full mt-2 flex flex-col gap-5"
-                      onSubmit={handleSubmit}
-                    >
-                      <div className="w-full flex gap-2">
-                        <div className="w-1/2">
-                          <TextInput
-                            name="name"
-                            label="Name"
-                            placeholder="Enter your name"
-                            type="text"
-                            value={values.name}
-                            onChange={handleChange}
-                            //   register={register("firstName", {
-                            //     required: "First Name is required",
-                            //   })}
-                            //   error={
-                            //     errors.firstName ? errors.firstName?.message : ""
-                            //   }
-                          />
-                        </div>
-                        <div className="w-1/2 hidden">
-                          {/* <TextInput
-                          name='lastName'
-                          label='Last Name'
-                          placeholder='Wagonner'
-                          type='text'
-                        //   register={register("lastName", {
-                        //     required: "Last Name is required",
-                        //   })}
-                        //   error={
-                        //     errors.lastName ? errors.lastName?.message : ""
-                        //   }
-                        /> */}
-                        </div>
-                      </div>
+  const updateEducation = (index, field, value) => {
+    // const newEducation = [...values.education];
+    // newEducation[index][field] = value;
+    // setFieldValue("education", newEducation);
+    setFieldValue(`education[${index}].${field}`, value);
+  };
 
-                      <div className="w-full flex gap-2">
-                        <div className="w-1/2">
-                          <TextInput
-                            name="contact"
-                            label="Contact"
-                            placeholder="Phone Number"
-                            type="number"
-                            value={values.contact}
-                            onChange={handleChange}
-                            //   register={register("contact", {
-                            //     required: "Coontact is required!",
-                            //   })}
-                            //   error={errors.contact ? errors.contact?.message : ""}
-                          />
-                        </div>
+  const removeEducation = (index) => {
+    const newEducation = values.education.filter(
+      (_, eduIndex) => eduIndex !== index
+    );
+    setFieldValue("education", newEducation);
+  };
 
-                        <div className="w-1/2">
-                          <TextInput
-                            name="location"
-                            label="Location"
-                            placeholder="Location"
-                            type="text"
-                            value={values.location}
-                            onChange={handleChange}
-                            //   register={register("location", {
-                            //     required: "Location is required",
-                            //   })}
-                            //   error={
-                            //     errors.location ? errors.location?.message : ""
-                            //   }
-                          />
-                        </div>
-                      </div>
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.substr(0, 5) === "image") {
+      setFieldValue("profilePic", file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
-                      <div className="w-full flex gap-2 text-sm">
-                        <div className="w-1/2">
-                          <label className="text-gray-600 text-sm mb-1">
-                            Profile Picture
-                          </label>
-                          <input
-                            type="file"
-                            name="profilePic"
-                            onChange={(e) => {
-                              console.log("hello");
-                              return setFieldValue(
-                                "profilePic",
-                                e.target.files[0]
-                              );
-                            }}
-                          />
-                        </div>
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
 
-                        {/* <div className='w-1/2'>
-                        <label className='text-gray-600 text-sm mb-1'>
-                          Resume
-                        </label>
-                        <input
-                          type='file'
-                        //   onChange={(e) => setUploadCv(e.target.files[0])}
-                        />
-                      </div> */}
-                      </div>
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.substr(0, 5) === "image") {
+      setFieldValue("profilePic", file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
-                      <div className="flex flex-col">
-                        <label className="text-gray-600 text-sm mb-1">
-                          Education
-                        </label>
-                        <textarea
-                          className="ounded border border-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-base px-4 py-2 resize-none"
-                          rows={4}
-                          cols={6}
-                          value={values.education}
-                          name="education"
-                          onChange={handleChange}
-                        ></textarea>
-                      </div>
-
-                      <div className="mt-4">
-                        <CustomButton
-                          type="submit"
-                          containerStyles="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-8 py-2 text-sm font-medium text-white hover:bg-[#1d4fd846] hover:text-[#1d4fd8] focus:outline-none "
-                          title={"Submit"}
-                        />
-                      </div>
-                    </form>
-                  </DialogPanel>
-                </TransitionChild>
-              </div>
-            </div>
-          </Dialog>
-        </Transition>
-      </div>
-    </>
-  );
-};
-
-const CandidateProfilePage = () => {
-  const [profile, setProfile] = useState({});
-  const { userInfo } = useSelector((state) => state.user);
-  const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const fetchUser = async (userId) => {
-      try {
-        let res = await axiosInstance.get(`/user/get-user/${userId}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        let data = res.data;
-        setProfile(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchUser(userInfo._id);
-    return () => console.log("profile page unmounted");
-  }, [open]);
   return (
     <div className="">
       <NavBar />
-      <div className="container w-full justify-end shadow-lg mx-auto mt-10">
+      <div className="container w-3/4 flex shadow-lg mx-auto mt-10">
         <div className="w-full bg-white shadow-lg p-10 pb-20 rounded-lg">
-          <div className="flex items-center">
-            <Avatar
-              src={`/api/images/${profile.profilePic}`}
-              alt="avatar"
-              className="w-40 h-40"
-            />
-            <TextField
-              id="outlined-read-only-input"
-              label="Name"
-              defaultValue={userInfo.name}
-              className="border-lime-100"
-              slotProps={{
-                input: {
-                  readOnly: true,
-                },
-              }}
-            />
-            <TextField
-              id="filled-read-only-input"
-              label="name"
-              defaultValue={userInfo.name}
-              variant="filled"
-              slotProps={{
-                input: {
-                  readOnly: true,
-                },
-              }}
-            />
-            <div className="ms-4">
-              <TextField variant="filled" />
+          <div className={`flex justify-end ${edit ? "invisible" : ""}`}>
+            <div>
+              <Tooltip content="Edit Profile">
+                <IconButton
+                  variant="text"
+                  className="bg-blue-gray-100"
+                  onClick={() => setEdit((prev) => !prev)}
+                >
+                  <PencilIcon className="h-4 w-4" />
+                </IconButton>
+              </Tooltip>
             </div>
           </div>
+          <div className="">
+            <div className="flex justify-between">
+              {edit ? (
+                <div
+                  className={`relative mb-6 border-2 border-dashed rounded-full text-center ${"border-blue-gray-200"}`}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                >
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="mx-auto max-h-40 max-w-40 rounded-full object-cover"
+                  />
 
-          <div className="flex flex-col items-center justify-center mb-4">
-            <h1 className="text-4xl font-semibold text-slate-600">
-              {userInfo?.name}
-            </h1>
-
-            <h5 className="text-blue-700 text-base font-bold">
-              {userInfo?.role || "Add Job Title"}
-            </h5>
-
-            <div className="w-full flex flex-wrap lg:flex-row justify-between mt-8 text-sm">
-              <p className="flex gap-1 items-center justify-center  px-3 py-1 text-slate-600 rounded-full">
-                <HiLocationMarker /> {userInfo?.email ?? "No Location"}
-              </p>
-              <p className="flex gap-1 items-center justify-center  px-3 py-1 text-slate-600 rounded-full">
-                <AiOutlineMail /> {userInfo?.email ?? "No Email"}
-              </p>
-              <p className="flex gap-1 items-center justify-center  px-3 py-1 text-slate-600 rounded-full">
-                <FiPhoneCall /> {userInfo?.email ?? "No Contact"}
-              </p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                </div>
+              ) : (
+                <Avatar
+                  src={`/api/images/${profile.profilePic}`}
+                  alt="avatar"
+                  className="w-40 h-40 mb-6"
+                />
+              )}
             </div>
+
+            <form action="" onSubmit={handleSubmit}>
+              <Card className="mb-6">
+                <CardBody>
+                  <Typography variant="h4" className="mb-4 text-blue-500">
+                    Personal Information
+                  </Typography>
+                  <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+                    <TextField
+                      required
+                      name="name"
+                      id="outlined-read-only-input"
+                      label="Name"
+                      value={values.name}
+                      onChange={handleChange}
+                      className="border-lime-100"
+                      slotProps={{
+                        input: {
+                          readOnly: !edit,
+                        },
+                      }}
+                    />
+                    <TextField
+                      id="filled-read-only-input"
+                      label="name"
+                      name="location"
+                      value={values.name}
+                      onChange={handleChange}
+                      variant="filled"
+                      slotProps={{
+                        input: {
+                          readOnly: !edit,
+                        },
+                      }}
+                    />
+                    <TextField
+                      id="outlined-read-only-input"
+                      label="Name"
+                      name="contact"
+                      defaultValue={values.email}
+                      onChange={handleChange}
+                      className="border-lime-100"
+                      disabled={edit}
+                      slotProps={{
+                        input: {
+                          readOnly: !edit,
+                        },
+                      }}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+              <Card className="mb-6">
+                <CardBody>
+                  <Typography variant="h4" className="mb-4 text-blue-500">
+                    Education
+                  </Typography>
+                  {values.education.map((edu, index) => (
+                    <div
+                      key={index}
+                      className="mb-4 border p-4 rounded-md bg-gray-50 shadow-sm"
+                    >
+                      <div className="grid gap-2 lg:grid-cols-3">
+                        <Input
+                          label="Institution"
+                          name="college"
+                          value={edu.college}
+                          onChange={(e) =>
+                            updateEducation(index, "college", e.target.value)
+                          }
+                          readOnly={!edit}
+                        />
+                        <Input
+                          label="Degree"
+                          name="degree"
+                          value={edu.degree}
+                          onChange={(e) =>
+                            updateEducation(index, "degree", e.target.value)
+                          }
+                          readOnly={!edit}
+                        />
+                        <Input
+                          name="from"
+                          label="Start Date"
+                          placeholder=""
+                          type="date"
+                          value={edu.from?.slice(0, 10)}
+                          onChange={(e) =>
+                            updateEducation(index, "from", e.target.value)
+                          }
+                          readOnly={!edit}
+                        />
+                        <Input
+                          name="to"
+                          label="End Date"
+                          placeholder=""
+                          type="date"
+                          value={edu.to?.slice(0, 10)}
+                          onChange={(e) =>
+                            updateEducation(index, "to", e.target.value)
+                          }
+                          readOnly={!edit}
+                        />
+                      </div>
+                      {edit && (
+                        <Button
+                          variant="outlined"
+                          color="red"
+                          size="sm"
+                          className="mt-2"
+                          onClick={() => removeEducation(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  {edit && (
+                    <Button color="blue" onClick={addEducation}>
+                      Add Education
+                    </Button>
+                  )}
+                </CardBody>
+              </Card>
+              {edit && (
+                <Button
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <div className="flex justify-center">
+                      <div className="h-5 w-5 animate-spin rounded-full border-4 border-solid border-white border-t-transparent my-0"></div>
+                    </div>
+                  ) : (
+                    "Save Profile"
+                  )}
+                </Button>
+              )}
+            </form>
           </div>
 
           <hr />
-
-          <div className="w-full py-10">
-            <div className="w-full flex flex-col-reverse md:flex-row gap-8 py-6">
-              <div className="w-full md:w-2/3 flex flex-col gap-4 text-lg text-slate-600 mt-20 md:mt-0">
-                <p className="text-[#0536e7]  font-semibold text-2xl">
-                  EDUCATION
-                </p>
-                <span className="text-base text-justify leading-7">
-                  {userInfo?.education ?? "No Education Found"}
-                </span>
-              </div>
-
-              <div className="w-auto h-44 bg-black">
-                <img
-                  src={`/api/images/user.png`}
-                  alt={userInfo?.role}
-                  className="w-48 h-48 object-contain rounded-lg"
-                />
-                <button
-                  className="w-auto bg-blue-600 text-white mt-4 p-2 rounded"
-                  onClick={() => setOpen(true)}
-                >
-                  Edit Profile
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
-
-        <UserForm open={open} setOpen={setOpen} user={profile} />
       </div>
     </div>
   );

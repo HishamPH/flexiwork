@@ -7,6 +7,8 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 
+import { Avatar } from "@material-tailwind/react";
+
 const ApplicantProfileModal = ({ open, setOpen, user }) => {
   const closeModal = () => setOpen(false);
   return (
@@ -44,6 +46,11 @@ const ApplicantProfileModal = ({ open, setOpen, user }) => {
                     >
                       Profile
                     </DialogTitle>
+                    <Avatar
+                      src={`/api/images/${user.profilePic}`}
+                      alt="avatar"
+                      className="w-24 h-24 mb-6"
+                    />
                     <div>{user.name}</div>
                   </DialogPanel>
                 </TransitionChild>

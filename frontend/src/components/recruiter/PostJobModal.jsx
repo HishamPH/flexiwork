@@ -131,15 +131,16 @@ const PostJobModal = ({ open, setOpen, job }) => {
                           type="text"
                           value={values.jobName}
                           onChange={handleChange}
+                          onBlur={handleBlur}
                           error={
                             errors.jobName && touched.jobName
-                              ? errors.jobName?.message
+                              ? errors.jobName
                               : ""
                           }
                         />
-                        {errors.jobName && touched.jobName ? (
+                        {/* {errors.jobName && touched.jobName ? (
                           <div className="text-red-700">{errors.jobName}</div>
-                        ) : null}
+                        ) : null} */}
                       </div>
 
                       <div className="flex flex-col">
@@ -268,11 +269,12 @@ const PostJobModal = ({ open, setOpen, job }) => {
                       </div>
 
                       <div className="mt-4">
-                        <CustomButton
+                        <button
                           type="submit"
-                          containerStyles="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-8 py-2 text-sm font-medium text-white hover:bg-[#1d4fd846] hover:text-[#1d4fd8] focus:outline-none "
-                          title={"Submit"}
-                        />
+                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-8 py-2 text-sm font-medium text-white hover:bg-[#1d4fd846] hover:text-[#1d4fd8] focus:outline-none "
+                        >
+                          Submit
+                        </button>
                       </div>
                     </form>
                   </DialogPanel>

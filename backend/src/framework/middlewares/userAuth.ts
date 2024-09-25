@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { Secret, TokenExpiredError } from "jsonwebtoken";
 import JwtTokenService from "../services/JwtToken";
-import userModel from "../databases/userModel";
+
 import UserRepository from "../repository/userRepository";
 
 const jwtToken = new JwtTokenService();

@@ -2,16 +2,19 @@ import { useState } from "react";
 
 import { Typography, Input, Button } from "@material-tailwind/react";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/solid";
-import { useNavigate,Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import { useFormik } from "formik";
 import axios from "axios";
 import { loginValidation } from "../../validations/validation";
-import { Success,Failed } from "../../helper/popup";
-import { useDispatch,useSelector } from 'react-redux';
+import { Success, Failed } from "../../helper/popup";
+import { useDispatch, useSelector } from "react-redux";
+
+import { setAdmin } from "../../redux/slices/adminAuth";
+
 const initialValues = {
-  email:'',
-  password:''
-}
+  email: "",
+  password: "",
+};
 
 function AdminLogin() {
   const [passwordShown, setPasswordShown] = useState(false);
@@ -25,12 +28,12 @@ function AdminLogin() {
     handleBlur,
     touched,
     isSubmitting,
-    setValues
+    setValues,
   } = useFormik({
     initialValues,
     validationSchema: loginValidation,
     onSubmit: async (values, action) => {
-      const {...rest } = values;
+      const { ...rest } = values;
       try {
         const res = await axios.post("/api/admin/login", rest, {
           headers: {
@@ -38,25 +41,24 @@ function AdminLogin() {
           },
         });
         const data = res.data;
-        //dispatch(storeOTP(data.activationToken))
-        //console.log(res.data);
+        dispatch(setAdmin(res.data));
         action.resetForm();
         Success(data.message);
         navigate("/admin/dashboard");
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
-        console.log(err.message)
+        console.log(err.message);
       } finally {
         action.setSubmitting(false);
       }
     },
   });
 
-
-
-
   const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
-
+  const { adminInfo } = useSelector((state) => state.admin);
+  if (adminInfo) {
+    return <Navigate to={"/admin/dashboard"} />;
+  }
   return (
     <div className="flex justify-center items-center h-screen bg-gray-50">
       <section className="shadow-lg text-center p-8 bg-white">
@@ -67,7 +69,10 @@ function AdminLogin() {
           <Typography className="mb-2 text-gray-600 font-normal text-[18px]">
             Enter your email and password to sign in
           </Typography>
-          <form onSubmit={handleSubmit} className="mx-auto max-w-[24rem] text-left">
+          <form
+            onSubmit={handleSubmit}
+            className="mx-auto max-w-[24rem] text-left"
+          >
             <div className="mb-6">
               <label htmlFor="email">
                 <Typography
@@ -92,7 +97,9 @@ function AdminLogin() {
                   className: "hidden",
                 }}
               />
-              {errors.email&&touched.email?<div className='text-red-700'>{errors.email}</div>:null}
+              {errors.email && touched.email ? (
+                <div className="text-red-700">{errors.email}</div>
+              ) : null}
             </div>
             <div className="mb-6">
               <label htmlFor="password">
@@ -126,18 +133,24 @@ function AdminLogin() {
                   </i>
                 }
               />
-              {errors.password&&touched.password?<div className='text-red-700'>{errors.password}</div>:null}
+              {errors.password && touched.password ? (
+                <div className="text-red-700">{errors.password}</div>
+              ) : null}
             </div>
-            <Button disabled={isSubmitting} type="submit" color="black" size="lg" className="mt-6" fullWidth>
+            <Button
+              disabled={isSubmitting}
+              type="submit"
+              color="black"
+              size="lg"
+              className="mt-6"
+              fullWidth
+            >
               sign in
             </Button>
-            
-           
           </form>
         </div>
       </section>
     </div>
-    
   );
 }
 

@@ -61,12 +61,14 @@ class AdminUseCase {
         id: emailExists._id as string,
         role: emailExists.role as string,
       });
+      const { _id, role } = emailExists;
+      const result = { _id, email, role };
       return {
         statusCode: 200,
         accessToken,
         refreshToken,
         message: "Admin logged Successfully",
-        _id: emailExists._id,
+        ...result,
       };
     } catch (error) {
       console.log(error);

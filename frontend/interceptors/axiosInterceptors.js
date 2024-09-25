@@ -2,10 +2,11 @@ import axios from "axios";
 
 import { dispatch } from "../src/redux/store";
 import { logoutUser } from "../src/redux/slices/userAuth";
+import { logoutAdmin } from "../src/redux/slices/adminAuth";
 import { Failed } from "../src/helper/popup";
 
 const axiosInstance = axios.create({
-  baseURL: "/api", 
+  baseURL: "/api",
 });
 
 // axiosInstance.interceptors.request.use(
@@ -29,12 +30,15 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (error.response && error.response.status === 401) {
-      const {data} = error.response;
-      if(data.tokenExpired){
+      const { data } = error.response;
+      if (data.tokenExpired && data.isAdmin) {
+        dispatch(logoutAdmin());
+        Failed(data.message);
+      } else if (data.tokenExpired) {
         dispatch(logoutUser());
         Failed(data.message);
       }
-    } 
+    }
 
     return Promise.reject(error);
   }

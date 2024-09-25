@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import {
   MenuItems,
@@ -28,6 +28,7 @@ const initialValues = {
 };
 
 const SignUp = () => {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const [selectedRole, setSelectedRole] = useState("Select Role");
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
@@ -79,6 +80,15 @@ const SignUp = () => {
   const closeModal = () => {
     setIsOpen(false);
   };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: () => {
+      console.log("hello");
+    },
+    onError: () => {
+      console.log("very disappointing");
+    },
+  });
 
   return (
     <>
@@ -236,11 +246,11 @@ const SignUp = () => {
           </div>
 
           <GoogleLogin
-            // onSuccess={handleLogin}
-            className="w-full bg-red-500 text-white py-3 rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Login with Google
-          </GoogleLogin>
+            clientId={clientId}
+            onClick={() => {
+              console.log("hello");
+            }}
+          />
 
           <p className="mt-4 text-center text-sm text-gray-600">
             Already have an account?{" "}

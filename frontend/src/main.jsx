@@ -11,15 +11,15 @@ import { SocketProvider } from "./socket/SocketContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Provider store={store}>
-      <GoogleOAuthProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <Provider store={store}>
         <ThemeProvider>
           <SocketProvider>
             <ToastContainer />
             <App />
           </SocketProvider>
         </ThemeProvider>
-      </GoogleOAuthProvider>
-    </Provider>
+      </Provider>
+    </GoogleOAuthProvider>
   </StrictMode>
 );

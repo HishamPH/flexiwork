@@ -7,7 +7,11 @@ import { ObjectId } from "mongodb";
 export default class UserRepository implements IUserRepository {
   async updateUser(user: User): Promise<{} | null> {
     try {
-      const { _id, name, contact, location, about, profilePic } = user;
+      let { _id, name, contact, location, about, profilePic, education } = user;
+
+      if (!education) {
+        education = [];
+      }
       const updatedUser = await userModel
         .findByIdAndUpdate(
           { _id },
@@ -17,6 +21,7 @@ export default class UserRepository implements IUserRepository {
             location,
             about,
             profilePic,
+            education,
           },
           { new: true }
         )

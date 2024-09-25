@@ -23,10 +23,10 @@ const NavBar = () => {
   const { userInfo } = useSelector((state) => state.user);
   let dispatch = useDispatch();
   let navigate = useNavigate();
-  const handleLogout = (e) => {
+  const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      dispatch(logoutUser());
+      await dispatch(logoutUser());
       Success("Logout successful");
       navigate("/");
     } catch (err) {
@@ -37,9 +37,9 @@ const NavBar = () => {
   let profilePath = "";
   if (userInfo) {
     if (userInfo.role === "recruiter") {
-      profilePath = "recruiter";
+      profilePath = "/recruiter/home";
     } else {
-      profilePath = "candidate";
+      profilePath = "/candidate/home";
     }
   } else {
     profilePath = "/";
@@ -52,7 +52,7 @@ const NavBar = () => {
       }}
     >
       <div className="flex items-center">
-        <Link to={`/${profilePath}/home`} className="flex">
+        <Link to={profilePath} className="flex">
           <div className="w-8 h-8 bg-indigo-600 rounded-full mr-2"></div>
           <span className="text-xl font-bold">FlexiWork</span>
         </Link>
@@ -72,7 +72,7 @@ const NavBar = () => {
                   />
                 </MenuHandler>
                 <MenuList className="p-1 bg-white">
-                  <Link to={`/${profilePath}/profile`}>
+                  <Link to={`/recruiter/profile`}>
                     <MenuItem className="flex items-center gap-2 m-0">
                       <UserCircleIcon className="h-6 w-6" />
                       <Typography variant="h6" className="font-medium">
@@ -105,7 +105,7 @@ const NavBar = () => {
                   />
                 </MenuHandler>
                 <MenuList className="p-1 bg-white">
-                  <Link to={`/${profilePath}/profile`}>
+                  <Link to={`/candidate/profile`}>
                     <MenuItem className="flex items-center gap-2 m-0">
                       <UserCircleIcon className="h-6 w-6" />
                       <Typography variant="h6" className="font-medium">
@@ -113,7 +113,7 @@ const NavBar = () => {
                       </Typography>
                     </MenuItem>
                   </Link>
-                  <Link to={`/${profilePath}/chats`}>
+                  <Link to={`/candidate/chats`}>
                     <MenuItem className="flex items-center gap-2 m-0">
                       <ChatBubbleLeftIcon className="h-6 w-6" />
                       <Typography variant="h6" className="font-medium">
@@ -121,7 +121,7 @@ const NavBar = () => {
                       </Typography>
                     </MenuItem>
                   </Link>
-                  <Link to={`/${profilePath}/applications`}>
+                  <Link to={`/candidate/applications`}>
                     <MenuItem className="flex items-center gap-2 m-0">
                       <AcademicCapIcon className="h-6 w-6" />
                       <Typography variant="h6" className="font-medium">

@@ -3,8 +3,9 @@ import Slider from "rc-slider";
 import { Typography } from "@material-tailwind/react";
 import "rc-slider/assets/index.css";
 
-const RCSlider = ({ range, setRange, min, max, step }) => {
+const RCSlider = ({ range, setRange, min, max, step, setCurrentPage }) => {
   const handleChange = (newRange) => {
+    setCurrentPage(1);
     setRange(newRange);
   };
 

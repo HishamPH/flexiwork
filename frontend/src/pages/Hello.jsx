@@ -1192,208 +1192,289 @@
 
 //============================================================================================================================
 
+// import React, { useState } from "react";
+// import {
+//   Card,
+//   CardBody,
+//   Typography,
+//   Input,
+//   Button,
+// } from "@material-tailwind/react";
+
+// const Hello = () => {
+//   const [personalInfo, setPersonalInfo] = useState({
+//     name: "",
+//     email: "",
+//     phone: "",
+//   });
+//   const [resume, setResume] = useState(null);
+//   const [workExperience, setWorkExperience] = useState([]);
+//   const [education, setEducation] = useState([]);
+
+//   const handlePersonalInfoChange = (e) => {
+//     setPersonalInfo({ ...personalInfo, [e.target.name]: e.target.value });
+//   };
+
+//   const handleResumeUpload = (e) => {
+//     setResume(e.target.files[0]);
+//   };
+
+//   const addWorkExperience = () => {
+//     setWorkExperience([
+//       ...workExperience,
+//       { company: "", position: "", duration: "" },
+//     ]);
+//   };
+
+//   const updateWorkExperience = (index, field, value) => {
+//     const updatedExperience = [...workExperience];
+//     updatedExperience[index][field] = value;
+//     setWorkExperience(updatedExperience);
+//   };
+
+//   const removeWorkExperience = (index) => {
+//     setWorkExperience(workExperience.filter((_, i) => i !== index));
+//   };
+
+//   const addEducation = () => {
+//     setEducation([...education, { institution: "", degree: "", year: "" }]);
+//   };
+
+//   const updateEducation = (index, field, value) => {
+//     const updatedEducation = [...education];
+//     updatedEducation[index][field] = value;
+//     setEducation(updatedEducation);
+//   };
+
+//   const removeEducation = (index) => {
+//     setEducation(education.filter((_, i) => i !== index));
+//   };
+
+//   return (
+//     <div className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+//       <Card className="mb-6">
+//         <CardBody>
+//           <Typography variant="h4" className="mb-4 text-blue-500">
+//             Personal Information
+//           </Typography>
+//           <div className="grid gap-4 md:grid-cols-2">
+//             <Input
+//               label="Full Name"
+//               name="name"
+//               value={personalInfo.name}
+//               onChange={handlePersonalInfoChange}
+//             />
+//             <Input
+//               label="Email"
+//               name="email"
+//               type="email"
+//               value={personalInfo.email}
+//               onChange={handlePersonalInfoChange}
+//             />
+//             <Input
+//               label="Phone"
+//               name="phone"
+//               type="tel"
+//               value={personalInfo.phone}
+//               onChange={handlePersonalInfoChange}
+//             />
+//           </div>
+//         </CardBody>
+//       </Card>
+
+//       <Card className="mb-6">
+//         <CardBody>
+//           <Typography variant="h4" className="mb-4 text-blue-500">
+//             Resume
+//           </Typography>
+//           <Input type="file" onChange={handleResumeUpload} />
+//           {resume && (
+//             <Typography variant="small" className="mt-2 text-gray-500">
+//               Uploaded: {resume.name}
+//             </Typography>
+//           )}
+//         </CardBody>
+//       </Card>
+
+//       <Card className="mb-6">
+//         <CardBody>
+//           <Typography variant="h4" className="mb-4 text-blue-500">
+//             Work Experience
+//           </Typography>
+//           {workExperience.map((exp, index) => (
+//             <div key={index} className="mb-4 border p-4 rounded-lg bg-gray-100">
+//               <div className="grid gap-2 md:grid-cols-3">
+//                 <Input
+//                   label="Company"
+//                   value={exp.company}
+//                   onChange={(e) =>
+//                     updateWorkExperience(index, "company", e.target.value)
+//                   }
+//                 />
+//                 <Input
+//                   label="Position"
+//                   value={exp.position}
+//                   onChange={(e) =>
+//                     updateWorkExperience(index, "position", e.target.value)
+//                   }
+//                 />
+//                 <Input
+//                   label="Duration"
+//                   value={exp.duration}
+//                   onChange={(e) =>
+//                     updateWorkExperience(index, "duration", e.target.value)
+//                   }
+//                 />
+//               </div>
+//               <Button
+//                 variant="outlined"
+//                 color="red"
+//                 size="sm"
+//                 className="mt-2"
+//                 onClick={() => removeWorkExperience(index)}
+//               >
+//                 Remove
+//               </Button>
+//             </div>
+//           ))}
+//           <Button color="blue" onClick={addWorkExperience}>
+//             Add Work Experience
+//           </Button>
+//         </CardBody>
+//       </Card>
+
+//       <Card className="mb-6">
+//         <CardBody>
+//           <Typography variant="h4" className="mb-4 text-blue-500">
+//             Education
+//           </Typography>
+//           {education.map((edu, index) => (
+//             <div key={index} className="mb-4 border p-4 rounded-lg bg-gray-100">
+//               <div className="grid gap-2 md:grid-cols-3">
+//                 <Input
+//                   label="Institution"
+//                   value={edu.institution}
+//                   onChange={(e) =>
+//                     updateEducation(index, "institution", e.target.value)
+//                   }
+//                 />
+//                 <Input
+//                   label="Degree"
+//                   value={edu.degree}
+//                   onChange={(e) =>
+//                     updateEducation(index, "degree", e.target.value)
+//                   }
+//                 />
+//                 <Input
+//                   label="Year"
+//                   value={edu.year}
+//                   onChange={(e) =>
+//                     updateEducation(index, "year", e.target.value)
+//                   }
+//                 />
+//               </div>
+//               <Button
+//                 variant="outlined"
+//                 color="red"
+//                 size="sm"
+//                 className="mt-2"
+//                 onClick={() => removeEducation(index)}
+//               >
+//                 Remove
+//               </Button>
+//             </div>
+//           ))}
+//           <Button color="blue" onClick={addEducation}>
+//             Add Education
+//           </Button>
+//         </CardBody>
+//       </Card>
+
+//       <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+//         Save Profile
+//       </Button>
+//     </div>
+//   );
+// };
+
+// export default Hello;
+
+//===========================================================================================================================
+
 import React, { useState } from "react";
-import {
-  Card,
-  CardBody,
-  Typography,
-  Input,
-  Button,
-} from "@material-tailwind/react";
+import { Card, CardBody, Typography } from "@material-tailwind/react";
+import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
 
-const Hello = () => {
-  const [personalInfo, setPersonalInfo] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
-  const [resume, setResume] = useState(null);
-  const [workExperience, setWorkExperience] = useState([]);
-  const [education, setEducation] = useState([]);
+const Hello = ({ onImageUpload }) => {
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  const handlePersonalInfoChange = (e) => {
-    setPersonalInfo({ ...personalInfo, [e.target.name]: e.target.value });
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.substr(0, 5) === "image") {
+      setImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      onImageUpload(file); // Pass the file to the parent component
+    } else {
+      setImage(null);
+      setPreviewUrl(null);
+    }
   };
 
-  const handleResumeUpload = (e) => {
-    setResume(e.target.files[0]);
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
-  const addWorkExperience = () => {
-    setWorkExperience([
-      ...workExperience,
-      { company: "", position: "", duration: "" },
-    ]);
-  };
-
-  const updateWorkExperience = (index, field, value) => {
-    const updatedExperience = [...workExperience];
-    updatedExperience[index][field] = value;
-    setWorkExperience(updatedExperience);
-  };
-
-  const removeWorkExperience = (index) => {
-    setWorkExperience(workExperience.filter((_, i) => i !== index));
-  };
-
-  const addEducation = () => {
-    setEducation([...education, { institution: "", degree: "", year: "" }]);
-  };
-
-  const updateEducation = (index, field, value) => {
-    const updatedEducation = [...education];
-    updatedEducation[index][field] = value;
-    setEducation(updatedEducation);
-  };
-
-  const removeEducation = (index) => {
-    setEducation(education.filter((_, i) => i !== index));
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.substr(0, 5) === "image") {
+      setImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      onImageUpload(file); // Pass the file to the parent component
+    }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
-      <Card className="mb-6">
-        <CardBody>
-          <Typography variant="h4" className="mb-4 text-blue-500">
-            Personal Information
-          </Typography>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input
-              label="Full Name"
-              name="name"
-              value={personalInfo.name}
-              onChange={handlePersonalInfoChange}
-            />
-            <Input
-              label="Email"
-              name="email"
-              type="email"
-              value={personalInfo.email}
-              onChange={handlePersonalInfoChange}
-            />
-            <Input
-              label="Phone"
-              name="phone"
-              type="tel"
-              value={personalInfo.phone}
-              onChange={handlePersonalInfoChange}
-            />
-          </div>
-        </CardBody>
-      </Card>
-
-      <Card className="mb-6">
-        <CardBody>
-          <Typography variant="h4" className="mb-4 text-blue-500">
-            Resume
-          </Typography>
-          <Input type="file" onChange={handleResumeUpload} />
-          {resume && (
-            <Typography variant="small" className="mt-2 text-gray-500">
-              Uploaded: {resume.name}
-            </Typography>
+    <Card className="w-96 mx-auto">
+      <CardBody>
+        <Typography variant="h5" color="blue-gray" className="mb-4 text-center">
+          Upload Image
+        </Typography>
+        <div
+          className={`relative border-2 border-dashed rounded-lg p-4 text-center ${
+            previewUrl ? "border-green-500" : "border-blue-gray-200"
+          }`}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          {previewUrl ? (
+            <div className="relative">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="mx-auto max-h-48 rounded-lg object-cover"
+              />
+            </div>
+          ) : (
+            <>
+              <CloudArrowUpIcon className="mx-auto h-12 w-12 text-blue-gray-300" />
+              <Typography color="blue-gray" className="mt-2">
+                Drag and drop an image here, or click to select
+              </Typography>
+            </>
           )}
-        </CardBody>
-      </Card>
-
-      <Card className="mb-6">
-        <CardBody>
-          <Typography variant="h4" className="mb-4 text-blue-500">
-            Work Experience
-          </Typography>
-          {workExperience.map((exp, index) => (
-            <div key={index} className="mb-4 border p-4 rounded-lg bg-gray-100">
-              <div className="grid gap-2 md:grid-cols-3">
-                <Input
-                  label="Company"
-                  value={exp.company}
-                  onChange={(e) =>
-                    updateWorkExperience(index, "company", e.target.value)
-                  }
-                />
-                <Input
-                  label="Position"
-                  value={exp.position}
-                  onChange={(e) =>
-                    updateWorkExperience(index, "position", e.target.value)
-                  }
-                />
-                <Input
-                  label="Duration"
-                  value={exp.duration}
-                  onChange={(e) =>
-                    updateWorkExperience(index, "duration", e.target.value)
-                  }
-                />
-              </div>
-              <Button
-                variant="outlined"
-                color="red"
-                size="sm"
-                className="mt-2"
-                onClick={() => removeWorkExperience(index)}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
-          <Button color="blue" onClick={addWorkExperience}>
-            Add Work Experience
-          </Button>
-        </CardBody>
-      </Card>
-
-      <Card className="mb-6">
-        <CardBody>
-          <Typography variant="h4" className="mb-4 text-blue-500">
-            Education
-          </Typography>
-          {education.map((edu, index) => (
-            <div key={index} className="mb-4 border p-4 rounded-lg bg-gray-100">
-              <div className="grid gap-2 md:grid-cols-3">
-                <Input
-                  label="Institution"
-                  value={edu.institution}
-                  onChange={(e) =>
-                    updateEducation(index, "institution", e.target.value)
-                  }
-                />
-                <Input
-                  label="Degree"
-                  value={edu.degree}
-                  onChange={(e) =>
-                    updateEducation(index, "degree", e.target.value)
-                  }
-                />
-                <Input
-                  label="Year"
-                  value={edu.year}
-                  onChange={(e) =>
-                    updateEducation(index, "year", e.target.value)
-                  }
-                />
-              </div>
-              <Button
-                variant="outlined"
-                color="red"
-                size="sm"
-                className="mt-2"
-                onClick={() => removeEducation(index)}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
-          <Button color="blue" onClick={addEducation}>
-            Add Education
-          </Button>
-        </CardBody>
-      </Card>
-
-      <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-        Save Profile
-      </Button>
-    </div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+        </div>
+      </CardBody>
+    </Card>
   );
 };
 

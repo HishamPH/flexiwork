@@ -166,6 +166,7 @@ const CandidateHomePage = () => {
                 max={400000}
                 min={30000}
                 step={10000}
+                setCurrentPage={setCurrentPage}
               />
             </div>
           </div>

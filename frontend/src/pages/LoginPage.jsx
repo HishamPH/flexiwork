@@ -4,12 +4,14 @@ import { GoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import { loginValidation } from "../validations/validation";
 
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+
 import { useFormik } from "formik";
 import axios from "axios";
 import { Success, Failed } from "../helper/popup";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slices/userAuth";
-import { Button } from "@material-tailwind/react";
+import { Button, Input } from "@material-tailwind/react";
 import axiosInstance from "../../interceptors/axiosInterceptors";
 
 const initialValues = {
@@ -18,6 +20,7 @@ const initialValues = {
 };
 
 const LoginPage = () => {
+  const [passwordShown, setPasswordShown] = useState(false);
   const [selectedRole, setSelectedRole] = useState("candidate");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -57,7 +60,7 @@ const LoginPage = () => {
       }
     },
   });
-
+  const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 shadow-lg max-w-md w-full">
@@ -120,9 +123,18 @@ const LoginPage = () => {
             >
               Password
             </label>
-            <input
+            <Input
               id="password"
-              type="password"
+              type={passwordShown ? "text" : "password"}
+              icon={
+                <i onClick={togglePasswordVisiblity}>
+                  {passwordShown ? (
+                    <EyeIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  )}
+                </i>
+              }
               name="password"
               value={values.password}
               onChange={handleChange}
