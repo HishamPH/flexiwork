@@ -1,26 +1,20 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+
 import { Link } from "react-router-dom";
-import { PencilIcon } from "@heroicons/react/24/solid";
+
 import {
   Card,
   Typography,
   Button,
   CardBody,
-  Chip,
   CardFooter,
-  Avatar,
-  IconButton,
-  Tooltip,
   Select,
   Option,
   Input,
 } from "@material-tailwind/react";
-import RecruiterLayout from "../../Layouts/RecruiterLayout";
 
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import PostJobModal from "../../components/recruiter/PostJobModal";
+
 import PDFViewer from "../../components/PDFViewer";
 
 import { pdfjs } from "react-pdf";
@@ -135,8 +129,8 @@ const ViewApplicants = () => {
     <div>
       <Card className="h-auto">
         <CardBody className="px-0">
-          <div className="flex justify-between items-center mb-4 px-4">
-            <div className="w-1/4">
+          <div className="flex justify-end items-center mb-4 px-4">
+            {/* <div className="w-1/4">
               <Input
                 type="text"
                 placeholder="Search applicants..."
@@ -144,7 +138,7 @@ const ViewApplicants = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-1/4"
               />
-            </div>
+            </div> */}
 
             <div className="w-1/4 border-red-600">
               <Select

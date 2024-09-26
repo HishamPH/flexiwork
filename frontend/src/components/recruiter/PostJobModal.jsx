@@ -11,7 +11,6 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 
-import CustomButton from "../CustomButton";
 import TextInput from "../TextInput";
 import { Success, Failed } from "../../helper/popup";
 import { jobValidation } from "../../validations/validation";
@@ -27,7 +26,7 @@ const PostJobModal = ({ open, setOpen, job }) => {
     niceToHaves: job?.niceToHaves ?? "",
     postDate: job?.postDate?.slice(0, 10) ?? "",
     dueDate: job?.dueDate?.slice(0, 10) ?? "",
-    jobType: job?.jobType ?? "",
+    jobType: job?.jobType ?? "Full Time",
     minSalary: job?.minSalary ?? "",
     maxSalary: job?.maxSalary ?? "",
     skills: job?.skills ?? "",
@@ -147,14 +146,20 @@ const PostJobModal = ({ open, setOpen, job }) => {
                         <label className="text-gray-600 text-sm mb-1">
                           Job Description
                         </label>
-                        <textarea
+                        <TextInput
                           className="rounded border border-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-base px-4 py-2 resize-none"
                           rows={3}
                           cols={5}
                           value={values.description}
                           name="description"
                           onChange={handleChange}
-                        ></textarea>
+                          onBlur={handleBlur}
+                          error={
+                            errors.description && touched.description
+                              ? errors.description
+                              : ""
+                          }
+                        />
                       </div>
                       <div className="flex flex-col">
                         <label className="text-gray-600 text-sm mb-1">
@@ -221,6 +226,12 @@ const PostJobModal = ({ open, setOpen, job }) => {
                           type="number"
                           value={values.minSalary}
                           onChange={handleChange}
+                          onBlur={handleBlur}
+                          error={
+                            errors.minSalary && touched.minSalary
+                              ? errors.minSalary
+                              : ""
+                          }
                         />
                       </div>
 
@@ -232,6 +243,12 @@ const PostJobModal = ({ open, setOpen, job }) => {
                           type="number"
                           value={values.maxSalary}
                           onChange={handleChange}
+                          onBlur={handleBlur}
+                          error={
+                            errors.maxSalary && touched.maxSalary
+                              ? errors.maxSalary
+                              : ""
+                          }
                         />
                       </div>
                       <div className="w-full">

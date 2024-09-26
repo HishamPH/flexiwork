@@ -63,6 +63,9 @@ const CandidateProfilePage = () => {
     location: profile?.location ?? "",
     profilePic: profile?.profilePic ?? null,
     education: profile?.education ?? [],
+    email: profile?.email ?? "",
+    about: profile?.about ?? "",
+    workExperience: profile?.workExperience ?? [],
   };
   const {
     handleChange,
@@ -125,6 +128,24 @@ const CandidateProfilePage = () => {
       (_, eduIndex) => eduIndex !== index
     );
     setFieldValue("education", newEducation);
+  };
+
+  const addWork = () => {
+    setFieldValue("workExperience", [
+      ...values.workExperience,
+      { company: "", position: "", from: "", to: "" },
+    ]);
+  };
+
+  const updateWork = (index, field, value) => {
+    setFieldValue(`workExperience[${index}].${field}`, value);
+  };
+
+  const removeWork = (index) => {
+    const newWork = values.workExperience.filter(
+      (_, workIndex) => workIndex !== index
+    );
+    setFieldValue("workExperience", newWork);
   };
 
   const handleImageChange = (e) => {
@@ -201,10 +222,25 @@ const CandidateProfilePage = () => {
             <form action="" onSubmit={handleSubmit}>
               <Card className="mb-6">
                 <CardBody>
-                  <Typography variant="h4" className="mb-4 text-blue-500">
+                  <Typography variant="h4" className="mb-4 text-indigo-800">
                     Personal Information
                   </Typography>
                   <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+                    <div className="col-span-2">
+                      <TextField
+                        name="email"
+                        value={values.email}
+                        onChange={handleChange}
+                        disabled={true}
+                        slotProps={{
+                          input: {
+                            readOnly: true,
+                          },
+                        }}
+                        className="text-black disabled:text-black w-full"
+                      />
+                    </div>
+
                     <TextField
                       required
                       name="name"
@@ -221,11 +257,10 @@ const CandidateProfilePage = () => {
                     />
                     <TextField
                       id="filled-read-only-input"
-                      label="name"
+                      label="Location"
                       name="location"
-                      value={values.name}
+                      value={values.location}
                       onChange={handleChange}
-                      variant="filled"
                       slotProps={{
                         input: {
                           readOnly: !edit,
@@ -234,12 +269,30 @@ const CandidateProfilePage = () => {
                     />
                     <TextField
                       id="outlined-read-only-input"
-                      label="Name"
+                      label="Contact"
                       name="contact"
-                      defaultValue={values.email}
+                      value={values.contact}
                       onChange={handleChange}
                       className="border-lime-100"
-                      disabled={edit}
+                      type="number"
+                      slotProps={{
+                        input: {
+                          readOnly: !edit,
+                        },
+                      }}
+                    />
+
+                    <TextField
+                      name="about"
+                      value={values.about}
+                      onChange={handleChange}
+                      fullWidth
+                      label="About"
+                      variant="outlined"
+                      type="text"
+                      className="col-span-2"
+                      multiline
+                      rows={4}
                       slotProps={{
                         input: {
                           readOnly: !edit,
@@ -321,6 +374,80 @@ const CandidateProfilePage = () => {
                   )}
                 </CardBody>
               </Card>
+
+              <Card className="mb-6">
+                <CardBody>
+                  <Typography variant="h4" className="mb-4 text-blue-500">
+                    Work Experience
+                  </Typography>
+                  {values?.workExperience.map((work, index) => (
+                    <div
+                      key={index}
+                      className="mb-4 border p-4 rounded-md bg-gray-50 shadow-sm"
+                    >
+                      <div className="grid gap-2 lg:grid-cols-3">
+                        <Input
+                          label="Company"
+                          name="company"
+                          value={work.company}
+                          onChange={(e) =>
+                            updateWork(index, "company", e.target.value)
+                          }
+                          readOnly={!edit}
+                        />
+                        <Input
+                          label="Position"
+                          name="position"
+                          value={work.position}
+                          onChange={(e) =>
+                            updateWork(index, "position", e.target.value)
+                          }
+                          readOnly={!edit}
+                        />
+                        <Input
+                          name="from"
+                          label="Start Date"
+                          placeholder=""
+                          type="date"
+                          value={work.from?.slice(0, 10)}
+                          onChange={(e) =>
+                            updateWork(index, "from", e.target.value)
+                          }
+                          readOnly={!edit}
+                        />
+                        <Input
+                          name="to"
+                          label="End Date"
+                          placeholder=""
+                          type="date"
+                          value={work.to?.slice(0, 10)}
+                          onChange={(e) =>
+                            updateWork(index, "to", e.target.value)
+                          }
+                          readOnly={!edit}
+                        />
+                      </div>
+                      {edit && (
+                        <Button
+                          variant="outlined"
+                          color="red"
+                          size="sm"
+                          className="mt-2"
+                          onClick={() => removeWork(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  {edit && (
+                    <Button color="blue" onClick={addWork}>
+                      Add Experience
+                    </Button>
+                  )}
+                </CardBody>
+              </Card>
+
               {edit && (
                 <Button
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white"

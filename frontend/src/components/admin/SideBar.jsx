@@ -70,7 +70,7 @@ const SideBar = () => {
         />
         <NavItem to="/admin/recruiters" icon={<FaUsers />} text="Recruiters" />
         <NavItem to="/admin/candidates" icon={<FaUser />} text="Candidates" />
-        <NavItem to="/jobs" icon={<FaSuitcase />} text="Jobs" />
+        {/* <NavItem to="/jobs" icon={<FaSuitcase />} text="Jobs" /> */}
         <NavItem
           to="/admin/profile"
           icon={<FaUserCircle />}

@@ -7,7 +7,16 @@ import { ObjectId } from "mongodb";
 export default class UserRepository implements IUserRepository {
   async updateUser(user: User): Promise<{} | null> {
     try {
-      let { _id, name, contact, location, about, profilePic, education } = user;
+      let {
+        _id,
+        name,
+        contact,
+        location,
+        about,
+        profilePic,
+        education,
+        workExperience,
+      } = user;
 
       if (!education) {
         education = [];
@@ -22,6 +31,7 @@ export default class UserRepository implements IUserRepository {
             about,
             profilePic,
             education,
+            workExperience,
           },
           { new: true }
         )

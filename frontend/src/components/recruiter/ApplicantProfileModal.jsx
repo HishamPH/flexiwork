@@ -51,7 +51,26 @@ const ApplicantProfileModal = ({ open, setOpen, user }) => {
                       alt="avatar"
                       className="w-24 h-24 mb-6"
                     />
-                    <div>{user.name}</div>
+                    <div>Name : {user.name}</div>
+                    <div>email : {user.email}</div>
+                    <div>location : {user.location}</div>
+                    <div>contact : {user.contact}</div>
+                    <div>about : {user.about}</div>
+                    {user?.education?.length !== 0 && (
+                      <div>
+                        education :{" "}
+                        {user?.education?.map((edu, index) => (
+                          <div key={index} className="ms-5 mb-4 flex-col">
+                            <div>college : {edu.college}</div>
+                            <div>degree : {edu.degree}</div>
+                            <div>
+                              {edu.from.slice(0, 10)} - {edu.to.slice(0, 10)}
+                            </div>
+                            <div></div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </DialogPanel>
                 </TransitionChild>
               </div>

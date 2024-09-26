@@ -280,13 +280,13 @@ const RecruiterProfilePage = () => {
                 </CardBody>
               </Card>
 
-              <Card className="mb-6">
+              {/* <Card className="mb-6">
                 <CardBody>
                   <Typography variant="h4" className="mb-4 text-blue-500">
                     Company Details
                   </Typography>
                 </CardBody>
-              </Card>
+              </Card> */}
               {edit && (
                 <Button
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white"
