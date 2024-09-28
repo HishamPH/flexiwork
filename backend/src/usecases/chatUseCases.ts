@@ -74,11 +74,13 @@ class ChatUseCase {
     try {
       const chats = await this.iChatRepository.getConversations(senderId);
       if (chats) {
-        const result = chats.flatMap((chat) =>
-          chat.participants.filter(
-            (participant) => participant._id.toString() !== senderId
-          )
-        );
+        const result = chats.map((chat) => ({
+          ...chat,
+          participants: chat.participants.filter(
+            (participant) => participant._id.toString() !== senderId.toString()
+          ),
+        }));
+
         return {
           status: true,
           statusCode: 200,

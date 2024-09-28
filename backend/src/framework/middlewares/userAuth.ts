@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import jwt, { Secret, TokenExpiredError } from "jsonwebtoken";
+import jwt, {
+  Secret,
+  TokenExpiredError,
+  JsonWebTokenError,
+} from "jsonwebtoken";
 import JwtTokenService from "../services/JwtToken";
 
 import UserRepository from "../repository/userRepository";
@@ -80,10 +84,19 @@ export const userAuth = async (
             message: "RefreshToken Expired Login again",
             tokenExpired: true,
           });
+        } else if (error instanceof JsonWebTokenError) {
+          return res.status(401).json({
+            message: "wrong refresh Token",
+            tokenExpired: true,
+          });
         }
       }
-    } else {
-      console.log(error);
+    } else if (error instanceof JsonWebTokenError) {
+      return res.status(401).json({
+        message: "wrong access Token",
+        tokenExpired: true,
+      });
     }
+    console.log(error);
   }
 };

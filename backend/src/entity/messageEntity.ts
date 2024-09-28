@@ -7,6 +7,7 @@ interface Message {
   message: string;
   sentAt?: Date;
   updatedAt?: Date;
+  createdAt?: Date;
 }
 
 export default Message;

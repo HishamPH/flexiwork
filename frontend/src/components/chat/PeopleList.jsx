@@ -1,16 +1,31 @@
 import { ChatItem } from "react-chat-elements";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSocketContext } from "../../socket/SocketContext";
 import axiosInstance from "../../../interceptors/axiosInterceptors";
 import { Failed } from "../../helper/popup";
+import moment from "moment";
+
+import "./people.css";
+
+const formatDate = (date) => {
+  const momentDate = moment(date);
+  const now = moment();
+
+  if (momentDate.isSame(now, "day")) {
+    return `${momentDate.format("HH:mm")}\tToday`;
+  } else if (momentDate.isSame(now.subtract(1, "day"), "day")) {
+    return `${momentDate.format("HH:mm")}\tYesterday`;
+  } else {
+    return momentDate.format("HH:mm\tDD/MM/YYYY");
+  }
+};
 
 const PeopleList = () => {
+  const { socket, onlineUsers } = useSocketContext();
   const { userInfo } = useSelector((state) => state.user);
   const [conversations, setConversations] = useState([]);
-  const { socket } = useSocketContext();
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -26,6 +41,7 @@ const PeopleList = () => {
             },
           }
         );
+        console.log("PeopleList 64");
         setConversations(res.data.result);
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
@@ -33,7 +49,15 @@ const PeopleList = () => {
       }
     };
     getConversations();
-  }, [setConversations, socket]);
+
+    socket?.on("newMessage", () => {
+      getConversations();
+    });
+    return () => {
+      return socket?.off("newMessage");
+    };
+  }, [socket]);
+
   const handleClick = (userId) => {
     navigate(`/${userInfo.role}/chats/${userId}`);
   };
@@ -42,19 +66,24 @@ const PeopleList = () => {
     <>
       <div className="flex-col">
         {conversations.map((item) => {
-          const isAcive = item._id === id;
+          const person = item.participants[0];
 
+          const isAcive = person._id === id;
           return (
-            // <NavLink to={`/${userInfo.role}/chats/${item._id}}`}>
             <ChatItem
               key={item._id}
-              onClick={() => handleClick(item._id)}
-              avatar={`/api/images/${item.profilePic}`}
-              title={item.name}
-              date={item.createdAt}
-              className={`${isAcive ? "text-green-600" : ""}`}
+              onClick={() => handleClick(person._id)}
+              avatar={`/api/images/${person.profilePic}`}
+              title={person.name}
+              date
+              dateString={formatDate(item.updatedAt)}
+              className={`${isAcive ? "my-custom-container" : ""}`}
+              statusColor={`${onlineUsers.includes(person._id) ? "green" : ""}`}
+              style={{
+                backgroundColor: "green",
+              }}
+              showVideoCall
             />
-            // </NavLink>
           );
         })}
       </div>

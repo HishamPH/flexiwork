@@ -63,7 +63,8 @@ export default class ChatRepository implements IChatRepsoitory {
           path: "participants",
           match: { _id: receiverId },
           select: "-password -__v", // Exclude the password field
-        });
+        })
+        .exec();
       if (!chat) {
         const newChat = await chatModel.create({
           participants: [senderId, receiverId],
@@ -79,11 +80,13 @@ export default class ChatRepository implements IChatRepsoitory {
     try {
       const chats = await chatModel
         .find({ participants: senderId })
+        .sort({ updatedAt: -1 })
+        .select("-messages -__v")
         .populate({
           path: "participants",
-          select: "-password -__v", // Exclude the password field
+          select: "-password -__v",
         })
-        .select("-messages")
+        .lean()
         .exec();
       return chats;
     } catch (err) {

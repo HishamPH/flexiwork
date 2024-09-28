@@ -17,7 +17,7 @@ import { useSocketContext } from "../../socket/SocketContext";
 import { Avatar } from "@material-tailwind/react";
 
 const MessageContainer = () => {
-  const { socket } = useSocketContext();
+  const { socket, onlineUsers } = useSocketContext();
   const [messages, setMessages] = useState([]);
   const [receiver, setReceiver] = useState({});
   const [loading, setLoading] = useState(false);
@@ -25,13 +25,15 @@ const MessageContainer = () => {
   const { id } = useParams();
   const fetchRef = useRef(false);
 
-  useEffect(() => {
-    socket?.on("newMessage", (newMessage) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-    });
+  const handleNewMessage = (newMessage) => {
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+  };
 
-    return () => socket?.off("newMessage");
-  }, [messages, setMessages, socket]);
+  useEffect(() => {
+    socket?.on("newMessage", handleNewMessage);
+    console.log("Hello");
+    return () => socket?.off("newMessage", handleNewMessage);
+  }, [setMessages, socket]);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -72,14 +74,16 @@ const MessageContainer = () => {
         </div>
       ) : (
         <div className="flex-col w-full bg-blue-gray-100 h-full">
-          <div className="h-[60px] bg-blue-gray-200">
-            <Avatar
-              variant="circular"
-              alt="tania andrew"
-              src={`/api/images/${receiver?.profilePic || "user.png"}`}
-              className="mx-2 mt-1"
-            />
-            {receiver.name}
+          <div className="h-[60px] bg-blue-gray-400">
+            <div>
+              <Avatar
+                variant="circular"
+                alt="tania andrew"
+                src={`/api/images/${receiver?.profilePic || "user.png"}`}
+                className="mx-2 mt-1"
+              />
+              {receiver.name}
+            </div>
           </div>
           <Messages messages={messages} />
           <MessageInput1 addMessage={addMessage} />

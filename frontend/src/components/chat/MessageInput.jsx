@@ -11,12 +11,18 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import axiosInstance from "../../../interceptors/axiosInterceptors";
 
+import EmojiPicker from "emoji-picker-react";
+
+import { FaceSmileIcon } from "@heroicons/react/24/outline";
+
 const MessageInput1 = ({ addMessage }) => {
   let { userInfo } = useSelector((state) => state.user);
   let [message, setMessage] = useState("");
+  const [emoji, setEmoji] = useState(false);
   let { id } = useParams();
   const handleSubmit = async (e) => {
     e.preventDefault();
+    message.trim();
     if (message.length === 0) return;
     try {
       const res = await axiosInstance.post(
@@ -31,6 +37,7 @@ const MessageInput1 = ({ addMessage }) => {
       const { message: text, senderId, receiverId, createdAt } = res.data;
       //addMessage({ message: text, senderId, receiverId, createdAt });
       setMessage("");
+      setEmoji(false);
     } catch (err) {
       console.log(err.message);
     }
@@ -40,9 +47,20 @@ const MessageInput1 = ({ addMessage }) => {
     setMessage(e.target.value);
   };
 
+  const handleEmojiClick = (emoj) => {
+    console.log(emoj.emoji);
+    setMessage((prev) => `${prev}${emoj.emoji}`);
+  };
+
   return (
     <div>
-      <div className="flex w-full rounded-md mt-4">
+      <div className="flex w-full rounded-md mt-4 relative">
+        <div className="absolute bottom-10">
+          <EmojiPicker open={emoji} onEmojiClick={handleEmojiClick} />
+        </div>
+        <button onClick={() => setEmoji((prev) => !prev)}>
+          <FaceSmileIcon className="w-6 h-6" />
+        </button>
         <form onSubmit={handleSubmit} className="flex w-full rounded-sm">
           <input
             type="text"
@@ -51,8 +69,11 @@ const MessageInput1 = ({ addMessage }) => {
             onChange={handleChange}
           />
           <button
+            disabled={message.trim().length === 0}
             type="submit"
-            className="py-2 px-4 bg-black text-white rounded-full"
+            className={`py-2 px-4  text-white rounded-full ${
+              message.trim().length === 0 ? "bg-gray-800" : "bg-black"
+            }`}
           >
             send
           </button>
