@@ -37,6 +37,8 @@ axiosInstance.interceptors.response.use(
       } else if (data.tokenExpired) {
         dispatch(logoutUser());
         Failed(data.message);
+      } else if (data.isProExpired) {
+        Failed(data.message);
       }
     }
 

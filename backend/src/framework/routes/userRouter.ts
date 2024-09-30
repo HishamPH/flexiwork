@@ -9,6 +9,7 @@ import AuthController from "../../controller/authController";
 import UserController from "../../controller/userController";
 import uploadImage, { uploadResume } from "../services/multer";
 import { userAuth } from "../middlewares/userAuth";
+import { proUserAuth } from "../middlewares/proUserAuth";
 import JobRepository from "../repository/jobRepository";
 import JobUseCase from "../../usecases/jobUseCases";
 import JobController from "../../controller/jobController";
@@ -20,6 +21,7 @@ import ApplicationController from "../../controller/applicationController";
 import ChatRepository from "../repository/chatRepository";
 import ChatUseCase from "../../usecases/chatUseCases";
 import ChatController from "../../controller/chatController";
+import Payment from "../services/payment";
 
 const userRouter = express.Router();
 
@@ -30,8 +32,9 @@ const sendEmail = new SendEmail();
 const authUseCase = new AuthUseCase(authRepository, sendEmail, JwtToken);
 const authController = new AuthController(authUseCase);
 
+const payment = new Payment();
 const userRepository = new UserRepository();
-const userUseCase = new UserUseCase(userRepository);
+const userUseCase = new UserUseCase(userRepository, payment);
 const userController = new UserController(userUseCase);
 
 const jobRepository = new JobRepository();
@@ -134,6 +137,14 @@ userRouter.get(
     applicationController.getApplications(req, res, next);
   }
 );
+
+userRouter.post("/upgrade-request", userAuth, (req, res, next) => {
+  userController.upgradeUserRequest(req, res, next);
+});
+
+userRouter.post("/upgrade-verification", userAuth, (req, res, next) => {
+  userController.verifyPayment(req, res, next);
+});
 
 userRouter.post("/logout", (req, res, next) => {
   authController.logoutUser(req, res, next);

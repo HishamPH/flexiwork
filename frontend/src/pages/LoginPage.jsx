@@ -7,7 +7,6 @@ import { loginValidation } from "../validations/validation";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
 import { useFormik } from "formik";
-import axios from "axios";
 import { Success, Failed } from "../helper/popup";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slices/userAuth";
@@ -46,7 +45,7 @@ const LoginPage = () => {
           },
         });
         const data = res.data;
-        dispatch(setUser(res.data));
+        dispatch(setUser(res.data.result));
         action.resetForm();
         Success(data.message);
         if (data.role === "candidate") navigate("/candidate/home");
@@ -66,28 +65,30 @@ const LoginPage = () => {
       <div className="bg-white p-8 shadow-lg max-w-md w-full">
         {/* Role Selection Buttons */}
         <div className="flex rounded-md justify-center">
-          <Button
-            type="button"
-            className={`px-4 py-2 text-sm font-medium rounded-sm ${
-              selectedRole === "candidate"
-                ? "bg-indigo-700 text-white font-bold"
-                : "bg-white text-black hover:bg-gray-50"
-            } border border-gray-200`}
-            onClick={() => setSelectedRole("candidate")}
-          >
-            Candidate
-          </Button>
-          <Button
-            type="button"
-            className={`px-4 py-2 text-sm font-medium rounded-sm ${
-              selectedRole === "recruiter"
-                ? "bg-indigo-700 text-white font-bold"
-                : "bg-white text-gray-700 hover:bg-gray-50"
-            } border border-gray-200`}
-            onClick={() => setSelectedRole("recruiter")}
-          >
-            Recruiter
-          </Button>
+          <div className="bg-blue-600 p-[2px]">
+            <Button
+              type="button"
+              className={`px-4 py-2 text-sm font-medium rounded-sm ${
+                selectedRole === "candidate"
+                  ? "bg-indigo-700 text-white font-bold"
+                  : "bg-white text-black hover:bg-gray-50"
+              } border border-gray-200`}
+              onClick={() => setSelectedRole("candidate")}
+            >
+              Candidate
+            </Button>
+            <Button
+              type="button"
+              className={`px-4 py-2 text-sm font-medium rounded-sm ${
+                selectedRole === "recruiter"
+                  ? "bg-indigo-700 text-white font-bold"
+                  : "bg-white text-black hover:bg-gray-50"
+              } border border-gray-200`}
+              onClick={() => setSelectedRole("recruiter")}
+            >
+              Recruiter
+            </Button>
+          </div>
         </div>
         {/* Role Selection Buttons */}
 

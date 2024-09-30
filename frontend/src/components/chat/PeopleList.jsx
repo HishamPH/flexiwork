@@ -82,7 +82,6 @@ const PeopleList = () => {
               style={{
                 backgroundColor: "green",
               }}
-              showVideoCall
             />
           );
         })}

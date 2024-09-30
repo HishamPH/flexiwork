@@ -1401,80 +1401,134 @@
 
 //===========================================================================================================================
 
-import React, { useState } from "react";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
+// import { X, Check } from "lucide-react";
 
-const Hello = ({ onImageUpload }) => {
-  const [image, setImage] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+// const Hello = () => {
+//   const features = [
+//     "Unlimited projects",
+//     "Priority support",
+//     "Advanced analytics",
+//     "Custom branding",
+//     "Team collaboration",
+//   ];
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.substr(0, 5) === "image") {
-      setImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
-      onImageUpload(file); // Pass the file to the parent component
-    } else {
-      setImage(null);
-      setPreviewUrl(null);
+//   return (
+//     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+//       <div className="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden">
+//         <div className="relative bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-4">
+//           <h3 className="text-2xl font-bold">Upgrade to Pro</h3>
+//           <p className="mt-1 text-purple-100">Unlock premium features today!</p>
+//           <div className="absolute top-4 right-4">
+//             <button className="text-purple-100 hover:text-white">
+//               <X size={24} />
+//             </button>
+//           </div>
+//         </div>
+
+//         <div className="px-6 py-4">
+//           <div className="mb-4">
+//             <span className="text-4xl font-bold">$29</span>
+//             <span className="text-gray-600">/month</span>
+//           </div>
+
+//           <ul className="space-y-2">
+//             {features.map((feature, index) => (
+//               <li key={index} className="flex items-center">
+//                 <Check size={20} className="text-green-500 mr-2" />
+//                 <span>{feature}</span>
+//               </li>
+//             ))}
+//           </ul>
+//         </div>
+
+//         <div className="px-6 py-4 bg-gray-50">
+//           <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+//             Upgrade Now
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Hello;
+
+//=====================================================================================================================
+
+import React from "react";
+import axiosInstance from "../../interceptors/axiosInterceptors";
+
+// Razorpay script loader
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+const Hello = () => {
+  const handlePayment = async () => {
+    const scriptLoaded = await loadRazorpayScript();
+
+    if (!scriptLoaded) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      return;
     }
-  };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+    // Create an order on the server
+    const orderResponse = await axiosInstance.post("/user/upgrade-request", {
+      amount: 500, // Amount in INR
+    });
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.substr(0, 5) === "image") {
-      setImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
-      onImageUpload(file); // Pass the file to the parent component
-    }
+    const { id: order_id, amount, currency } = orderResponse.data.order;
+
+    // Razorpay options for the checkout popup
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "YOUR_RAZORPAY_KEY_ID",
+      amount: amount.toString(),
+      currency,
+      name: "FlexiWork",
+      description: "Upgrade to Pro",
+      order_id,
+      handler: async function (response) {
+        const paymentData = {
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+        };
+        const verifyResponse = await axiosInstance.post(
+          "/user/upgrade-verification",
+          paymentData
+        );
+        console.log(verifyResponse);
+        if (verifyResponse.data.success) {
+          alert("Payment Successful");
+        } else {
+          alert("Payment Verification Failed");
+        }
+      },
+      prefill: {
+        name: "Test User",
+        email: "test@example.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#61dafb",
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
   };
 
   return (
-    <Card className="w-96 mx-auto">
-      <CardBody>
-        <Typography variant="h5" color="blue-gray" className="mb-4 text-center">
-          Upload Image
-        </Typography>
-        <div
-          className={`relative border-2 border-dashed rounded-lg p-4 text-center ${
-            previewUrl ? "border-green-500" : "border-blue-gray-200"
-          }`}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        >
-          {previewUrl ? (
-            <div className="relative">
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="mx-auto max-h-48 rounded-lg object-cover"
-              />
-            </div>
-          ) : (
-            <>
-              <CloudArrowUpIcon className="mx-auto h-12 w-12 text-blue-gray-300" />
-              <Typography color="blue-gray" className="mt-2">
-                Drag and drop an image here, or click to select
-              </Typography>
-            </>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-        </div>
-      </CardBody>
-    </Card>
+    <div>
+      <h2>Razorpay Payment Integration</h2>
+      <button onClick={handlePayment}>Pay ₹500</button>
+    </div>
   );
 };
 

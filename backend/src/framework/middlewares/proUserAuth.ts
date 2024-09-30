@@ -5,7 +5,6 @@ import jwt, {
   JsonWebTokenError,
 } from "jsonwebtoken";
 import JwtTokenService from "../services/JwtToken";
-
 import UserRepository from "../repository/userRepository";
 
 const jwtToken = new JwtTokenService();
@@ -25,14 +24,11 @@ declare global {
   }
 }
 
-export const userAuth = async (
+export const proUserAuth = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  // const authHeader = req.headers["authorization"];
-  // const bearerToken = authHeader && authHeader.split(" ")[1];
-
   try {
     const userRepository = new UserRepository();
     const accessToken = req.cookies.accessToken;
@@ -51,7 +47,22 @@ export const userAuth = async (
         tokenExpired: true,
       });
     }
-    next();
+    if (user && user.isPro) {
+      if (user.proExpiry.getTime() > Date.now()) next();
+      else {
+        const result = userRepository.degradeUser(user._id);
+        return res.status(203).json({
+          message: "your premiums subscription has ended",
+          result,
+          isProExpired: true,
+        });
+      }
+    } else {
+      return res.status(401).json({
+        message: "Unauthorized route",
+        tokenExpire: true,
+      });
+    }
   } catch (error) {
     if (error instanceof TokenExpiredError) {
       try {

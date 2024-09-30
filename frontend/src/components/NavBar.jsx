@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -17,10 +17,17 @@ import {
   MenuItem,
   Avatar,
   Typography,
+  Button,
 } from "@material-tailwind/react";
+
+import { FaCrown } from "react-icons/fa6";
+
+import ProModal from "./ProModal";
 
 const NavBar = () => {
   const { userInfo } = useSelector((state) => state.user);
+
+  const [open, setOpen] = useState(false);
   let dispatch = useDispatch();
   let navigate = useNavigate();
   const handleLogout = async (e) => {
@@ -56,6 +63,20 @@ const NavBar = () => {
           <div className="w-8 h-8 bg-indigo-600 rounded-full mr-2"></div>
           <span className="text-xl font-bold">FlexiWork</span>
         </Link>
+        {userInfo ? (
+          userInfo?.isPro ? (
+            "pro"
+          ) : (
+            <Button
+              className="bg-red-700 rounded-sm ms-3 py-2 px-3 font-bold"
+              onClick={() => setOpen(true)}
+            >
+              Upgrade
+            </Button>
+          )
+        ) : (
+          "hello"
+        )}
       </div>
       <nav className="flex items-center">
         {/* <Link to='#' className="mr-6 hover:text-indigo-400">Browse Companies</Link> */}
@@ -161,6 +182,7 @@ const NavBar = () => {
           </>
         )}
       </nav>
+      <ProModal open={open} setOpen={setOpen} />
     </header>
   );
 };

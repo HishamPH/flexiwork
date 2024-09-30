@@ -7,6 +7,9 @@ import adminRouter from "../routes/adminRouter";
 import session from "express-session";
 import { EventEmitter } from "events";
 import { app } from "../services/socketIo";
+import dotenv from "dotenv";
+dotenv.config();
+
 const createServer = () => {
   try {
     const corsOptions = {
@@ -40,8 +43,8 @@ const createServer = () => {
     app.use("/admin", adminRouter);
     //error middle ware
     app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-      console.error(err.stack);
-      res.status(500).send("Internal server error!");
+      console.error(err);
+      res.status(500).send("Internal server error! from backend side");
     });
 
     return app;

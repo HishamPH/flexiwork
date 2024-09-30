@@ -33,19 +33,17 @@ class AuthController {
       const { otp } = req.body;
       const token = req.cookies.activationToken;
       const user = await this.authCase.activateUser(token, otp);
-      res.cookie("refreshToken", user.refreshToken, {
-        httpOnly: true,
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-      });
-      res.cookie("accessToken", user.accessToken, {
-        httpOnly: true,
-        maxAge: 30 * 60 * 1000,
-      });
-      let message;
-      if (user?.message) {
-        message = user.message;
+      if (user.accessToken && user.refreshToken) {
+        res.cookie("refreshToken", user.refreshToken, {
+          httpOnly: true,
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+        res.cookie("accessToken", user.accessToken, {
+          httpOnly: true,
+          maxAge: 30 * 60 * 1000,
+        });
       }
-      return res.status(user?.statusCode).json({ message, ...user });
+      return res.status(user?.statusCode).json({ ...user });
     } catch (error) {
       console.log(error);
       next(error);
@@ -64,9 +62,7 @@ class AuthController {
           secure: true,
         });
       }
-      console.log(user);
-
-      res.status(user?.statusCode).json({ message: user.message, ...user });
+      res.status(user?.statusCode).json({ ...user });
     } catch (error) {
       console.log(error);
       next(error);

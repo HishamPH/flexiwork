@@ -54,14 +54,11 @@ const SignUp = () => {
             "Content-Type": "application/json",
           },
         });
-        console.log(res);
-        const data = res.data;
-        dispatch(storeOTP(data.activationToken));
-        console.log(data);
+        dispatch(storeOTP(res.data.activationToken));
+        console.log(res.data);
         action.resetForm();
-        Success(data.message);
+        Success(res.data.message);
         setIsOpen(true);
-        //navigate("/otp");
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
         console.log(err.message);

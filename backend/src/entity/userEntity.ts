@@ -21,6 +21,15 @@ interface User {
     from: Date;
     to: Date;
   }[];
+  isPro: boolean;
+  proExpiry: Date;
+  paymentDetails?: {
+    paymentId: string;
+    amount: number;
+    date: Date;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export default User;

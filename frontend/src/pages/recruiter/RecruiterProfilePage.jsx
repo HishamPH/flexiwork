@@ -27,7 +27,9 @@ const RecruiterProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({});
   const [edit, setEdit] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(
+    `/api/images/${userInfo.profilePic}`
+  );
 
   const dispatch = useDispatch();
 
@@ -37,32 +39,32 @@ const RecruiterProfilePage = () => {
   // });
   // console.log(renderCountRef.current);
 
-  useEffect(() => {
-    const fetchUser = async (userId) => {
-      try {
-        let res = await axiosInstance.get(`/user/get-user/${userId}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        let data = res.data;
-        setProfile(data);
-        setPreviewUrl(`/api/images/${data.profilePic}`);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchUser(userInfo._id);
-    return () => console.log("profile page unmounted");
-  }, [edit]);
+  // useEffect(() => {
+  //   const fetchUser = async (userId) => {
+  //     try {
+  //       let res = await axiosInstance.get(`/user/get-user/${userId}`, {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+  //       let data = res.data;
+  //       setProfile(data);
+  //       setPreviewUrl(`/api/images/${data.profilePic}`);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   fetchUser(userInfo._id);
+  //   return () => console.log("profile page unmounted");
+  // }, [edit]);
 
   const initialValues = {
-    name: profile?.name ?? "",
-    contact: profile?.contact ?? "",
-    location: profile?.location ?? "",
-    profilePic: profile?.profilePic ?? null,
-    email: profile?.email ?? "",
-    about: profile?.about ?? "",
+    name: userInfo?.name ?? "",
+    contact: userInfo?.contact ?? "",
+    location: userInfo?.location ?? "",
+    profilePic: userInfo?.profilePic ?? null,
+    email: userInfo?.email ?? "",
+    about: userInfo?.about ?? "",
   };
   const {
     handleChange,
@@ -87,7 +89,7 @@ const RecruiterProfilePage = () => {
             "Content-Type": "multipart/form-data",
           },
         });
-
+        console.log(res.data);
         const data = res.data;
         dispatch(setUser({ ...userInfo, ...data }));
 
@@ -167,7 +169,7 @@ const RecruiterProfilePage = () => {
                 </div>
               ) : (
                 <Avatar
-                  src={`/api/images/${profile.profilePic}`}
+                  src={`/api/images/${userInfo.profilePic}`}
                   alt="avatar"
                   className="w-40 h-40 mb-6"
                 />

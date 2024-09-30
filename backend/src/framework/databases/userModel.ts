@@ -25,91 +25,127 @@ export interface IUser {
     from: Date;
     to: Date;
   }[];
+  isPro: boolean;
+  proExpiry: Date;
+  paymentDetails?: {
+    paymentId: string;
+    amount: number;
+    date: Date;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const userSchema: Schema<IUser> = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    required: true,
-  },
-  isBlocked: {
-    type: Boolean,
-    default: false,
-  },
-  profilePic: {
-    type: String,
-    default: "user.png",
-  },
-  location: {
-    type: String,
-    default: "",
-  },
-  contact: {
-    type: Number,
-  },
-  about: {
-    type: String,
-    default: "",
-  },
-  education: {
-    type: [
+const userSchema: Schema<IUser> = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      required: true,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    profilePic: {
+      type: String,
+      default: "user.png",
+    },
+    location: {
+      type: String,
+      default: "",
+    },
+    contact: {
+      type: Number,
+    },
+    about: {
+      type: String,
+      default: "",
+    },
+    education: {
+      type: [
+        {
+          college: {
+            type: String,
+            required: true,
+          },
+          degree: {
+            type: String,
+            required: true,
+          },
+          from: {
+            type: Date,
+            required: true,
+          },
+          to: {
+            type: Date,
+            required: true,
+          },
+        },
+      ],
+      default: [],
+    },
+    workExperience: {
+      type: [
+        {
+          company: {
+            type: String,
+            required: true,
+          },
+          position: {
+            type: String,
+            required: true,
+          },
+          from: {
+            type: Date,
+            required: true,
+          },
+          to: {
+            type: Date,
+            required: true,
+          },
+        },
+      ],
+      default: [],
+    },
+    isPro: {
+      type: Boolean,
+      default: false,
+    },
+    proExpiry: {
+      type: Date,
+      required: false,
+    },
+    paymentDetails: [
       {
-        college: {
+        paymentId: {
           type: String,
-          required: true,
+          required: false,
         },
-        degree: {
-          type: String,
-          required: true,
+        amount: {
+          type: Number,
+          required: false,
         },
-        from: {
+        date: {
           type: Date,
-          required: true,
-        },
-        to: {
-          type: Date,
-          required: true,
+          required: false,
         },
       },
     ],
-    default: [],
   },
-  workExperience: {
-    type: [
-      {
-        company: {
-          type: String,
-          required: true,
-        },
-        position: {
-          type: String,
-          required: true,
-        },
-        from: {
-          type: Date,
-          required: true,
-        },
-        to: {
-          type: Date,
-          required: true,
-        },
-      },
-    ],
-    default: [],
-  },
-});
+  { timestamps: true }
+);
 
 userSchema.pre<IUser>("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);

@@ -1,16 +1,33 @@
 import React, { useState, useEffect } from "react";
 import OtpInput from "react-otp-input";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../redux/slices/userAuth";
-import { Failed } from "../helper/popup";
+import { Failed, Success } from "../helper/popup";
 import axiosInstance from "../../interceptors/axiosInterceptors";
 
+import { jwtDecode } from "jwt-decode";
+
+import { storeOTP } from "../redux/slices/userAuth";
+
+function getRemainingTime(token) {
+  if (!token) return 0;
+  const decoded = jwtDecode(token);
+  if (!decoded.exp) return 0;
+  const currentTime = Math.floor(Date.now() / 1000);
+  const remainingTime = decoded.exp - currentTime;
+  return remainingTime > 0 ? remainingTime : 0;
+}
+
 const OTPInput = ({ isOpen, onClose }) => {
+  const { otpToken } = useSelector((state) => state.user);
+  let time = getRemainingTime(otpToken);
+  console.log(getRemainingTime(otpToken));
   const [otp, setOtp] = useState("");
-  const [timer, setTimer] = useState(120); // 120 seconds timer
+  const [timer, setTimer] = useState(time - 4); // 120 seconds timer
   const [canResend, setCanResend] = useState(false);
+
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -29,11 +46,17 @@ const OTPInput = ({ isOpen, onClose }) => {
 
   const handleResendOTP = async () => {
     try {
-      await axiosInstance.post("/user/resend-otp");
-      setTimer(120); // Reset the timer to 120 seconds
       setCanResend(false);
+      setTimer(time--);
+      setLoading(true);
+      const res = await axiosInstance.post("/user/resend-otp");
+      dispatch(storeOTP(res.data.activationToken));
+      setLoading(false);
+      Success(res.data.message);
     } catch (err) {
-      Failed("Failed to resend OTP");
+      setCanResend(true);
+      setTimer(0);
+      Failed(err.response ? err.response.data.message : err.message);
     }
   };
 
@@ -114,7 +137,12 @@ const OTPInput = ({ isOpen, onClose }) => {
         </button>
 
         <div className="flex justify-between mt-4">
-          <button onClick={onClose} className="text-blue-700 underline">
+          <button
+            onClick={() => {
+              return onClose();
+            }}
+            className="text-blue-700 underline"
+          >
             Cancel
           </button>
           <div className="flex items-center space-x-2">
@@ -125,6 +153,8 @@ const OTPInput = ({ isOpen, onClose }) => {
               >
                 Resend OTP
               </button>
+            ) : loading ? (
+              <div>resending...</div>
             ) : (
               <span className="text-gray-600">
                 Resend in {formatTime(timer)}

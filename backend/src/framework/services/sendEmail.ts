@@ -1,5 +1,4 @@
-import nodemailer, { Transporter } from 'nodemailer'
-
+import nodemailer, { Transporter } from "nodemailer";
 
 class SendEmail {
   async sendEmail(mailOptions: {

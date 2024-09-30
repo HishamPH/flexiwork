@@ -18,6 +18,7 @@ import axiosInstance from "../../../interceptors/axiosInterceptors";
 
 const PostJobModal = ({ open, setOpen, job }) => {
   const { userInfo } = useSelector((state) => state.user);
+  console.log("job modal mounted");
 
   const initialValues = {
     jobName: job?.jobName ?? "",

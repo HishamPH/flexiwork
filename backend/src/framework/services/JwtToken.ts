@@ -1,17 +1,19 @@
-import jwt, { JwtPayload, Secret, TokenExpiredError } from 'jsonwebtoken'
-import IJwtToken from '../../usecases/interfaces/IJwtToken'
-import User from '../../entity/userEntity'
+import jwt, { JwtPayload, Secret, TokenExpiredError } from "jsonwebtoken";
+import IJwtToken from "../../usecases/interfaces/IJwtToken";
+import User from "../../entity/userEntity";
 
+import dotenv from "dotenv";
+dotenv.config();
 
 interface Response {
-  statusCode: number
-  message: string
-  id?: string | JwtPayload
+  statusCode: number;
+  message: string;
+  id?: string | JwtPayload;
 }
 interface DecodedToken {
-  user: string
-  iat: number
-  exp: number
+  user: string;
+  iat: number;
+  exp: number;
 }
 
 class JwtTokenService implements IJwtToken {
@@ -21,16 +23,16 @@ class JwtTokenService implements IJwtToken {
         { ...user },
         process.env.ACCESS_TOKEN_SECRET as Secret,
         {
-          expiresIn: '30min',
+          expiresIn: "30min",
         }
-      )
+      );
 
-      if (token) return token
-      return ''
+      if (token) return token;
+      return "";
     } catch (error) {
-      console.log(error)
+      console.log(error);
 
-      return ''
+      return "";
     }
   }
 
@@ -39,11 +41,11 @@ class JwtTokenService implements IJwtToken {
       { ...user },
       process.env.REFRESH_TOKEN_SECRET as Secret,
       {
-        expiresIn: '30d',
+        expiresIn: "30d",
       }
-    )
-    if (token) return token
-    return ''
+    );
+    if (token) return token;
+    return "";
   }
 
   async SignUpActivationToken(user: User, code: string): Promise<string> {
@@ -51,10 +53,10 @@ class JwtTokenService implements IJwtToken {
       { user, code },
       process.env.ACCESS_TOKEN_SECRET as Secret,
       {
-        expiresIn: '2m',
+        expiresIn: "2m",
       }
-    )
-    return token
+    );
+    return token;
   }
 
   async verifyOtpToken(
@@ -68,24 +70,27 @@ class JwtTokenService implements IJwtToken {
       const payload = jwt.verify(
         activationToken,
         process.env.ACCESS_TOKEN_SECRET as Secret
-      ) as { user: User; code: string; email: string }
+      ) as { user: User; code: string; email: string };
 
-      if (otp == 'resend') {
-        return payload
+      if (otp == "resend") {
+        return payload;
       }
 
       if (payload.code == otp) {
-        return payload
+        return payload;
       } else {
-        return { status: false, message: 'Otp Does not match' }
+        return { status: false, message: "Otp Does not match" };
       }
     } catch (error) {
       if (error instanceof TokenExpiredError) {
-        return { status: false, message: 'otp expired try resending the otp' }
+        return {
+          status: false,
+          message: "activation token expired try signing up again",
+        };
       }
-      return { status: false, message: 'Jwt error' }
+      return { status: false, message: "Jwt error" };
     }
   }
 }
 
-export default JwtTokenService
+export default JwtTokenService;

@@ -31,13 +31,9 @@ import {
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 export default function RecruiterSidebar() {
-  const [open, setOpen] = useState(0);
-  const [openAlert, setOpenAlert] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const handleOpen = (value) => {
-    setOpen(open === value ? 0 : value);
-  };
+  const handleDrawer = () => setIsDrawerOpen((prev) => !prev);
 
   const openDrawer = () => setIsDrawerOpen(true);
   const closeDrawer = () => setIsDrawerOpen(false);
@@ -74,7 +70,7 @@ export default function RecruiterSidebar() {
       <IconButton
         variant="text"
         size="lg"
-        onClick={openDrawer}
+        onClick={handleDrawer}
         className="md:hidden"
       >
         {isDrawerOpen ? (
@@ -85,7 +81,7 @@ export default function RecruiterSidebar() {
       </IconButton>
       <Drawer
         open={isDrawerOpen}
-        onClose={closeDrawer}
+        onClose={handleDrawer}
         className="w-62 md:hidden"
         overlay={false}
       >
@@ -107,8 +103,8 @@ export default function RecruiterSidebar() {
               icon={<UserCircleIcon className="h-5 w-5" />}
             />
             <NavItem
-              to={"hello"}
-              text={"Inbox"}
+              to={"chats"}
+              text={"Chats"}
               icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}
               chipValue={14}
             />
@@ -149,7 +145,7 @@ export default function RecruiterSidebar() {
             />
             <NavItem
               to={"chats"}
-              text={"Chat"}
+              text={"Chats"}
               icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}
               chipValue={14}
             />

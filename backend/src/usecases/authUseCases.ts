@@ -144,6 +144,7 @@ class AuthUseCase {
 
         const token = await this.JwtToken.SignUpActivationToken(user, code);
         if (sendEmail) {
+          console.log(code);
           return {
             statusCode: 200,
             message: "Otp has resend to the email",
@@ -197,13 +198,39 @@ class AuthUseCase {
             id: emailExists._id,
             role: emailExists.role,
           });
-          const { name, email, role, profilePic, _id } = emailExists;
-          const result = { name, email, role, profilePic, _id };
+          const {
+            _id,
+            name,
+            email,
+            role,
+            profilePic,
+            location,
+            contact,
+            about,
+            education,
+            workExperience,
+            isPro,
+            proExpiry,
+          } = emailExists;
+          const result = {
+            _id,
+            name,
+            email,
+            role,
+            profilePic,
+            location,
+            contact,
+            about,
+            education,
+            workExperience,
+            isPro,
+            proExpiry,
+          };
           return {
             statusCode: 200,
             accessToken,
             refreshToken,
-            ...result,
+            result,
             message: "User logged success fully",
           };
         } else {

@@ -19,7 +19,7 @@ const controller = new AdminController(adminUseCase);
 adminRouter.post("/login", (req, res, next) => {
   controller.loginAdmin(req, res, next);
 });
-adminRouter.get("/logout", (req, res, next) => {
+adminRouter.post("/logout", (req, res, next) => {
   controller.logoutAdmin(req, res, next);
 });
 
