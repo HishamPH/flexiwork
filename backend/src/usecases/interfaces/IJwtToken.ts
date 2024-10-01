@@ -1,11 +1,9 @@
-import User from '../../entity/userEntity'
+import User from "../../entity/userEntity";
 
 interface IJwtToken {
-  SignInAccessToken(user: {}): Promise<string>
-  SignInRefreshToken(user: {}): Promise<string>
-  SignUpActivationToken(user: User, code: string): Promise<string>
-
-  
+  SignInAccessToken(user: {}): Promise<string>;
+  SignInRefreshToken(user: {}): Promise<string>;
+  SignUpActivationToken(user: User, code: string): Promise<string>;
 }
 
-export default IJwtToken
+export default IJwtToken;

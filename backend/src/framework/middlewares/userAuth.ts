@@ -8,6 +8,20 @@ import JwtTokenService from "../services/JwtToken";
 
 import UserRepository from "../repository/userRepository";
 
+import {
+  getReceiverSocketId,
+  io,
+  getAllReciverSocketId,
+  SocketEntry,
+} from "../services/socketIo";
+
+declare module "express-session" {
+  interface SessionData {
+    isProExpired?: boolean;
+    message?: string;
+  }
+}
+
 const jwtToken = new JwtTokenService();
 
 interface DecodedToken {
@@ -36,9 +50,9 @@ export const userAuth = async (
   try {
     const userRepository = new UserRepository();
     const accessToken = req.cookies.accessToken;
-    if (!accessToken) {
-      throw new TokenExpiredError("access Token expires", new Date());
-    }
+    // if (!accessToken) {
+    //   throw new TokenExpiredError("access Token expires", new Date());
+    // }
     const decoded = jwt.verify(
       accessToken,
       process.env.ACCESS_TOKEN_SECRET as Secret
@@ -50,6 +64,20 @@ export const userAuth = async (
         message: "The user is blocked by Admin",
         tokenExpired: true,
       });
+    }
+    if (user && user.isPro) {
+      if (user.proExpiry.getTime() <= Date.now()) {
+        const result = await userRepository.degradeUser(user._id);
+        const allReciverSocketId: SocketEntry[] = await getAllReciverSocketId(
+          decoded.id
+        );
+        if (allReciverSocketId?.length !== 0) {
+          allReciverSocketId.forEach((item: SocketEntry) => {
+            io.to(item.socketId).emit("proUserDemoted", result);
+          });
+        }
+        req.session.isProExpired = true;
+      }
     }
     next();
   } catch (error) {
@@ -71,10 +99,9 @@ export const userAuth = async (
         const newAccessToken = await jwtToken.SignInAccessToken({ id, role });
         res.cookie("accessToken", newAccessToken, {
           httpOnly: true,
-          maxAge: 30 * 60 * 1000,
+          maxAge: 30 * 24 * 60 * 60 * 1000,
         });
         req.user = decoded;
-
         console.log("this is the code for refreshing the accessToken", decoded);
         next();
       } catch (error) {
@@ -97,9 +124,10 @@ export const userAuth = async (
         tokenExpired: true,
       });
     }
-    console.log(
-      "heellllllllloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
-    );
     console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      tokenExpired: true,
+    });
   }
 };

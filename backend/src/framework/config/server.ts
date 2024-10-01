@@ -7,6 +7,8 @@ import adminRouter from "../routes/adminRouter";
 import session from "express-session";
 import { EventEmitter } from "events";
 import { app } from "../services/socketIo";
+import "../services/croneJobs";
+
 import dotenv from "dotenv";
 dotenv.config();
 

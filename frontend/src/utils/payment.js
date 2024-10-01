@@ -48,7 +48,7 @@ const handlePayment = async (userInfo, navigate, dispatch) => {
     prefill: {
       name: userInfo.name,
       email: userInfo.email,
-      contact: userInfo.contact || "9898989898",
+      contact: userInfo.contact || 9898989898,
     },
     theme: {
       color: "#61dafb",
@@ -56,7 +56,11 @@ const handlePayment = async (userInfo, navigate, dispatch) => {
   };
   const paymentObject = new window.Razorpay(options);
   paymentObject.open();
-  paymentObject.on("payment.failed", () => {
+  paymentObject.on("payment.failed", (response) => {
+    console.log("the payment has failed miserably", response);
+    paymentObject.close();
+    navigate(`/${userInfo.role}/home`);
+
     return false;
   });
 };

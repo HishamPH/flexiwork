@@ -3,6 +3,7 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
   RouterProvider,
+  useNavigate,
 } from "react-router-dom";
 
 import "react-chat-elements/dist/main.css";
@@ -48,8 +49,6 @@ const router = createBrowserRouter(
     </Route>
   )
 );
-
-let hello = false;
 function App() {
   return <RouterProvider router={router} />;
 }

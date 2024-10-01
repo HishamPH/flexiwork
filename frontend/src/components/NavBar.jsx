@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
+import { setUser } from "../redux/slices/userAuth";
 
 import {
   UserCircleIcon,
@@ -24,12 +26,25 @@ import { FaCrown } from "react-icons/fa6";
 
 import ProModal from "./ProModal";
 
+import { useSocketContext } from "../socket/SocketContext";
+
 const NavBar = () => {
   const { userInfo } = useSelector((state) => state.user);
-
+  const { socket } = useSocketContext();
   const [open, setOpen] = useState(false);
   let dispatch = useDispatch();
   let navigate = useNavigate();
+
+  useEffect(() => {
+    if (userInfo && socket) {
+      socket.on("proUserDemoted", (data) => {
+        dispatch(setUser(data));
+      });
+
+      return () => socket.close("proUserDemoted");
+    }
+  }, [socket]);
+
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
@@ -68,7 +83,7 @@ const NavBar = () => {
             "pro"
           ) : (
             <Button
-              className="bg-red-700 rounded-sm ms-3 py-2 px-3 font-bold"
+              className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-sm ms-3 py-3 px-3 font-extrabold"
               onClick={() => setOpen(true)}
             >
               Upgrade

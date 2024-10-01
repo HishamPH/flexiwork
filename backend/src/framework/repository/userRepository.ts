@@ -43,11 +43,13 @@ export default class UserRepository implements IUserRepository {
       return null;
     }
   }
-  async findUser(id: string): Promise<{} | null> {
+  async findUser(id: string): Promise<User | null> {
     try {
       const user = (await userModel
         .findById(id)
-        .select("-password -__v")
+        .select(
+          "-password -__v -isBlocked -paymentDetails -createdAt -updatedAt"
+        )
         .lean()) as User;
       return user;
     } catch (err) {
@@ -58,7 +60,9 @@ export default class UserRepository implements IUserRepository {
 
   async isBlocked(userId: string): Promise<User | null> {
     try {
-      const user = await userModel.findById(userId).select("-password -__v");
+      const user = await userModel
+        .findById(userId)
+        .select("-password -__v -paymentDetails -createdAt -updatedAt");
       return user;
     } catch (err) {
       console.log(err);
@@ -69,14 +73,15 @@ export default class UserRepository implements IUserRepository {
   async upgradeUser(userId: string, paymentId: string): Promise<User | null> {
     try {
       const now = new Date();
-      const futureDate = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 28,
-        0,
-        0,
-        0
-      );
+      // const futureDate = new Date(
+      //   now.getFullYear(),
+      //   now.getMonth(),
+      //   now.getDate() + 28,
+      //   0,
+      //   0,
+      //   0
+      // );
+      const futureDate = new Date(now.getTime() + 2 * 60 * 1000);
       const user = await userModel
         .findByIdAndUpdate(
           userId,
@@ -93,7 +98,9 @@ export default class UserRepository implements IUserRepository {
           },
           { new: true }
         )
-        .select("-password -__v -isBlocked")
+        .select(
+          "-password -__v -isBlocked -paymentDetails -createdAt -updatedAt"
+        )
         .lean();
       return user;
     } catch (err) {
@@ -113,9 +120,27 @@ export default class UserRepository implements IUserRepository {
           },
           { new: true }
         )
-        .select("-password -__v -isBlocked")
+        .select(
+          "-password -__v -isBlocked -paymentDetails -createdAt -updatedAt"
+        )
         .lean();
       return user;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async updateProStatus(): Promise<boolean | null> {
+    console.log(new Date(Date.now()), "thw whole thing is awesome");
+    try {
+      const now = Date.now();
+      let users = await userModel.updateMany(
+        { proExpiry: { $lt: now } },
+        { $set: { isPro: false, proExpiry: null } },
+        { new: true }
+      );
+      return true;
     } catch (err) {
       console.log(err);
       return null;

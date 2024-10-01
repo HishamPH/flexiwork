@@ -14,38 +14,22 @@ interface ResponseType {
   authToken?: string;
 }
 
-class UserUseCase {
+class PaymentUseCase {
   private iUserRepository: IUserRepository;
-
-  constructor(iUserRepository: IUserRepository) {
+  private payment: Payment;
+  constructor(iUserRepository: IUserRepository, payment: Payment) {
     this.iUserRepository = iUserRepository;
+    this.payment = payment;
   }
-  async updateProfile(user: User): Promise<ResponseType> {
+
+  async updateUserRequest(amount: number): Promise<any> {
     try {
-      const result = await this.iUserRepository.updateUser(user);
+      const order = await this.payment.createOrder(amount);
       return {
         status: true,
         statusCode: 200,
-        message: "user updated Successfully",
-        ...result,
-      };
-    } catch (err) {
-      console.log(err);
-      return {
-        status: false,
-        statusCode: 500,
-        message: "Internal server Error",
-      };
-    }
-  }
-  async getUser(id: string): Promise<ResponseType> {
-    try {
-      const result = await this.iUserRepository.findUser(id);
-      return {
-        status: true,
-        statusCode: 200,
-        message: "user found Successfully",
-        ...result,
+        message: "order created successfully",
+        order,
       };
     } catch (err) {
       console.log(err);
@@ -57,10 +41,33 @@ class UserUseCase {
     }
   }
 
-  async updateProStatus(): Promise<any> {
+  async verifyPayment(
+    userId: string,
+    razorpay_order_id: string,
+    razorpay_payment_id: string,
+    razorpay_signature: string
+  ): Promise<any> {
     try {
-      const result = await this.iUserRepository.updateProStatus();
-      return result;
+      const result = await this.payment.verifyPayment(
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature
+      );
+      if (result.success && result.statusCode === 200) {
+        const user = await this.iUserRepository.upgradeUser(
+          userId,
+          razorpay_payment_id
+        );
+        return {
+          status: true,
+          ...result,
+          user,
+        };
+      }
+      return {
+        status: true,
+        ...result,
+      };
     } catch (err) {
       console.log(err);
       return {
@@ -72,4 +79,4 @@ class UserUseCase {
   }
 }
 
-export default UserUseCase;
+export default PaymentUseCase;

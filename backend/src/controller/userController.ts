@@ -1,18 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import crypto from "crypto";
-import Razorpay from "razorpay";
-
 import UserUseCase from "../usecases/userUseCases";
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "your secret key",
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+import PaymentUseCase from "../usecases/paymentUseCases";
 
 class UserController {
   private userCase: UserUseCase;
-  constructor(userCase: UserUseCase) {
+  private paymentCase: PaymentUseCase;
+  constructor(userCase: UserUseCase, paymentCase: PaymentUseCase) {
     this.userCase = userCase;
+    this.paymentCase = paymentCase;
   }
   async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
@@ -41,7 +36,7 @@ class UserController {
   async upgradeUserRequest(req: Request, res: Response, next: NextFunction) {
     try {
       const { amount } = req.body;
-      const order = await this.userCase.updateUserRequest(amount);
+      const order = await this.paymentCase.updateUserRequest(amount);
       return res.status(order?.statusCode).json({ ...order });
     } catch (err) {
       console.log("userController line no. 55");
@@ -54,7 +49,7 @@ class UserController {
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
         req.body;
       const { id } = req.user;
-      const result = await this.userCase.verifyPayment(
+      const result = await this.paymentCase.verifyPayment(
         id,
         razorpay_order_id,
         razorpay_payment_id,

@@ -40,7 +40,7 @@ class AuthController {
         });
         res.cookie("accessToken", user.accessToken, {
           httpOnly: true,
-          maxAge: 30 * 60 * 1000,
+          maxAge: 30 * 24 * 60 * 60 * 1000,
         });
       }
       return res.status(user?.statusCode).json({ ...user });
@@ -81,7 +81,7 @@ class AuthController {
         });
         res.cookie("accessToken", result.accessToken, {
           httpOnly: true,
-          maxAge: 30 * 60 * 1000,
+          maxAge: 30 * 24 * 60 * 60 * 1000,
         });
       }
       res.status(result.statusCode).json({ ...result });

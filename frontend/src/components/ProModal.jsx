@@ -38,7 +38,10 @@ const ProModal = ({ open, setOpen }) => {
     }
   };
 
-  const handleOpen = () => setOpen((prev) => !prev);
+  const handleOpen = () => {
+    console.log("ehllo");
+    setOpen((prev) => !prev);
+  };
 
   return (
     <>

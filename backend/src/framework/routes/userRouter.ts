@@ -22,6 +22,7 @@ import ChatRepository from "../repository/chatRepository";
 import ChatUseCase from "../../usecases/chatUseCases";
 import ChatController from "../../controller/chatController";
 import Payment from "../services/payment";
+import PaymentUseCase from "../../usecases/paymentUseCases";
 
 const userRouter = express.Router();
 
@@ -33,9 +34,11 @@ const authUseCase = new AuthUseCase(authRepository, sendEmail, JwtToken);
 const authController = new AuthController(authUseCase);
 
 const payment = new Payment();
+
 const userRepository = new UserRepository();
-const userUseCase = new UserUseCase(userRepository, payment);
-const userController = new UserController(userUseCase);
+const paymentUseCase = new PaymentUseCase(userRepository, payment);
+const userUseCase = new UserUseCase(userRepository);
+const userController = new UserController(userUseCase, paymentUseCase);
 
 const jobRepository = new JobRepository();
 const jobUseCase = new JobUseCase(jobRepository);
@@ -93,9 +96,14 @@ userRouter.post("/recruiter/block-job", userAuth, (req, res, next) => {
   jobController.blockJob(req, res, next);
 });
 
-userRouter.get("/recruiter/get-jobs/:id", userAuth, (req, res, next) => {
-  jobController.getRecruiterJobs(req, res, next);
-});
+userRouter.get(
+  "/recruiter/get-jobs/:id",
+  userAuth,
+  proUserAuth,
+  (req, res, next) => {
+    jobController.getRecruiterJobs(req, res, next);
+  }
+);
 
 userRouter.get("/recruiter/get-applicants/:id", userAuth, (req, res, next) => {
   jobController.getApplicants(req, res, next);

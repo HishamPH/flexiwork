@@ -32,6 +32,10 @@ const SocketProvider = ({ children }) => {
       socket.on("getOnlineUsers", (users) => {
         setOnlineUsers(users);
       });
+      socket.on("proUserDemoted", (data) => {
+        console.log(data, "this user is demoted successfully");
+      });
+
       return () => {
         socket.close();
       };

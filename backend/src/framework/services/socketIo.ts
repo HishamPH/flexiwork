@@ -39,7 +39,6 @@ io.on("connection", (socket) => {
     userSocketMap[userId] = socket.id;
     receiverSocketMap.push({ socketId: socket.id, receiverId: userId });
   }
-
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {

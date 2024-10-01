@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { dispatch } from "../src/redux/store";
-import { logoutUser } from "../src/redux/slices/userAuth";
+import { logoutUser, setUser } from "../src/redux/slices/userAuth";
 import { logoutAdmin } from "../src/redux/slices/adminAuth";
 import { Failed } from "../src/helper/popup";
 
@@ -31,13 +31,12 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response && error.response.status === 401) {
       const { data } = error.response;
+      console.log(data);
       if (data.tokenExpired && data.isAdmin) {
-        dispatch(logoutAdmin());
+        await dispatch(logoutAdmin());
         Failed(data.message);
       } else if (data.tokenExpired) {
         dispatch(logoutUser());
-        Failed(data.message);
-      } else if (data.isProExpired) {
         Failed(data.message);
       }
     }
