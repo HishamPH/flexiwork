@@ -36,12 +36,16 @@ const NavBar = () => {
   let navigate = useNavigate();
 
   useEffect(() => {
+    console.log("navbar socket has triggered for no reason");
     if (userInfo && socket) {
       socket.on("proUserDemoted", (data) => {
         dispatch(setUser(data));
       });
 
-      return () => socket.close("proUserDemoted");
+      return () =>
+        socket?.off("proUserDemoted", () => {
+          console.log("pro user demoted socket disconnected");
+        });
     }
   }, [socket]);
 
