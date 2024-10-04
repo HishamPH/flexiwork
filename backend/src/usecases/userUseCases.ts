@@ -4,7 +4,7 @@ import Payment from "../framework/services/payment";
 
 interface ResponseType {
   _id?: string;
-  result?: User | {};
+  result?: User | {} | null;
   status?: boolean;
   statusCode: number;
   message?: string;
@@ -61,6 +61,26 @@ class UserUseCase {
     try {
       const result = await this.iUserRepository.updateProStatus();
       return result;
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+
+  async demoteUser(userId: string): Promise<ResponseType> {
+    try {
+      console.log("userUseCase 76");
+      const result = await this.iUserRepository.demoteUser(userId);
+      return {
+        status: true,
+        statusCode: 200,
+        message: "user found Successfully",
+        result,
+      };
     } catch (err) {
       console.log(err);
       return {

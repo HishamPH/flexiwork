@@ -27,10 +27,12 @@ import RecruiterOnly from "./routes/privateRoutes/RecruiterOnly";
 
 import NotFound from "./pages/NotFound";
 import Hello from "./pages/Hello";
+import VideoCall from "./pages/videocall/VideoCall";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
+      <Route path="/video-call" element={<VideoCall />} />
       <Route path="/hello" element={<Hello />} />
       <Route element={<ProtectedRoute />}>
         <Route index element={<LandingPage />} />

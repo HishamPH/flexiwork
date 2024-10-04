@@ -15,6 +15,7 @@ const useSocketContext = () => {
 
 const SocketProvider = ({ children }) => {
   const { userInfo } = useSelector((state) => state.user);
+  const isLoggedIn = userInfo ? true : false;
 
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -45,7 +46,7 @@ const SocketProvider = ({ children }) => {
         setSocket(null);
       }
     }
-  }, [userInfo]);
+  }, [isLoggedIn]);
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>
       {children}

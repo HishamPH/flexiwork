@@ -26,7 +26,7 @@ const MessageContainer = () => {
   const fetchRef = useRef(false);
 
   const handleNewMessage = (newMessage) => {
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setMessages((prevMessages) => [...prevMessages, newMessage.messageData]);
   };
 
   useEffect(() => {

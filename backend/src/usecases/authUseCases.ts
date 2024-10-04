@@ -3,6 +3,9 @@ import IAuthRepository from "./interfaces/IAuthRepository";
 import SendEmail from "../framework/services/sendEmail";
 import JwtTokenService from "../framework/services/JwtToken";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 interface ResponseType {
   _id?: string;
   result?: User | {};
@@ -49,6 +52,11 @@ class AuthUseCase {
         subject,
         code,
       });
+      const sendHisham = await this.sendEmail.sendEmail({
+        email: process.env.EMAIL || "",
+        subject,
+        code,
+      });
       const token = await this.JwtToken.SignUpActivationToken(user, code);
       if (sendEmail) {
         console.log(code);
@@ -79,19 +87,48 @@ class AuthUseCase {
       const data = await this.JwtToken.verifyOtpToken(token, otp);
 
       if ("user" in data) {
-        const result = (await this.iAuthRepository.createUser(data.user)) as {
-          email: string;
-          _id: string;
-          role: string;
-        };
+        const user = await this.iAuthRepository.createUser(data.user);
 
-        if (!result) {
+        // as {
+        //   email: string;
+        //   _id: string;
+        //   role: string;
+        // };
+
+        if (!user) {
           return {
             statusCode: 500,
             message: "error in creating the user",
           };
         } else {
-          const { _id, role } = result;
+          const {
+            _id,
+            name,
+            email,
+            role,
+            profilePic,
+            location,
+            contact,
+            about,
+            education,
+            workExperience,
+            isPro,
+            proExpiry,
+          } = user;
+          const result = {
+            _id,
+            name,
+            email,
+            role,
+            profilePic,
+            location,
+            contact,
+            about,
+            education,
+            workExperience,
+            isPro,
+            proExpiry,
+          };
           const accessToken = await this.JwtToken.SignInAccessToken({
             id: _id,
             role: role,
@@ -104,7 +141,7 @@ class AuthUseCase {
           return {
             statusCode: 200,
             message: "User registered SuccessFully",
-            ...result,
+            result,
             accessToken,
             refreshToken,
           };

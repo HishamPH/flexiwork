@@ -72,8 +72,8 @@ const OTPInput = ({ isOpen, onClose }) => {
         }
       );
       if (res?.status === 200) {
-        let data = res.data;
-        dispatch(setUser(res.data));
+        let data = res.data.result;
+        dispatch(setUser(res.data.result));
         if (data.role === "candidate") navigate("/candidate/home");
         else navigate("/recruiter/home");
         onClose();

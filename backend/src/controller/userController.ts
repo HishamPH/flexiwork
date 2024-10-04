@@ -61,6 +61,17 @@ class UserController {
       next(err);
     }
   }
+
+  async demoteUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body;
+      const result = await this.userCase.demoteUser(userId);
+      return res.status(result?.statusCode).json({ ...result });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
 }
 
 export default UserController;

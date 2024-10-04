@@ -49,7 +49,7 @@ const ProModal = ({ open, setOpen }) => {
         open={open}
         handler={handleOpen}
         className="rounded-none"
-        size="xs"
+        size="md"
       >
         <div className="bg-white rounded-none shadow-xl w-full overflow-hidden ">
           <div className="relative bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-4">

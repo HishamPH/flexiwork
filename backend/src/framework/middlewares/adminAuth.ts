@@ -26,9 +26,9 @@ export const adminAuth = async (
 ) => {
   try {
     const accessToken = req.cookies.adminAccessToken;
-    if (!accessToken) {
-      throw new TokenExpiredError("access Token expires", new Date());
-    }
+    // if (!accessToken) {
+    //   throw new TokenExpiredError("access Token expires", new Date());
+    // }
     const decoded = jwt.verify(
       accessToken,
       process.env.ACCESS_TOKEN_SECRET as Secret

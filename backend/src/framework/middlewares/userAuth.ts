@@ -8,19 +8,12 @@ import JwtTokenService from "../services/JwtToken";
 
 import UserRepository from "../repository/userRepository";
 
-import {
-  getReceiverSocketId,
-  io,
-  getAllReciverSocketId,
-  SocketEntry,
-} from "../services/socketIo";
-
-declare module "express-session" {
-  interface SessionData {
-    isProExpired?: boolean;
-    message?: string;
-  }
-}
+// declare module "express-session" {
+//   interface SessionData {
+//     isProExpired?: boolean;
+//     message?: string;
+//   }
+// }
 
 const jwtToken = new JwtTokenService();
 
@@ -65,20 +58,7 @@ export const userAuth = async (
         tokenExpired: true,
       });
     }
-    if (user && user.isPro) {
-      if (user.proExpiry.getTime() <= Date.now()) {
-        const result = await userRepository.degradeUser(user._id);
-        const allReciverSocketId: SocketEntry[] = await getAllReciverSocketId(
-          decoded.id
-        );
-        if (allReciverSocketId?.length !== 0) {
-          allReciverSocketId.forEach((item: SocketEntry) => {
-            io.to(item.socketId).emit("proUserDemoted", result);
-          });
-        }
-        req.session.isProExpired = true;
-      }
-    }
+
     next();
   } catch (error) {
     if (error instanceof TokenExpiredError) {
@@ -123,11 +103,12 @@ export const userAuth = async (
         message: "wrong access Token",
         tokenExpired: true,
       });
+    } else {
+      console.log(error);
+      return res.status(500).json({
+        message: "Internal server error",
+        tokenExpired: true,
+      });
     }
-    console.log(error);
-    return res.status(500).json({
-      message: "Internal server error",
-      tokenExpired: true,
-    });
   }
 };

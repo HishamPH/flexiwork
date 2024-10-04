@@ -7,6 +7,8 @@ interface ResponseType {
   status?: boolean;
   statusCode: number;
   message?: string;
+  messageData?: Chat | {} | null;
+  notification?: any;
 }
 
 class ChatUseCase {
@@ -30,11 +32,18 @@ class ChatUseCase {
         receiverId,
         message
       );
+      const notification = await this.iChatRepository.createNotification(
+        senderId,
+        receiverId,
+        message
+      );
+
       return {
         status: true,
         statusCode: 200,
         message: "Message sent Successfully",
-        ...messageData,
+        messageData,
+        notification,
       };
     } catch (err) {
       console.log(err);
@@ -94,6 +103,67 @@ class ChatUseCase {
           message: "There is no conversation",
         };
       }
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+
+  async getNotifications(userId: string): Promise<ResponseType> {
+    try {
+      const result = await this.iChatRepository.getNotifications(userId);
+      return {
+        status: true,
+        statusCode: 200,
+        message: "Here are the messages",
+        result,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+
+  async deleteNotification(notificationId: string): Promise<ResponseType> {
+    try {
+      const result = await this.iChatRepository.deleteNotification(
+        notificationId
+      );
+      console.log("this is chat use case get message inside something");
+      return {
+        status: true,
+        statusCode: 200,
+        message: "Here are the messages",
+        ...result,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+
+  async clearNotifications(receiverId: string): Promise<ResponseType> {
+    try {
+      const result = await this.iChatRepository.clearNotifications(receiverId);
+      console.log("this is chat use case get message inside something");
+      return {
+        status: true,
+        statusCode: 200,
+        message: "Here are the messages",
+        ...result,
+      };
     } catch (err) {
       console.log(err);
       return {

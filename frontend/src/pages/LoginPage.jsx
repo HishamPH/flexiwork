@@ -65,13 +65,13 @@ const LoginPage = () => {
       <div className="bg-white p-8 shadow-lg max-w-md w-full">
         {/* Role Selection Buttons */}
         <div className="flex rounded-md justify-center">
-          <div className="bg-blue-600 p-[2px]">
+          <div className="bg-gray-400 p-[3px] shadow-lg">
             <Button
               type="button"
               className={`px-4 py-2 text-sm font-medium rounded-sm ${
                 selectedRole === "candidate"
-                  ? "bg-indigo-700 text-white font-bold"
-                  : "bg-white text-black hover:bg-gray-50"
+                  ? "bg-indigo-700 hover:bg-indigo-400 text-white font-bold"
+                  : "bg-white text-black hover:bg-gray-300"
               } border border-gray-200`}
               onClick={() => setSelectedRole("candidate")}
             >
@@ -81,8 +81,8 @@ const LoginPage = () => {
               type="button"
               className={`px-4 py-2 text-sm font-medium rounded-sm ${
                 selectedRole === "recruiter"
-                  ? "bg-indigo-700 text-white font-bold"
-                  : "bg-white text-black hover:bg-gray-50"
+                  ? "bg-indigo-700 hover:bg-indigo-400 text-white font-bold"
+                  : "bg-white text-black hover:bg-gray-300"
               } border border-gray-200`}
               onClick={() => setSelectedRole("recruiter")}
             >

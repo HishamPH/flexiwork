@@ -73,6 +73,7 @@ export default class UserRepository implements IUserRepository {
   async upgradeUser(userId: string, paymentId: string): Promise<User | null> {
     try {
       const now = new Date();
+
       // const futureDate = new Date(
       //   now.getFullYear(),
       //   now.getMonth(),
@@ -81,7 +82,8 @@ export default class UserRepository implements IUserRepository {
       //   0,
       //   0
       // );
-      const futureDate = new Date(now.getTime() + 2 * 60 * 1000);
+
+      const futureDate = new Date(now.getTime() + 100 * 60 * 1000);
       const user = await userModel
         .findByIdAndUpdate(
           userId,
@@ -109,7 +111,7 @@ export default class UserRepository implements IUserRepository {
     }
   }
 
-  async degradeUser(userId: string): Promise<User | null> {
+  async demoteUser(userId: string): Promise<User | null> {
     try {
       const user = await userModel
         .findByIdAndUpdate(

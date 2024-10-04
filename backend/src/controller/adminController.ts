@@ -15,7 +15,7 @@ class AdminController {
       const result = await this.adminCase.loginAdmin(email, password);
       if (result.accessToken && result.refreshToken) {
         res.cookie("adminAccessToken", result.accessToken, {
-          maxAge: 30 * 60 * 1000,
+          maxAge: 30 * 24 * 60 * 60 * 10000,
           httpOnly: true,
         });
         res.cookie("adminRefreshToken", result.refreshToken, {

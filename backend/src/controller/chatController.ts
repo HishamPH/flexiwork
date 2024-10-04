@@ -21,7 +21,6 @@ class ChatController {
         receiverId,
         message
       );
-
       //socket io programs
       const allSenderSocketId: SocketEntry[] = getAllReciverSocketId(senderId);
 
@@ -39,6 +38,7 @@ class ChatController {
 
         allReceiverSocketId.forEach((item: SocketEntry) => {
           io.to(item.socketId).emit("newMessage", messageData);
+          io.to(item.socketId).emit("newNoti", messageData);
         });
         //io.to(receiverSocketId).emit("newMessage", messageData);
       }
@@ -62,6 +62,36 @@ class ChatController {
       const { senderId } = req.body;
       const conversations = await this.chatCase.getConversations(senderId);
       return res.status(conversations?.statusCode).json({ ...conversations });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  async getNotifications(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+
+      const result = await this.chatCase.getNotifications(id);
+      return res.status(result?.statusCode).json({ ...result });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  async clearNotifications(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body;
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  async deleteNotification(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { notificationId } = req.body;
     } catch (err) {
       console.log(err);
       next(err);

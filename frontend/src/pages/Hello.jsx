@@ -1455,81 +1455,209 @@
 
 //=====================================================================================================================
 
-import React from "react";
-import axiosInstance from "../../interceptors/axiosInterceptors";
+import {
+  LocalUser,
+  RemoteUser,
+  useIsConnected,
+  useJoin,
+  useLocalMicrophoneTrack,
+  useLocalCameraTrack,
+  usePublish,
+  useRemoteUsers,
+} from "agora-rtc-react";
+import React, { useState } from "react";
+export const Hello = () => {
+  const [calling, setCalling] = useState(false);
+  const isConnected = useIsConnected(); // Store the user's connection status
+  const [appId, setAppId] = useState("");
+  const [channel, setChannel] = useState("");
+  const [token, setToken] = useState("");
 
-// Razorpay script loader
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
+  useJoin(
+    { appid: appId, channel: channel, token: token ? token : null },
+    calling
+  );
 
-const Hello = () => {
-  const handlePayment = async () => {
-    const scriptLoaded = await loadRazorpayScript();
+  const [micOn, setMic] = useState(true);
+  const [cameraOn, setCamera] = useState(true);
+  const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
+  const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+  usePublish([localMicrophoneTrack, localCameraTrack]);
 
-    if (!scriptLoaded) {
-      alert("Razorpay SDK failed to load. Are you online?");
-      return;
-    }
+  const remoteUsers = useRemoteUsers();
 
-    // Create an order on the server
-    const orderResponse = await axiosInstance.post("/user/upgrade-request", {
-      amount: 500, // Amount in INR
-    });
-
-    const { id: order_id, amount, currency } = orderResponse.data.order;
-
-    // Razorpay options for the checkout popup
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "YOUR_RAZORPAY_KEY_ID",
-      amount: amount.toString(),
-      currency,
-      name: "FlexiWork",
-      description: "Upgrade to Pro",
-      order_id,
-      handler: async function (response) {
-        const paymentData = {
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
-        };
-        const verifyResponse = await axiosInstance.post(
-          "/user/upgrade-verification",
-          paymentData
-        );
-        console.log(verifyResponse);
-        if (verifyResponse.data.success) {
-          alert("Payment Successful");
-        } else {
-          alert("Payment Verification Failed");
-        }
-      },
-      prefill: {
-        name: "Test User",
-        email: "test@example.com",
-        contact: "9999999999",
-      },
-      theme: {
-        color: "#61dafb",
-      },
-    };
-
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
-  };
+  console.log(localCameraTrack);
 
   return (
-    <div>
-      <h2>Razorpay Payment Integration</h2>
-      <button onClick={handlePayment}>Pay ₹500</button>
-    </div>
+    <>
+      <div className="room bg-gray-400 h-screen">
+        // highlight-next-line
+        {isConnected ? (
+          <div className="user-list">
+            <div className="user">
+              <LocalUser
+                audioTrack={localMicrophoneTrack}
+                cameraOn={cameraOn}
+                micOn={micOn}
+                videoTrack={localCameraTrack}
+              >
+                <samp className="user-name">You</samp>
+              </LocalUser>
+            </div>
+            {remoteUsers.map((user) => (
+              <div className="user" key={user.uid}>
+                <RemoteUser
+                  cover="https://www.agora.io/en/wp-content/uploads/2022/10/3d-spatial-audio-icon.svg"
+                  user={user}
+                >
+                  <samp className="user-name">{user.uid}</samp>
+                </RemoteUser>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="join-room">
+            <img alt="agora-logo" className="logo" src="{agoraLogo}" />
+            <input
+              onChange={(e) => setAppId(e.target.value)}
+              placeholder="<Your app ID>"
+              value={appId}
+            />
+            <input
+              onChange={(e) => setChannel(e.target.value)}
+              placeholder="<Your channel Name>"
+              value={channel}
+            />
+            <input
+              onChange={(e) => setToken(e.target.value)}
+              placeholder="<Your token>"
+              value={token}
+            />
+
+            <button
+              className={`join-channel ${!appId || !channel ? "disabled" : ""}`}
+              disabled={!appId || !channel}
+              onClick={() => setCalling(true)}
+            >
+              <span>Join Channel</span>
+            </button>
+          </div>
+        )}
+      </div>
+      {isConnected && (
+        <div className="control">
+          <div className="left-control">
+            <button className="btn" onClick={() => setMic((a) => !a)}>
+              <i className={`i-microphone ${!micOn ? "off" : ""}`} />
+            </button>
+            <button className="btn" onClick={() => setCamera((a) => !a)}>
+              <i className={`i-camera ${!cameraOn ? "off" : ""}`} />
+            </button>
+          </div>
+          <button
+            className={`btn btn-phone ${calling ? "btn-phone-active" : ""}`}
+            onClick={() => setCalling((a) => !a)}
+          >
+            {calling ? (
+              <i className="i-phone-hangup" />
+            ) : (
+              <i className="i-mdi-phone" />
+            )}
+          </button>
+        </div>
+      )}
+    </>
   );
 };
 
 export default Hello;
+
+//========================================================================================================================
+
+// import React, { useEffect, useState } from "react";
+// import AgoraRTC from "agora-rtc-sdk-ng";
+
+// const APP_ID = "9dd6ac3911884a1fa2bec02d525ecfb7";
+// const TOKEN = "YOUR_TEMP_TOKEN"; // For production, use a token server
+// const CHANNEL = "main";
+
+// const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+// const Hello = () => {
+//   const [localVideoTrack, setLocalVideoTrack] = useState(null);
+//   const [localAudioTrack, setLocalAudioTrack] = useState(null);
+
+//   const [remoteUser, setRemoteUser] = useState(null);
+
+//   useEffect(() => {
+//     const initAgora = async () => {
+//       alert(APP_ID);
+//       await client.join(APP_ID, CHANNEL, TOKEN, null);
+//       const videoTrack = await AgoraRTC.createCameraVideoTrack();
+//       const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+//       setLocalVideoTrack(videoTrack);
+//       setLocalAudioTrack(audioTrack);
+//       await client.publish([videoTrack, audioTrack]);
+
+//       client.on("user-published", async (user, mediaType) => {
+//         await client.subscribe(user, mediaType);
+//         if (mediaType === "video") {
+//           setRemoteUser(user);
+//           user.videoTrack?.play(`remote-video`);
+//         }
+//         if (mediaType === "audio") {
+//           user.audioTrack?.play();
+//         }
+//       });
+
+//       client.on("user-unpublished", (user, mediaType) => {
+//         if (mediaType === "video") {
+//           setRemoteUser(null);
+//         }
+//         if (mediaType === "audio") {
+//           user.audioTrack?.stop();
+//         }
+//       });
+//     };
+
+//     initAgora();
+
+//     return () => {
+//       localVideoTrack?.close();
+//       localAudioTrack?.close();
+//       client.removeAllListeners();
+//       client.leave();
+//     };
+//   }, []);
+
+//   useEffect(() => {
+//     if (localVideoTrack) {
+//       localVideoTrack.play("local-video");
+//     }
+//   }, [localVideoTrack]);
+
+//   const toggleMute = () => {
+//     if (localAudioTrack) {
+//       localAudioTrack.setEnabled(!localAudioTrack.enabled);
+//     }
+//   };
+
+//   const toggleVideo = () => {
+//     if (localVideoTrack) {
+//       localVideoTrack.setEnabled(!localVideoTrack.enabled);
+//     }
+//   };
+
+//   return (
+//     <div className="video-call-container">
+//       <div id="local-video" className="video-player"></div>
+//       {remoteUser && <div id="remote-video" className="video-player"></div>}
+//       <div className="controls">
+//         <button onClick={toggleMute}>Toggle Mute</button>
+//         <button onClick={toggleVideo}>Toggle Video</button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Hello;

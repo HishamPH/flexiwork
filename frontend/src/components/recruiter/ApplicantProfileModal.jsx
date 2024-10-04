@@ -64,7 +64,8 @@ const ApplicantProfileModal = ({ open, setOpen, user }) => {
                             <div>college : {edu.college}</div>
                             <div>degree : {edu.degree}</div>
                             <div>
-                              {edu.from.slice(0, 10)} - {edu.to.slice(0, 10)}
+                              {edu?.from?.slice(0, 10)} -{" "}
+                              {edu?.to?.slice(0, 10)}
                             </div>
                             <div></div>
                           </div>

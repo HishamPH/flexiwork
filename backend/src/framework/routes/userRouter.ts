@@ -130,6 +130,18 @@ userRouter.post("/chat/get-messages/:id", userAuth, (req, res, next) => {
   chatController.getMessages(req, res, next);
 });
 
+userRouter.get("/get-notifications/:id", userAuth, (req, res, next) => {
+  chatController.getNotifications(req, res, next);
+});
+
+userRouter.post("clear-notifications", userAuth, (req, res, next) => {
+  chatController.clearNotifications(req, res, next);
+});
+
+userRouter.post("delete-notification", userAuth, (req, res, next) => {
+  chatController.deleteNotification(req, res, next);
+});
+
 userRouter.post("/chat/get-conversations", userAuth, (req, res, next) => {
   chatController.getConversations(req, res, next);
 });
@@ -152,6 +164,10 @@ userRouter.post("/upgrade-request", userAuth, (req, res, next) => {
 
 userRouter.post("/upgrade-verification", userAuth, (req, res, next) => {
   userController.verifyPayment(req, res, next);
+});
+
+userRouter.post("/demote-user", userAuth, (req, res, next) => {
+  userController.demoteUser(req, res, next);
 });
 
 userRouter.post("/logout", (req, res, next) => {
