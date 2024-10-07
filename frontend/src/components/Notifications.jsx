@@ -6,6 +6,21 @@ import { useSelector } from "react-redux";
 import axiosInstance from "../../interceptors/axiosInterceptors";
 import { Failed } from "../helper/popup";
 
+import moment from "moment";
+
+const formatDate = (date) => {
+  const momentDate = moment(date);
+  const now = moment();
+
+  if (momentDate.isSame(now, "day")) {
+    return `${momentDate.format("HH:mm")}\tToday`;
+  } else if (momentDate.isSame(now.subtract(1, "day"), "day")) {
+    return `${momentDate.format("HH:mm")}\tYesterday`;
+  } else {
+    return momentDate.format("HH:mm\tDD/MM/YYYY");
+  }
+};
+
 const Notifications = () => {
   const { userInfo } = useSelector((state) => state.user);
   const { socket } = useSocketContext();
@@ -143,7 +158,9 @@ const Notifications = () => {
                     <p className="text-sm text-black pr-5">
                       {senderId.name} sent you a message
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">{createdAt}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {formatDate(createdAt)}
+                    </p>
                   </li>
                 )
               )

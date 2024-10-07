@@ -96,14 +96,9 @@ userRouter.post("/recruiter/block-job", userAuth, (req, res, next) => {
   jobController.blockJob(req, res, next);
 });
 
-userRouter.get(
-  "/recruiter/get-jobs/:id",
-  userAuth,
-  proUserAuth,
-  (req, res, next) => {
-    jobController.getRecruiterJobs(req, res, next);
-  }
-);
+userRouter.get("/recruiter/get-jobs/:id", userAuth, (req, res, next) => {
+  jobController.getRecruiterJobs(req, res, next);
+});
 
 userRouter.get("/recruiter/get-applicants/:id", userAuth, (req, res, next) => {
   jobController.getApplicants(req, res, next);

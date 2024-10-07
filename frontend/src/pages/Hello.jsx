@@ -1455,122 +1455,122 @@
 
 //=====================================================================================================================
 
-import {
-  LocalUser,
-  RemoteUser,
-  useIsConnected,
-  useJoin,
-  useLocalMicrophoneTrack,
-  useLocalCameraTrack,
-  usePublish,
-  useRemoteUsers,
-} from "agora-rtc-react";
-import React, { useState } from "react";
-export const Hello = () => {
-  const [calling, setCalling] = useState(false);
-  const isConnected = useIsConnected(); // Store the user's connection status
-  const [appId, setAppId] = useState("");
-  const [channel, setChannel] = useState("");
-  const [token, setToken] = useState("");
+// import {
+//   LocalUser,
+//   RemoteUser,
+//   useIsConnected,
+//   useJoin,
+//   useLocalMicrophoneTrack,
+//   useLocalCameraTrack,
+//   usePublish,
+//   useRemoteUsers,
+// } from "agora-rtc-react";
+// import React, { useState } from "react";
+// export const Hello = () => {
+//   const [calling, setCalling] = useState(false);
+//   const isConnected = useIsConnected(); // Store the user's connection status
+//   const [appId, setAppId] = useState("");
+//   const [channel, setChannel] = useState("");
+//   const [token, setToken] = useState("");
 
-  useJoin(
-    { appid: appId, channel: channel, token: token ? token : null },
-    calling
-  );
+//   useJoin(
+//     { appid: appId, channel: channel, token: token ? token : null },
+//     calling
+//   );
 
-  const [micOn, setMic] = useState(true);
-  const [cameraOn, setCamera] = useState(true);
-  const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
-  const { localCameraTrack } = useLocalCameraTrack(cameraOn);
-  usePublish([localMicrophoneTrack, localCameraTrack]);
+//   const [micOn, setMic] = useState(true);
+//   const [cameraOn, setCamera] = useState(true);
+//   const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
+//   const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+//   usePublish([localMicrophoneTrack, localCameraTrack]);
 
-  const remoteUsers = useRemoteUsers();
+//   const remoteUsers = useRemoteUsers();
 
-  console.log(localCameraTrack);
+//   console.log(localCameraTrack);
 
-  return (
-    <>
-      <div className="room bg-gray-400 h-screen">
-        // highlight-next-line
-        {isConnected ? (
-          <div className="user-list">
-            <div className="user">
-              <LocalUser
-                audioTrack={localMicrophoneTrack}
-                cameraOn={cameraOn}
-                micOn={micOn}
-                videoTrack={localCameraTrack}
-              >
-                <samp className="user-name">You</samp>
-              </LocalUser>
-            </div>
-            {remoteUsers.map((user) => (
-              <div className="user" key={user.uid}>
-                <RemoteUser
-                  cover="https://www.agora.io/en/wp-content/uploads/2022/10/3d-spatial-audio-icon.svg"
-                  user={user}
-                >
-                  <samp className="user-name">{user.uid}</samp>
-                </RemoteUser>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="join-room">
-            <img alt="agora-logo" className="logo" src="{agoraLogo}" />
-            <input
-              onChange={(e) => setAppId(e.target.value)}
-              placeholder="<Your app ID>"
-              value={appId}
-            />
-            <input
-              onChange={(e) => setChannel(e.target.value)}
-              placeholder="<Your channel Name>"
-              value={channel}
-            />
-            <input
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="<Your token>"
-              value={token}
-            />
+//   return (
+//     <>
+//       <div className="room bg-gray-400 h-screen">
+//         // highlight-next-line
+//         {isConnected ? (
+//           <div className="user-list">
+//             <div className="user">
+//               <LocalUser
+//                 audioTrack={localMicrophoneTrack}
+//                 cameraOn={cameraOn}
+//                 micOn={micOn}
+//                 videoTrack={localCameraTrack}
+//               >
+//                 <samp className="user-name">You</samp>
+//               </LocalUser>
+//             </div>
+//             {remoteUsers.map((user) => (
+//               <div className="user" key={user.uid}>
+//                 <RemoteUser
+//                   cover="https://www.agora.io/en/wp-content/uploads/2022/10/3d-spatial-audio-icon.svg"
+//                   user={user}
+//                 >
+//                   <samp className="user-name">{user.uid}</samp>
+//                 </RemoteUser>
+//               </div>
+//             ))}
+//           </div>
+//         ) : (
+//           <div className="join-room">
+//             <img alt="agora-logo" className="logo" src="{agoraLogo}" />
+//             <input
+//               onChange={(e) => setAppId(e.target.value)}
+//               placeholder="<Your app ID>"
+//               value={appId}
+//             />
+//             <input
+//               onChange={(e) => setChannel(e.target.value)}
+//               placeholder="<Your channel Name>"
+//               value={channel}
+//             />
+//             <input
+//               onChange={(e) => setToken(e.target.value)}
+//               placeholder="<Your token>"
+//               value={token}
+//             />
 
-            <button
-              className={`join-channel ${!appId || !channel ? "disabled" : ""}`}
-              disabled={!appId || !channel}
-              onClick={() => setCalling(true)}
-            >
-              <span>Join Channel</span>
-            </button>
-          </div>
-        )}
-      </div>
-      {isConnected && (
-        <div className="control">
-          <div className="left-control">
-            <button className="btn" onClick={() => setMic((a) => !a)}>
-              <i className={`i-microphone ${!micOn ? "off" : ""}`} />
-            </button>
-            <button className="btn" onClick={() => setCamera((a) => !a)}>
-              <i className={`i-camera ${!cameraOn ? "off" : ""}`} />
-            </button>
-          </div>
-          <button
-            className={`btn btn-phone ${calling ? "btn-phone-active" : ""}`}
-            onClick={() => setCalling((a) => !a)}
-          >
-            {calling ? (
-              <i className="i-phone-hangup" />
-            ) : (
-              <i className="i-mdi-phone" />
-            )}
-          </button>
-        </div>
-      )}
-    </>
-  );
-};
+//             <button
+//               className={`join-channel ${!appId || !channel ? "disabled" : ""}`}
+//               disabled={!appId || !channel}
+//               onClick={() => setCalling(true)}
+//             >
+//               <span>Join Channel</span>
+//             </button>
+//           </div>
+//         )}
+//       </div>
+//       {isConnected && (
+//         <div className="control">
+//           <div className="left-control">
+//             <button className="btn" onClick={() => setMic((a) => !a)}>
+//               <i className={`i-microphone ${!micOn ? "off" : ""}`} />
+//             </button>
+//             <button className="btn" onClick={() => setCamera((a) => !a)}>
+//               <i className={`i-camera ${!cameraOn ? "off" : ""}`} />
+//             </button>
+//           </div>
+//           <button
+//             className={`btn btn-phone ${calling ? "btn-phone-active" : ""}`}
+//             onClick={() => setCalling((a) => !a)}
+//           >
+//             {calling ? (
+//               <i className="i-phone-hangup" />
+//             ) : (
+//               <i className="i-mdi-phone" />
+//             )}
+//           </button>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
 
-export default Hello;
+// export default Hello;
 
 //========================================================================================================================
 
@@ -1661,3 +1661,47 @@ export default Hello;
 // };
 
 // export default Hello;
+
+//======================================================================================================================
+
+import React, { useState } from "react";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import moment from "moment";
+
+const localizer = momentLocalizer(moment);
+
+const Hello = () => {
+  const [events, setEvents] = useState([
+    {
+      title: "Event 1",
+      start: new Date(2023, 9, 7, 10, 0), // Year, Month (0-based), Day, Hour, Minute
+      end: new Date(2023, 9, 7, 11, 0),
+    },
+    // Add more events as needed
+  ]);
+
+  const handleSelectSlot = ({ start, end }) => {
+    const title = window.prompt("New Event name");
+    if (title) {
+      setEvents([...events, { start, end, title }]);
+    }
+  };
+  return (
+    <div className="flex justify-center">
+      <div className="w-1/2 bg-gray-50 p-4 shadow-lg">
+        <Calendar
+          localizer={localizer}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 500 }}
+          events={events}
+          selectable
+          onSelectSlot={handleSelectSlot}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default Hello;

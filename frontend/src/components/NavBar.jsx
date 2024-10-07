@@ -40,28 +40,18 @@ import Notifications from "./Notifications";
 const NavBar = () => {
   const { handleLogout, navigate } = useLogout();
   const { userInfo } = useSelector((state) => state.user);
-  const { socket } = useSocketContext();
-  const [noti, setNoti] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+
   let dispatch = useDispatch();
 
   const demoteUser = async () => {
     const res = await axiosInstance.post("/user/demote-user", {
       userId: userInfo._id,
     });
-    dispatch(setUser(res.data.result));
+    await dispatch(setUser(res.data.result));
+    navigate(`/${userInfo.role}/home`);
     dispatch(openModal());
     Success("your pro has expired !!!! ");
   };
-
-  const handelNewNotification = (newMessage) => {
-    setNotifications((prev) => [newMessage.notification, ...prev]);
-  };
-
-  useEffect(() => {
-    socket?.on("newNoti", handelNewNotification);
-    return () => socket?.off("newNoti", handelNewNotification);
-  }, [setNotifications, socket]);
 
   useEffect(() => {
     console.log(new Date(userInfo?.proExpiry));
@@ -79,23 +69,6 @@ const NavBar = () => {
       }
     }
   }, [userInfo]);
-
-  useEffect(() => {
-    if (userInfo) {
-      const getNotifications = async (userId) => {
-        try {
-          const res = await axiosInstance.get(
-            `/user/get-notifications/${userId}`
-          );
-          setNotifications(res.data.result);
-        } catch (err) {
-          Failed(err.response ? err.response.data.message : err.message);
-          console.log(err.message);
-        }
-      };
-      getNotifications(userInfo._id);
-    }
-  }, [setNotifications]);
 
   const handleUpgrade = async () => {
     dispatch(openModal());

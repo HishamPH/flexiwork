@@ -73,7 +73,7 @@ class UserUseCase {
 
   async demoteUser(userId: string): Promise<ResponseType> {
     try {
-      console.log("userUseCase 76");
+      console.log("userUseCase 76 ie a user is being demoted");
       const result = await this.iUserRepository.demoteUser(userId);
       return {
         status: true,

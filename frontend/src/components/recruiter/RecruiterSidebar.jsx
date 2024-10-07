@@ -57,8 +57,6 @@ const RecruiterSidebar = () => {
               icon={<HomeIcon className="h-5 w-5" />}
             />
             <NavItem
-              onClick={handleClick}
-              chipValue={"pro"}
               to={"jobs"}
               text={"Jobs"}
               icon={<BriefcaseIcon className="h-5 w-5" />}

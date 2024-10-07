@@ -16,6 +16,22 @@ const Message = ({ message }) => {
   const fromMe = message.senderId === userInfo._id;
   const position = fromMe ? "right" : "left";
 
+  const handleRemove = async (messageId) => {
+    try {
+      console.log(messageId);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleReply = async (message) => {
+    try {
+      console.log(message);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <div>
@@ -24,9 +40,12 @@ const Message = ({ message }) => {
           type="text"
           text={message.message}
           replyButton={true}
+          removeButton={fromMe}
           date
           className="text-black"
           dateString={formatDate(message.updatedAt)}
+          onRemoveMessageClick={() => handleRemove(message._id)}
+          onReplyClick={() => handleReply(message.message)}
         />
       </div>
     </>

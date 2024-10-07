@@ -8,6 +8,9 @@ import RecruiterLayout from "../Layouts/RecruiterLayout";
 import RecruiterChat from "../pages/recruiter/RecruiterChat";
 import MessageContainer from "../components/chat/MessageContainer";
 import Meetings from "../pages/recruiter/Meetings";
+import InterviewScheduler from "../pages/recruiter/InterviewScheduler";
+
+import ProRoute from "./privateRoutes/ProRoute";
 
 const RecruiterRouter = () => {
   return (
@@ -20,7 +23,10 @@ const RecruiterRouter = () => {
         <Route path="chats" element={<RecruiterChat />}>
           <Route path=":id" element={<MessageContainer />} />
         </Route>
-        <Route path="meetings" element={<Meetings />} />
+        <Route element={<ProRoute />}>
+          <Route path="jobs/interview/:id" element={<InterviewScheduler />} />
+          <Route path="meetings" element={<Meetings />} />
+        </Route>
       </Route>
     </Routes>
   );
