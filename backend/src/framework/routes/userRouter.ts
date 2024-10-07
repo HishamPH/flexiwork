@@ -134,11 +134,11 @@ userRouter.get("/get-notifications/:id", userAuth, (req, res, next) => {
   chatController.getNotifications(req, res, next);
 });
 
-userRouter.post("clear-notifications", userAuth, (req, res, next) => {
+userRouter.post("/clear-notifications", userAuth, (req, res, next) => {
   chatController.clearNotifications(req, res, next);
 });
 
-userRouter.post("delete-notification", userAuth, (req, res, next) => {
+userRouter.post("/delete-notification", userAuth, (req, res, next) => {
   chatController.deleteNotification(req, res, next);
 });
 

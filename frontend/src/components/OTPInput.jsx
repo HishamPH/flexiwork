@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
+
+import { Dialog } from "@material-tailwind/react";
+
 import OtpInput from "react-otp-input";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,13 +22,13 @@ function getRemainingTime(token) {
   return remainingTime > 0 ? remainingTime : 0;
 }
 
-const OTPInput = ({ isOpen, onClose }) => {
+const OTPInput = memo(({ open, setOpen }) => {
   const { otpToken } = useSelector((state) => state.user);
-  let time = getRemainingTime(otpToken);
-  console.log(getRemainingTime(otpToken));
+  const time = getRemainingTime(otpToken);
+  console.log(time);
   const [otp, setOtp] = useState("");
-  const [timer, setTimer] = useState(time - 4); // 120 seconds timer
   const [canResend, setCanResend] = useState(false);
+  const [timer, setTimer] = useState(90);
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,25 +36,34 @@ const OTPInput = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     let countdown;
-    if (timer > 0) {
+    if (time > 0) {
+      setCanResend(false);
       countdown = setInterval(() => {
-        setTimer((prev) => prev - 1);
+        setTimer(time - 1);
       }, 1000);
     } else {
-      clearInterval(countdown);
-      setCanResend(true); // Allow resend after timer ends
+      setCanResend(true);
     }
     return () => clearInterval(countdown);
-  }, [timer]);
+  }, [timer, otpToken]);
 
   const handleResendOTP = async () => {
     try {
+      const decoded = jwtDecode(otpToken);
       setCanResend(false);
-      setTimer(time--);
       setLoading(true);
-      const res = await axiosInstance.post("/user/resend-otp");
-      dispatch(storeOTP(res.data.activationToken));
+      const res = await axiosInstance.post(
+        "/user/resend-otp",
+        { user: decoded.user },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      await dispatch(storeOTP(res.data.activationToken));
       setLoading(false);
+      setTimer(getRemainingTime(res.data.activationToken));
       Success(res.data.message);
     } catch (err) {
       setCanResend(true);
@@ -72,11 +84,11 @@ const OTPInput = ({ isOpen, onClose }) => {
         }
       );
       if (res?.status === 200) {
+        setOpen(false);
         let data = res.data.result;
         dispatch(setUser(res.data.result));
         if (data.role === "candidate") navigate("/candidate/home");
         else navigate("/recruiter/home");
-        onClose();
       }
     } catch (err) {
       Failed(err.response ? err.response.data.message : err.message);
@@ -91,43 +103,51 @@ const OTPInput = ({ isOpen, onClose }) => {
     return `${minutes}:${seconds}`;
   };
 
-  if (!isOpen) return null;
+  const handleCancel = async () => {
+    try {
+      dispatch(storeOTP(null));
+      setTimer(90);
+      setOpen(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  if (!otpToken) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-black bg-opacity-75 backdrop:blur-lg"></div>
-
+    <Dialog open={open} size="xs">
       {/* Modal */}
-      <div className="relative bg-white p-8 rounded-xl shadow-2xl w-96">
+      <div className=" bg-white p-8 rounded-xl w-full">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Enter OTP
         </h2>
         <p className="text-center text-gray-600 mb-6">
           Please enter the 6-digit code sent to your device
         </p>
-
-        <OtpInput
-          value={otp}
-          onChange={setOtp}
-          numInputs={6}
-          renderSeparator={<span className="mx-2">-</span>}
-          renderInput={(props) => <input {...props} />}
-          inputStyle={{
-            border: "2px solid #cbd5e1",
-            borderRadius: "8px",
-            width: "36px",
-            height: "54px",
-            fontSize: "24px",
-            color: "#1e293b",
-            fontWeight: "700",
-            caretColor: "#3b82f6",
-          }}
-          focusStyle={{
-            border: "2px solid #3b82f6",
-            outline: "none",
-          }}
-        />
+        <div className="flex justify-center">
+          <OtpInput
+            value={otp}
+            onChange={setOtp}
+            numInputs={6}
+            renderSeparator={<span className="mx-2">-</span>}
+            renderInput={(props) => <input {...props} />}
+            inputStyle={{
+              border: "2px solid #cbd5e1",
+              borderRadius: "8px",
+              width: "36px",
+              height: "54px",
+              fontSize: "24px",
+              color: "#1e293b",
+              fontWeight: "700",
+              caretColor: "#3b82f6",
+            }}
+            focusStyle={{
+              border: "2px solid #3b82f6",
+              outline: "none",
+            }}
+          />
+        </div>
 
         <button
           onClick={handleSubmit}
@@ -137,12 +157,7 @@ const OTPInput = ({ isOpen, onClose }) => {
         </button>
 
         <div className="flex justify-between mt-4">
-          <button
-            onClick={() => {
-              return onClose();
-            }}
-            className="text-blue-700 underline"
-          >
+          <button onClick={handleCancel} className="text-blue-700 underline">
             Cancel
           </button>
           <div className="flex items-center space-x-2">
@@ -163,8 +178,8 @@ const OTPInput = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Dialog>
   );
-};
+});
 
 export default OTPInput;

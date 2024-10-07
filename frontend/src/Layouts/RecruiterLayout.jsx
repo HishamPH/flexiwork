@@ -1,7 +1,7 @@
 import React from "react";
 import RecruiterSidebar from "../components/recruiter/RecruiterSidebar";
 import NavBar from "../components/NavBar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 const RecruiterLayout = ({ children }) => {
   return (
     <>

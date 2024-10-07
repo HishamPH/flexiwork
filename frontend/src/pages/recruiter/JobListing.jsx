@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import axiosInstance from "../../../interceptors/axiosInterceptors";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
@@ -18,6 +17,62 @@ import Loader from "../../helper/Loader";
 import Swal from "sweetalert2";
 import { Failed, Success } from "../../helper/popup";
 
+const handleDelete = async (jobId, setJobs) => {
+  try {
+    Swal.fire({
+      title: `Do you want to Delete the Job`,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      confirmButtonColor: "red",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let res = await axiosInstance.post(
+          "/user/recruiter/delete-job",
+          {
+            jobId,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(res);
+        setJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
+        Swal.fire("", "job Deleted", "success");
+      }
+    });
+  } catch (err) {
+    Failed(err.response ? err.response.data.message : err.message);
+    console.log(err.message);
+  }
+};
+
+const handleBlock = async (jobId, setJobs) => {
+  try {
+    const res = await axiosInstance.post(
+      "/user/recruiter/block-job",
+      {
+        jobId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    setJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job._id === jobId ? { ...job, isActive: !job.isActive } : job
+      )
+    );
+    Success(res.data.message);
+  } catch (err) {
+    Failed(err.response ? err.response.data.message : err.message);
+    console.log(err.message);
+  }
+};
+
 const JobListing = () => {
   let ITEMS_PER_PAGE = 6;
   const { userInfo } = useSelector((state) => state.user);
@@ -31,15 +86,22 @@ const JobListing = () => {
   useEffect(() => {
     if (!open) {
       const fetchRecruiterJobs = async (recruiterId) => {
-        const res = await axiosInstance.get(
-          `/user/recruiter/get-jobs/${recruiterId}`
-        );
-        setJobs(res.data.result);
-        setTotalPages(Math.ceil(res.data.result.length / ITEMS_PER_PAGE));
-        setLoading(false);
+        try {
+          const res = await axiosInstance.get(
+            `/user/recruiter/get-jobs/${recruiterId}`
+          );
+          setJobs(res.data.result);
+          setTotalPages(Math.ceil(res.data.result.length / ITEMS_PER_PAGE));
+          setLoading(false);
+        } catch (err) {
+          Failed(err.response ? err.response.data.message : err.message);
+          console.log(err.message);
+        }
       };
 
       fetchRecruiterJobs(userInfo._id);
+
+      return () => {};
     }
   }, [open]);
 
@@ -47,70 +109,14 @@ const JobListing = () => {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentJobs = jobs.slice(startIndex, endIndex);
 
-  const handleEdit = useCallback(async (job) => {
+  const handleEdit = async (job) => {
     setSelectedJob(job);
     setOpen(true);
-  });
-  const handlePost = useCallback(async () => {
+  };
+  const handlePost = async () => {
     setSelectedJob(null);
     setOpen(true);
-  });
-
-  async function handleDelete(jobId) {
-    try {
-      Swal.fire({
-        title: `Do you want to Delete the Job`,
-        showCancelButton: true,
-        confirmButtonText: "Yes",
-        confirmButtonColor: "red",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          let res = await axiosInstance.post(
-            "/user/recruiter/delete-job",
-            {
-              jobId,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          console.log(res);
-          setJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
-          Swal.fire("", "job Deleted", "success");
-        }
-      });
-    } catch (err) {
-      Failed(err.response ? err.response.data.message : err.message);
-      console.log(err.message);
-    }
-  }
-
-  async function handleBlock(jobId) {
-    try {
-      const res = await axiosInstance.post(
-        "/user/recruiter/block-job",
-        {
-          jobId,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setJobs((prevJobs) =>
-        prevJobs.map((job) =>
-          job._id === jobId ? { ...job, isActive: !job.isActive } : job
-        )
-      );
-      Success(res.data.message);
-    } catch (err) {
-      Failed(err.response ? err.response.data.message : err.message);
-      console.log(err.message);
-    }
-  }
+  };
 
   //=======================================================
 
@@ -121,7 +127,10 @@ const JobListing = () => {
   });
 
   if (loading) {
+    console.log("job listing page is loading");
     return <Loader />;
+  } else {
+    console.log("the jobs are being rendered");
   }
   return (
     <>
@@ -174,7 +183,7 @@ const JobListing = () => {
                     <Tooltip content="Delete Job">
                       <IconButton
                         variant="text"
-                        onClick={() => handleDelete(_id)}
+                        onClick={() => handleDelete(_id, setJobs)}
                       >
                         <TrashIcon className="h-4 w-4 text-red-800" />
                       </IconButton>
@@ -183,14 +192,14 @@ const JobListing = () => {
                   <div className="m-2">
                     {isActive ? (
                       <button
-                        onClick={() => handleBlock(_id)}
+                        onClick={() => handleBlock(_id, setJobs)}
                         className="bg-red-800 text-white px-3 py-1 rounded-sm hover:bg-red-400"
                       >
                         close
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleBlock(_id)}
+                        onClick={() => handleBlock(_id, setJobs)}
                         className="bg-green-800 text-white px-3 py-1 rounded-sm hover:bg-green-400"
                       >
                         open

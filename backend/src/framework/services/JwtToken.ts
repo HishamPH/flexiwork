@@ -53,7 +53,7 @@ class JwtTokenService implements IJwtToken {
       { user, code },
       process.env.ACCESS_TOKEN_SECRET as Secret,
       {
-        expiresIn: "2m",
+        expiresIn: "90s",
       }
     );
     return token;
@@ -85,7 +85,7 @@ class JwtTokenService implements IJwtToken {
       if (error instanceof TokenExpiredError) {
         return {
           status: false,
-          message: "activation token expired try signing up again",
+          message: "otp expired try resending it",
         };
       }
       return { status: false, message: "Jwt error" };

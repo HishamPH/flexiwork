@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+
+import NavBar from "../components/NavBar";
+
+import { Button } from "@material-tailwind/react";
 import {
   MenuItems,
   MenuItem,
@@ -13,7 +17,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { signupValidation } from "../validations/validation";
 
 import { useFormik } from "formik";
-import axios from "axios";
 import { Success, Failed } from "../helper/popup";
 import { useDispatch, useSelector } from "react-redux";
 import { storeOTP } from "../redux/slices/userAuth";
@@ -27,12 +30,15 @@ const initialValues = {
   password2: "",
 };
 
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const SignUp = () => {
+  console.log("signup");
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const [selectedRole, setSelectedRole] = useState("Select Role");
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const {
     handleChange,
     values,
@@ -46,6 +52,7 @@ const SignUp = () => {
     initialValues,
     validationSchema: signupValidation,
     onSubmit: async (values, action) => {
+      //await delay(3000);
       const { ...rest } = values;
       rest.role = selectedRole;
       try {
@@ -54,11 +61,10 @@ const SignUp = () => {
             "Content-Type": "application/json",
           },
         });
-        dispatch(storeOTP(res.data.activationToken));
-        console.log(res.data);
+        await dispatch(storeOTP(res.data.activationToken));
         action.resetForm();
+        setOpen(true);
         Success(res.data.message);
-        setIsOpen(true);
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
         console.log(err.message);
@@ -74,9 +80,6 @@ const SignUp = () => {
     setSelectedRole(role);
     console.log(role);
   };
-  const closeModal = () => {
-    setIsOpen(false);
-  };
 
   const googleLogin = useGoogleLogin({
     onSuccess: () => {
@@ -89,20 +92,20 @@ const SignUp = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="bg-white p-8 shadow-lg max-w-md w-full">
+      <div className="flex justify-center min-h-screen bg-gray-100">
+        <div className="bg-white p-8 shadow-lg max-w-md w-full h-fit mt-10">
           {/* Role Selection Dropdown */}
 
           {/* Login Form */}
           <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
           <form onSubmit={handleSubmit}>
-            <div className="mb-2">
-              <label
+            <div className="mb-0">
+              {/* <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700"
               >
                 Name
-              </label>
+              </label> */}
               <input
                 id="name"
                 type="text"
@@ -110,19 +113,21 @@ const SignUp = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="Enter your name"
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
+                className="mt-0 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
               />
               {errors.name && touched.name ? (
                 <div className="text-red-700">{errors.name}</div>
-              ) : null}
+              ) : (
+                <div className="text-white">Hello</div>
+              )}
             </div>
-            <div className="mb-2">
-              <label
+            <div className="mb-0">
+              {/* <label
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
                 Email
-              </label>
+              </label> */}
               <input
                 id="email"
                 type="email"
@@ -130,17 +135,22 @@ const SignUp = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="Enter your email"
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm "
+                className="mt-0 block w-full p-3 border border-gray-300 rounded-md shadow-sm "
               />
+              {errors.email && touched.email ? (
+                <div className="text-red-700">{errors.email}</div>
+              ) : (
+                <div className="text-white">Hello</div>
+              )}
             </div>
 
-            <div className="mb-4">
-              <label
+            <div className="mb-0">
+              {/* <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
                 Password
-              </label>
+              </label> */}
               <input
                 id="password"
                 type="password"
@@ -148,16 +158,21 @@ const SignUp = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="Enter your password"
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
+                className="mt-0 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
               />
+              {errors.password && touched.password ? (
+                <div className="text-red-700">{errors.password}</div>
+              ) : (
+                <div className="text-white">l</div>
+              )}
             </div>
-            <div className="mb-4">
-              <label
+            <div className="mb-0">
+              {/* <label
                 htmlFor="password2"
                 className="block text-sm font-medium text-gray-700"
               >
                 Confirm Password
-              </label>
+              </label> */}
               <input
                 id="password2"
                 type="password"
@@ -165,8 +180,13 @@ const SignUp = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="Confirm your password"
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
+                className="mt-0 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
               />
+              {errors.password2 && touched.password2 ? (
+                <div className="text-red-700">{errors.password2}</div>
+              ) : (
+                <div className="text-white">l</div>
+              )}
             </div>
             <div className="mb-4">
               <Menu as="div" className="relative">
@@ -187,7 +207,7 @@ const SignUp = () => {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <MenuItems className="absolute w-auto origin-top-right bg-white border border-gray-300 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <MenuItems className="absolute w-auto origin-top-right bg-white border border-gray-300 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
                     <MenuItem>
                       {({ focus }) => (
                         <button
@@ -227,13 +247,22 @@ const SignUp = () => {
                 {errors.terms}
               </p>
             ) : null}
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-3 shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isSubmitting}
-            >
-              Sign Up
-            </button>
+            {isSubmitting ? (
+              <Button
+                type="submit"
+                className="w-full bg-indigo-700 text-white py-3 shadow-md hover:bg-indigo-500 rounded-sm"
+                disabled
+              >
+                registering...
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="w-full bg-indigo-700 text-white py-3 shadow-md hover:bg-indigo-500 rounded-sm"
+              >
+                Sign Up
+              </Button>
+            )}
           </form>
 
           <div className="flex items-center my-4">
@@ -257,7 +286,7 @@ const SignUp = () => {
           </p>
         </div>
       </div>
-      <OTPInput isOpen={isOpen} onClose={closeModal} />
+      <OTPInput open={open} setOpen={setOpen} />
     </>
   );
 };

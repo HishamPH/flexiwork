@@ -162,38 +162,34 @@ class AuthUseCase {
     }
   }
 
-  async resendOtp(token: string): Promise<ResponseType> {
+  async resendOtp(user: User): Promise<ResponseType> {
     try {
-      const otp = "resend";
-      const result = await this.JwtToken.verifyOtpToken(token, otp);
+      const code = Math.floor(100000 + Math.random() * 9000).toString();
+      const email = user.email;
+      const subject = "Please provide the new code for the registration";
 
-      if ("user" in result) {
-        const code = Math.floor(100000 + Math.random() * 9000).toString();
-        const email = result.user.email;
-        const subject = "Please provide the new code for the registration";
+      const sendEmail = await this.sendEmail.sendEmail({
+        email,
+        subject,
+        code,
+      });
 
-        const sendEmail = await this.sendEmail.sendEmail({
-          email,
-          subject,
-          code,
-        });
-        const user = result.user;
-
-        const token = await this.JwtToken.SignUpActivationToken(user, code);
-        if (sendEmail) {
-          console.log(code);
-          return {
-            statusCode: 200,
-            message: "Otp has resend to the email",
-            activationToken: token,
-          };
-        }
+      const token = await this.JwtToken.SignUpActivationToken(user, code);
+      if (sendEmail) {
+        console.log(code);
+        return {
+          statusCode: 200,
+          message: "Otp has resend to the email",
+          activationToken: token,
+        };
       }
       return {
         statusCode: 401,
-        ...result,
+        message: "could not send the email",
+        status: false,
       };
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
       return {
         status: false,
         statusCode: 500,

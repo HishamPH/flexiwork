@@ -162,7 +162,6 @@ const ViewJobPage = () => {
 
   return (
     <>
-      <NavBar />
       <div className="w-3/4 mx-auto p-14 bg-gray-100 rounded-lg shadow-md mt-5">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">

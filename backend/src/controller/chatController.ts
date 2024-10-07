@@ -83,6 +83,8 @@ class ChatController {
   async clearNotifications(req: Request, res: Response, next: NextFunction) {
     try {
       const { userId } = req.body;
+      const result = await this.chatCase.clearNotifications(userId);
+      return res.status(result?.statusCode).json({ ...result });
     } catch (err) {
       console.log(err);
       next(err);
@@ -92,6 +94,8 @@ class ChatController {
   async deleteNotification(req: Request, res: Response, next: NextFunction) {
     try {
       const { notificationId } = req.body;
+      const result = await this.chatCase.deleteNotification(notificationId);
+      return res.status(result?.statusCode).json({ ...result });
     } catch (err) {
       console.log(err);
       next(err);

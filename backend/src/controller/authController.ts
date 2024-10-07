@@ -53,16 +53,15 @@ class AuthController {
   async resendOtp(req: Request, res: Response, next: NextFunction) {
     try {
       const token = req.cookies.activationToken as string;
-      const type = req.body.type as string;
-
-      const user = await this.authCase.resendOtp(token);
-      if (user.activationToken) {
-        res.cookie("activationToken", user.activationToken, {
+      const { user } = req.body;
+      const userData = await this.authCase.resendOtp(user);
+      if (userData.activationToken) {
+        res.cookie("activationToken", userData.activationToken, {
           httpOnly: true,
           secure: true,
         });
       }
-      res.status(user?.statusCode).json({ ...user });
+      res.status(userData?.statusCode).json({ ...userData });
     } catch (error) {
       console.log(error);
       next(error);

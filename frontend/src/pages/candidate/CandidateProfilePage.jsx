@@ -173,7 +173,6 @@ const CandidateProfilePage = () => {
 
   return (
     <div className="">
-      <NavBar />
       <div className="container w-3/4 flex shadow-lg mx-auto mt-10">
         <div className="w-full bg-white shadow-lg p-10 pb-20 rounded-lg">
           <div className={`flex justify-end ${edit ? "invisible" : ""}`}>

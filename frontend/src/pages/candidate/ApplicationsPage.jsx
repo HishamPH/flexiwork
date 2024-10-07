@@ -34,8 +34,6 @@ const ApplicationsPage = () => {
 
   return (
     <div>
-      <NavBar />
-
       <div className="flex justify-center bg-white h-screen align-middle">
         <div className=" w-3/4 h-[600px] bg-blue-gray-50 grid grid-cols-3 gap-1 mt-10">
           {applications?.map(({ _id, resume, status, jobId }) => {

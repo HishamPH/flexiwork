@@ -16,10 +16,9 @@ import { Success, Failed } from "../../helper/popup";
 import { jobValidation } from "../../validations/validation";
 import axiosInstance from "../../../interceptors/axiosInterceptors";
 
-const PostJobModal = ({ open, setOpen, job }) => {
+const PostJobModal = memo(({ open, setOpen, job }) => {
+  console.log("post job modal");
   const { userInfo } = useSelector((state) => state.user);
-  console.log("job modal mounted");
-
   const initialValues = {
     jobName: job?.jobName ?? "",
     description: job?.description ?? "",
@@ -304,6 +303,6 @@ const PostJobModal = ({ open, setOpen, job }) => {
       </div>
     </>
   );
-};
+});
 
 export default PostJobModal;

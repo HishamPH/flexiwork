@@ -140,15 +140,16 @@ const ViewApplicants = () => {
               />
             </div> */}
 
-            <div className="w-1/4 border-red-600">
+            <div className="w-1/4">
               <Select
+                label="filter"
                 value={statusFilter}
                 onChange={(value) => setStatusFilter(value)}
                 menuProps={{
                   className: "text-white bg-gray-700 rounded-sm font-bold",
                 }}
                 containerProps={{ className: " rounded-0 font-bold" }}
-                labelProps={{ className: "text-red-300" }}
+                labelProps={{ className: "text-black" }}
                 className=""
               >
                 <Option value="All">All</Option>

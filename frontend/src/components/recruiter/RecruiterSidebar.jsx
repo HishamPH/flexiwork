@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   IconButton,
   List,
@@ -23,51 +23,26 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
-import ProModal from "../ProModal";
+import { useDispatch, useSelector } from "react-redux";
 
-export default function RecruiterSidebar() {
-  console.log("hello");
+import { useLogout } from "../../hooks/useLogout";
+import { openModal } from "../../redux/slices/modalSlice";
+
+const RecruiterSidebar = () => {
   const { userInfo } = useSelector((state) => state.user);
+  const { handleLogout } = useLogout();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleClick = async (e) => {
+    if (!userInfo.isPro) {
+      e.preventDefault();
+      dispatch(openModal());
+      return;
+    }
+  };
 
   const handleDrawer = () => setIsDrawerOpen((prev) => !prev);
-
-  const NavItem = ({ icon, text, to, chipValue, pro }) => {
-    const handleClick = async (e) => {
-      if (pro && !userInfo.isPro) {
-        e.preventDefault();
-        setOpen(true);
-        return;
-      }
-    };
-    return (
-      <NavLink
-        to={to}
-        className={({ isActive }) =>
-          isActive ? "bg-blue-gray-50 text-black rounded-md" : ""
-        }
-        onClick={handleClick}
-      >
-        <ListItem>
-          <ListItemPrefix>{icon}</ListItemPrefix>
-          {text}
-          {chipValue && (
-            <ListItemSuffix>
-              <Chip
-                value={chipValue}
-                size="sm"
-                variant="ghost"
-                color="blue-gray"
-                className="rounded-full bg-red-200 text-gray-50"
-              />
-            </ListItemSuffix>
-          )}
-        </ListItem>
-      </NavLink>
-    );
-  };
 
   return (
     <>
@@ -82,7 +57,7 @@ export default function RecruiterSidebar() {
               icon={<HomeIcon className="h-5 w-5" />}
             />
             <NavItem
-              pro={true}
+              onClick={handleClick}
               chipValue={"pro"}
               to={"jobs"}
               text={"Jobs"}
@@ -99,11 +74,12 @@ export default function RecruiterSidebar() {
               icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}
             />
             <NavItem
+              onClick={handleClick}
               pro={true}
+              chipValue={"pro"}
               to={"meetings"}
               text={"Meetings"}
               icon={<VideoCameraIcon className="h-5 w-5" />}
-              chipValue={"pro"}
             />
             <ListItem>
               <ListItemPrefix>
@@ -111,7 +87,10 @@ export default function RecruiterSidebar() {
               </ListItemPrefix>
               Settings
             </ListItem>
-            <ListItem className="text-white bg-red-900 hover:bg-red-700 selected:bg-black">
+            <ListItem
+              className="text-white bg-red-900 hover:bg-red-700 selected:bg-black"
+              onClick={handleLogout}
+            >
               <ListItemPrefix>
                 <PowerIcon className="h-5 w-5" />
               </ListItemPrefix>
@@ -176,8 +155,36 @@ export default function RecruiterSidebar() {
           </List>
         </Card>
       </Drawer>
-
-      <ProModal open={open} setOpen={setOpen} />
     </>
   );
-}
+};
+
+const NavItem = ({ icon, text, to, chipValue, onClick }) => {
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        isActive ? "bg-blue-gray-50 text-black rounded-md" : ""
+      }
+      onClick={onClick}
+    >
+      <ListItem>
+        <ListItemPrefix>{icon}</ListItemPrefix>
+        {text}
+        {chipValue && (
+          <ListItemSuffix>
+            <Chip
+              value={chipValue}
+              size="sm"
+              variant="ghost"
+              color="blue-gray"
+              className="rounded-full bg-red-200 text-gray-50"
+            />
+          </ListItemSuffix>
+        )}
+      </ListItem>
+    </NavLink>
+  );
+};
+
+export default RecruiterSidebar;

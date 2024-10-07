@@ -18,7 +18,12 @@ createRoot(document.getElementById("root")).render(
       <Provider store={store}>
         <ThemeProvider>
           <SocketProvider>
-            <ToastContainer />
+            <ToastContainer
+              style={{
+                zIndex: 99999,
+              }}
+            />
+
             <App />
           </SocketProvider>
         </ThemeProvider>

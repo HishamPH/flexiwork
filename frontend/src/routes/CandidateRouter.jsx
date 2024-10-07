@@ -8,18 +8,21 @@ import CandidateChat from "../pages/candidate/CandidateChat";
 import MessageContainer from "../components/chat/MessageContainer";
 import ApplicationsPage from "../pages/candidate/ApplicationsPage";
 import Chat from "../components/Chat";
+import CandidateLayout from "../Layouts/CandidateLayout";
 
 const CandidateRouter = () => {
   return (
     <Routes>
-      <Route path="home" element={<CandidateHomePage />} />
-      <Route path="profile" element={<CandidateProfilePage />} />
-      <Route path="job-detail/:id" element={<ViewJobPage />} />
-      <Route path="applied-jobs" element={<AppliedJobs />} />
-      <Route path="chats" element={<CandidateChat />}>
-        <Route path=":id" element={<MessageContainer />} />
+      <Route element={<CandidateLayout />}>
+        <Route path="home" element={<CandidateHomePage />} />
+        <Route path="profile" element={<CandidateProfilePage />} />
+        <Route path="job-detail/:id" element={<ViewJobPage />} />
+        <Route path="applied-jobs" element={<AppliedJobs />} />
+        <Route path="chats" element={<CandidateChat />}>
+          <Route path=":id" element={<MessageContainer />} />
+        </Route>
+        <Route path="applications" element={<ApplicationsPage />} />
       </Route>
-      <Route path="applications" element={<ApplicationsPage />} />
     </Routes>
   );
 };

@@ -157,7 +157,7 @@ class ChatUseCase {
   async clearNotifications(receiverId: string): Promise<ResponseType> {
     try {
       const result = await this.iChatRepository.clearNotifications(receiverId);
-      console.log("this is chat use case get message inside something");
+      console.log("this is chat use case clear");
       return {
         status: true,
         statusCode: 200,
