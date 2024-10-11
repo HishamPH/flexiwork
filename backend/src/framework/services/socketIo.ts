@@ -1,55 +1,115 @@
 import { Server } from "socket.io";
-import http, { ServerResponse } from "http";
+import http from "http";
 import express, { Application } from "express";
-import { config } from "dotenv";
+import ISocketIo from "../../usecases/interfaces/ISocketIo";
+
 const app: Application = express();
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: ["http://localhost:5000"],
-    methods: ["GET", "POST"],
-  },
-});
-
-const userSocketMap: { [key: string]: string | undefined } = {};
-
 export interface SocketEntry {
-  receiverId: string;
+  userId: string;
   socketId: string;
 }
 
-let receiverSocketMap: SocketEntry[] = [];
-
-export const getAllReciverSocketId: any = (
-  receiverId: string
-): SocketEntry[] | null => {
-  return receiverSocketMap.filter((item) => item.receiverId === receiverId);
-};
-
-export const getReceiverSocketId: any = (receiverId: string) => {
-  return userSocketMap[receiverId];
-};
-
-io.on("connection", (socket) => {
-  console.log("socket connedcted with id", socket.id);
-  const userId: any = socket.handshake.query.userId as string | undefined;
-  if (userId != "undefined") {
-    userSocketMap[userId] = socket.id;
-    receiverSocketMap.push({ socketId: socket.id, receiverId: userId });
+export class SocketIo implements ISocketIo {
+  private ioInstance: Server;
+  private userSocketMap: { [key: string]: string | undefined } = {};
+  private socketMap: SocketEntry[] = [];
+  constructor() {
+    this.ioInstance = new Server(server, {
+      cors: {
+        origin: process.env.ORIGIN,
+        methods: ["GET", "POST"],
+      },
+    });
+    this.setupListeners();
   }
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  socket.on("disconnect", () => {
-    console.log("disconnected the socket with id ", socket.id);
-    receiverSocketMap = receiverSocketMap.filter(
-      (item) => item.socketId !== socket.id
-    );
-    console.log(receiverSocketMap);
-    delete userSocketMap[userId];
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
-  });
-});
+  private setupListeners() {
+    try {
+      this.ioInstance.on("connection", (socket) => {
+        console.log("socket connected with id", socket.id);
+        const userId: any = socket.handshake.query.userId as string | undefined;
+        if (userId != "undefined") {
+          this.userSocketMap[userId] = socket.id;
+          this.socketMap.push({
+            socketId: socket.id,
+            userId: userId,
+          });
+        }
+        this.ioInstance.emit("getOnlineUsers", Object.keys(this.userSocketMap));
 
-export { app, io, server };
+        socket.on("disconnect", () => {
+          console.log("disconnected the socket with id ", socket.id);
+          this.socketMap = this.socketMap.filter(
+            (item) => item.socketId !== socket.id
+          );
+          delete this.userSocketMap[userId];
+          this.ioInstance.emit(
+            "getOnlineUsers",
+            Object.keys(this.userSocketMap)
+          );
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  private getAllSocketId(userId: string): SocketEntry[] {
+    return this.socketMap.filter((item) => item.userId === userId);
+  }
+
+  private getSocketId(userId: string): any {
+    return this.userSocketMap[userId];
+  }
+
+  async sendMessage(sender: string, receiver: string, data: any): Promise<any> {
+    try {
+      const allSender = this.getAllSocketId(sender);
+      const allReceiver = this.getAllSocketId(receiver);
+      if (allSender?.length !== 0) {
+        allSender?.forEach((item: SocketEntry) => {
+          this.ioInstance.to(item.socketId).emit("newMessage", data);
+        });
+      }
+      if (allReceiver?.length !== 0) {
+        allReceiver?.forEach((item: SocketEntry) => {
+          this.ioInstance.to(item.socketId).emit("newMessage", data);
+          this.ioInstance.to(item.socketId).emit("newNoti", data);
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async meetAlert(sender: string, receiver: string, data: any): Promise<any> {
+    try {
+      const senders = this.getAllSocketId(sender.toString());
+      const receivers = this.getAllSocketId(receiver.toString());
+      const all = [...senders, ...receivers];
+      all?.forEach((item) => {
+        this.ioInstance.to(item.socketId).emit("meetAlert", data);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async demoteUser(users: any): Promise<any> {
+    try {
+      users.forEach((user: any) => {
+        const ids = this.getAllSocketId(user._id);
+        ids.forEach((item) => {
+          this.ioInstance.to(item.socketId).emit("userDemoted", user);
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+
+export { app, server };

@@ -1,6 +1,6 @@
 import User from "../entity/userEntity";
 import IUserRepository from "./interfaces/IUserRepository";
-import Payment from "../framework/services/payment";
+import IPayment from "./interfaces/IPayment";
 
 interface ResponseType {
   _id?: string;
@@ -16,15 +16,15 @@ interface ResponseType {
 
 class PaymentUseCase {
   private iUserRepository: IUserRepository;
-  private payment: Payment;
-  constructor(iUserRepository: IUserRepository, payment: Payment) {
+  private iPayment: IPayment;
+  constructor(iUserRepository: IUserRepository, iPayment: IPayment) {
     this.iUserRepository = iUserRepository;
-    this.payment = payment;
+    this.iPayment = iPayment;
   }
 
   async updateUserRequest(amount: number): Promise<any> {
     try {
-      const order = await this.payment.createOrder(amount);
+      const order = await this.iPayment.createOrder(amount);
       return {
         status: true,
         statusCode: 200,
@@ -48,7 +48,7 @@ class PaymentUseCase {
     razorpay_signature: string
   ): Promise<any> {
     try {
-      const result = await this.payment.verifyPayment(
+      const result = await this.iPayment.verifyPayment(
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature

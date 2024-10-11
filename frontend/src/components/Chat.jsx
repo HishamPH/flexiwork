@@ -8,7 +8,7 @@ const Chat = () => {
   const { id } = useParams();
 
   return (
-    <div className="flex h-[600px] bg-gray-200 shadow-xl">
+    <div className="flex h-auto bg-gray-200 shadow-xl">
       <PeopleList />
       {!id ? <NoChatSelected /> : <Outlet />}
     </div>

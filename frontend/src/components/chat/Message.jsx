@@ -42,7 +42,7 @@ const Message = ({ message }) => {
           replyButton={true}
           removeButton={fromMe}
           date
-          className="text-black"
+          className=""
           dateString={formatDate(message.updatedAt)}
           onRemoveMessageClick={() => handleRemove(message._id)}
           onReplyClick={() => handleReply(message.message)}

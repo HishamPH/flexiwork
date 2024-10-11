@@ -1,6 +1,6 @@
 import User from "../entity/userEntity";
 import IUserRepository from "./interfaces/IUserRepository";
-import Payment from "../framework/services/payment";
+import ISocketIo from "./interfaces/ISocketIo";
 
 interface ResponseType {
   _id?: string;
@@ -16,9 +16,11 @@ interface ResponseType {
 
 class UserUseCase {
   private iUserRepository: IUserRepository;
+  private iSocket: ISocketIo;
 
-  constructor(iUserRepository: IUserRepository) {
+  constructor(iUserRepository: IUserRepository, iSocket: ISocketIo) {
     this.iUserRepository = iUserRepository;
+    this.iSocket = iSocket;
   }
   async updateProfile(user: User): Promise<ResponseType> {
     try {

@@ -1,18 +1,21 @@
-/* Styles for sender's message */
+
 .rce-mbox.rce-mbox-right {
-  background-color: #DCF8C6;
-  /* Light green for sender */
+  background-color: #005c4e;
 }
+
+
 
 /* Styles for receiver's message */
 .rce-mbox:not(.rce-mbox-right) {
-  background-color: #FFFFFF;
+  background-color: #2e2e2e;
+ 
   /* White for receiver */
 }
 
 /* Text color for both sender and receiver */
 .rce-mbox-text {
-  color: #000000;
+  color: #FFFFFF;
+  font-size: 16px;
   /* Black text for both */
 }
 
@@ -20,9 +23,15 @@
 .rce-mbox-right-notch {
   fill: #DCF8C6;
   /* Match sender background */
+  display: none;
 }
 
 .rce-mbox-left-notch {
+  display: none;
   fill: #FFFFFF;
   /* Match receiver background */
+}
+
+.rce-mbox-time{
+  color: #c9c9c9;
 }

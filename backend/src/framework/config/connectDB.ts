@@ -1,14 +1,12 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const MONGO_ATLAS_URL = process.env.MONGO_ATLAS_URL;
 
 export const connectDB = async () => {
   try {
     const MONGODB_URL = process.env.MONGO_URL;
-    await mongoose.connect(MONGODB_URL, {
+    await mongoose.connect(MONGODB_URL as string, {
       serverSelectionTimeoutMS: 30000,
     });
-
-    console.log("db connected");
   } catch (error) {
     console.error("error in database", error);
   }

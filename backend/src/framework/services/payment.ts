@@ -1,11 +1,13 @@
 import crypto from "crypto";
 import Razorpay from "razorpay";
+import IPayment from "../../usecases/interfaces/IPayment";
+
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || "your-secret-key",
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-export default class Payment {
+export default class Payment implements IPayment {
   async createOrder(amount: number): Promise<any> {
     try {
       const currency = "INR";

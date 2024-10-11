@@ -3,7 +3,7 @@ import AdminRepository from "../repository/adminRepository";
 import AdminController from "../../controller/adminController";
 import AdminUseCase from "../../usecases/adminUseCases";
 
-import JwtTokenService from "../services/JwtToken";
+import JwtTokenService from "../services/jwtToken";
 
 import { adminAuth } from "../middlewares/adminAuth";
 import SendEmail from "../services/sendEmail";

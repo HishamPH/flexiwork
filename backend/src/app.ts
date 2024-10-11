@@ -1,8 +1,6 @@
 import createServer from "./framework/config/server";
 import { connectDB } from "./framework/config/connectDB";
 import { server } from "./framework/services/socketIo";
-
-import http from "http";
 import { config } from "dotenv";
 config();
 
@@ -10,10 +8,8 @@ const startServer = async () => {
   try {
     await connectDB();
     const app = createServer();
-
     const port = process.env.PORT;
-
-    server?.listen(port, () => {
+    server?.listen(port, async () => {
       console.log("server is running at port ", port);
     });
   } catch (error) {
@@ -21,14 +17,3 @@ const startServer = async () => {
   }
 };
 startServer();
-// const app = express();
-// app.use(express.json());
-// app.post('/user/signup',(req,res)=>{
-//   console.log(req.body);
-//   console.log('hello')
-//   res.json({hello:'hello'})
-// })
-
-// app.listen(3000,()=>{
-//   console.log('server is running')
-// })

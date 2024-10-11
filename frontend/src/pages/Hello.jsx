@@ -1664,43 +1664,150 @@
 
 //======================================================================================================================
 
-import React, { useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import moment from "moment";
+// import React, { useState } from "react";
+// import { Calendar, momentLocalizer } from "react-big-calendar";
+// import "react-big-calendar/lib/css/react-big-calendar.css";
+// import moment from "moment";
 
-const localizer = momentLocalizer(moment);
+// const localizer = momentLocalizer(moment);
+
+// const Hello = () => {
+//   const [events, setEvents] = useState([
+//     {
+//       title: "Event 1",
+//       start: new Date(2023, 9, 7, 10, 0), // Year, Month (0-based), Day, Hour, Minute
+//       end: new Date(2023, 9, 7, 11, 0),
+//     },
+//     // Add more events as needed
+//   ]);
+
+//   const handleSelectSlot = ({ start, end }) => {
+//     const title = window.prompt("New Event name");
+//     if (title) {
+//       setEvents([...events, { start, end, title }]);
+//     }
+//   };
+//   return (
+//     <div className="flex justify-center">
+//       <div className="w-1/2 bg-gray-50 p-4 shadow-lg">
+//         <Calendar
+//           localizer={localizer}
+//           startAccessor="start"
+//           endAccessor="end"
+//           style={{ height: 500 }}
+//           events={events}
+//           selectable
+//           onSelectSlot={handleSelectSlot}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Hello;
+
+//===========================================================================================================
+
+import { useState } from "react";
+import AgoraUIKit from "agora-react-uikit";
 
 const Hello = () => {
-  const [events, setEvents] = useState([
-    {
-      title: "Event 1",
-      start: new Date(2023, 9, 7, 10, 0), // Year, Month (0-based), Day, Hour, Minute
-      end: new Date(2023, 9, 7, 11, 0),
-    },
-    // Add more events as needed
-  ]);
+  const [videoCall, setVideoCall] = useState(true);
 
-  const handleSelectSlot = ({ start, end }) => {
-    const title = window.prompt("New Event name");
-    if (title) {
-      setEvents([...events, { start, end, title }]);
-    }
+  const rtcProps = {
+    appId: import.meta.env.VITE_APP_ID,
+    channel: import.meta.env.VITE_CHANNEL,
+    token: import.meta.env.VITE_TOKEN,
   };
-  return (
-    <div className="flex justify-center">
-      <div className="w-1/2 bg-gray-50 p-4 shadow-lg">
-        <Calendar
-          localizer={localizer}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 500 }}
-          events={events}
-          selectable
-          onSelectSlot={handleSelectSlot}
-        />
-      </div>
+
+  const callbacks = {
+    EndCall: () => setVideoCall(false),
+  };
+  const styleProps = {
+    container: {
+      backgroundColor: "#2d2d2d", // Dark gray background
+      height: "100%", // Full height to ensure proper display
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    localBtnContainer: {
+      backgroundColor: "transparent",
+      position: "absolute",
+      bottom: 20,
+      left: 399,
+      width: "30%",
+      borderRadius: 30,
+      padding: 10,
+      display: "flex",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+    },
+    localBtnStyles: {
+      muteLocalAudio: {
+        backgroundColor: "#303134", // Gray background for mute button
+        color: "#fff",
+        borderRadius: "50%",
+        height: 50,
+        width: 50,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        cursor: "pointer",
+      },
+      muteLocalVideo: {
+        backgroundColor: "#303134",
+        color: "#fff",
+        borderRadius: "50%",
+        height: 50,
+        width: 50,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        cursor: "pointer",
+      },
+      endCall: {
+        backgroundColor: "#ea4335", // Google Meet's red color for hang-up
+        color: "#fff",
+        borderRadius: "50%",
+        height: 50,
+        width: 50,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        cursor: "pointer",
+      },
+    },
+    maxViewStyles: {
+      justifyContent: "center",
+      //alignItems: "center",
+      margin: 5,
+      borderRadius: 30,
+      backgroundColor: "#1c1c1e", // Dark gray background for the main video
+      position: "relative", // Make the main video container relative
+    },
+    pinnedVideoStyle: {
+      position: "absolute",
+      borderRadius: 8,
+      height: "20%", // Smaller size for the pinned video
+      width: "20%",
+
+      bottom: 10, // Position it inside the main video container
+      right: 10, // Adjust right positioning to be within the container
+      border: "2px solid #ffffff44", // Add a subtle border
+    },
+  };
+
+  return videoCall ? (
+    <div className="flex w-[100vw] h-[100vh] bg-gray-800">
+      <AgoraUIKit
+        rtcProps={rtcProps}
+        callbacks={callbacks}
+        styleProps={styleProps}
+      />
     </div>
+  ) : (
+    <h3 onClick={() => setVideoCall(true)}>Join</h3>
   );
 };
 

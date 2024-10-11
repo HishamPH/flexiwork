@@ -1,4 +1,4 @@
-import JwtTokenService from "../framework/services/JwtToken";
+import JwtTokenService from "../framework/services/jwtToken";
 import IAdminRepository from "./interfaces/IAdminRepository";
 import Admin from "../entity/adminEntity";
 

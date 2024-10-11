@@ -1,6 +1,8 @@
 import Chat from "../entity/chatEntity";
 import Message from "../entity/messageEntity";
 import IChatRepsoitory from "./interfaces/IChatRepository";
+import ISocketIo from "./interfaces/ISocketIo";
+
 interface ResponseType {
   _id?: string;
   result?: Chat | {} | null | Chat[];
@@ -13,8 +15,10 @@ interface ResponseType {
 
 class ChatUseCase {
   private iChatRepository: IChatRepsoitory;
-  constructor(iChatRepository: IChatRepsoitory) {
+  private iSocket: ISocketIo;
+  constructor(iChatRepository: IChatRepsoitory, iSocket: ISocketIo) {
     this.iChatRepository = iChatRepository;
+    this.iSocket = iSocket;
   }
 
   async sendMessage(
@@ -37,6 +41,11 @@ class ChatUseCase {
         receiverId,
         message
       );
+
+      await this.iSocket.sendMessage(senderId, receiverId, {
+        messageData,
+        notification,
+      });
 
       return {
         status: true,
@@ -63,7 +72,6 @@ class ChatUseCase {
         senderId,
         receiverId
       );
-      console.log("this is chat use case get message inside something");
       return {
         status: true,
         statusCode: 200,

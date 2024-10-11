@@ -34,8 +34,17 @@ const Notifications = () => {
 
   useEffect(() => {
     socket?.on("newNoti", handelNewNotification);
-    return () => socket?.off("newNoti", handelNewNotification);
-  }, [setNotifications, socket]);
+    socket?.on("meetAlert", (data) => {
+      alert("meeting will start in 5 minutes");
+    });
+
+    return () => {
+      socket?.off("newNoti", handelNewNotification);
+      socket?.off("meetAlert", () => {
+        console.log("hello");
+      });
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (userInfo) {
@@ -52,7 +61,7 @@ const Notifications = () => {
       };
       getNotifications(userInfo._id);
     }
-  }, [setNotifications]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -116,7 +125,7 @@ const Notifications = () => {
   };
 
   return (
-    <div className="relative mr-3 z-50" ref={notificationRef}>
+    <div className="relative mr-3 " ref={notificationRef}>
       <button
         onClick={toggleNotifications}
         className="relative text-white p-2 rounded-full shadow-lg transition-colors"
@@ -130,7 +139,7 @@ const Notifications = () => {
       </button>
 
       {showNotifications && (
-        <div className="absolute top-10 right-0 w-64 bg-white shadow-xl rounded-lg overflow-hidden">
+        <div className="absolute top-10 right-0 w-64 bg-white shadow-xl rounded-lg overflow-hidden z-50">
           <div className="bg-blue-500 text-white p-2 font-bold flex justify-between items-center">
             <span>Recent Notifications</span>
             <button

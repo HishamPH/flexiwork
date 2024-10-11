@@ -4,7 +4,7 @@ import jwt, {
   TokenExpiredError,
   JsonWebTokenError,
 } from "jsonwebtoken";
-import JwtTokenService from "../services/JwtToken";
+import JwtTokenService from "../services/jwtToken";
 
 import UserRepository from "../repository/userRepository";
 
@@ -53,7 +53,7 @@ export const userAuth = async (
     req.user = decoded;
     let user = await userRepository.isBlocked(decoded.id);
     if (user && user.isBlocked) {
-      return res.status(401).json({
+      res.status(401).json({
         message: "The user is blocked by Admin",
         tokenExpired: true,
       });
@@ -65,7 +65,7 @@ export const userAuth = async (
       try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "Refresh Token not Available",
             tokenExpired: true,
           });
@@ -87,25 +87,25 @@ export const userAuth = async (
       } catch (error) {
         console.log(error);
         if (error instanceof TokenExpiredError) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "RefreshToken Expired Login again",
             tokenExpired: true,
           });
         } else if (error instanceof JsonWebTokenError) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "wrong refresh Token",
             tokenExpired: true,
           });
         }
       }
     } else if (error instanceof JsonWebTokenError) {
-      return res.status(401).json({
+      res.status(401).json({
         message: "wrong access Token",
         tokenExpired: true,
       });
     } else {
       console.log(error);
-      return res.status(500).json({
+      res.status(500).json({
         message: "Internal server error",
         tokenExpired: true,
       });

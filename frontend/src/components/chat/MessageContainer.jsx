@@ -21,6 +21,7 @@ const MessageContainer = () => {
   const [messages, setMessages] = useState([]);
   const [receiver, setReceiver] = useState({});
   const [loading, setLoading] = useState(false);
+  const [typing, setTyping] = useState(false);
   const { userInfo } = useSelector((state) => state.user);
   const { id } = useParams();
   const fetchRef = useRef(false);
@@ -73,16 +74,22 @@ const MessageContainer = () => {
           <Loader />
         </div>
       ) : (
-        <div className="flex-col w-full bg-blue-gray-100 h-full">
-          <div className="h-[60px] bg-blue-gray-400">
-            <div>
+        <div className="flex-col w-full bg-gray-800 h-full">
+          <div className="h-[60px] bg-gray-900">
+            <div className="flex items-center">
               <Avatar
                 variant="circular"
                 alt="tania andrew"
                 src={`/api/images/${receiver?.profilePic || "user.png"}`}
                 className="mx-2 mt-1"
               />
-              {receiver.name}
+
+              <div className="font-bold text-xl text-white">
+                {receiver.name}
+                {typing && (
+                  <div className="text-xs text-green-600 ">Typing...</div>
+                )}
+              </div>
             </div>
           </div>
           <Messages messages={messages} />

@@ -34,7 +34,7 @@ export default class ChatRepository implements IChatRepsoitory {
     senderId: string,
     receiverId: string,
     message: string
-  ): Promise<{ newMessage: Message; notification: Notification } | null> {
+  ): Promise<Message | null> {
     try {
       const newMessage = await messageModel.create({
         senderId,

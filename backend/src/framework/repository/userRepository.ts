@@ -133,16 +133,18 @@ export default class UserRepository implements IUserRepository {
     }
   }
 
-  async updateProStatus(): Promise<boolean | null> {
+  async updateProStatus(): Promise<any> {
     console.log(new Date(Date.now()), "thw whole thing is awesome");
     try {
       const now = Date.now();
-      let users = await userModel.updateMany(
-        { proExpiry: { $lt: now } },
-        { $set: { isPro: false, proExpiry: null } },
-        { new: true }
-      );
-      return true;
+      let users = await userModel
+        .updateMany(
+          { proExpiry: { $lt: now } },
+          { $set: { isPro: false, proExpiry: null } },
+          { new: true }
+        )
+        .select("-password -__v -paymentDetails -createdAt -updatedAt");
+      return users;
     } catch (err) {
       console.log(err);
       return null;

@@ -40,7 +40,11 @@ import Notifications from "./Notifications";
 const NavBar = () => {
   const { handleLogout, navigate } = useLogout();
   const { userInfo } = useSelector((state) => state.user);
-
+  let isPro, proExpiry;
+  if (userInfo) {
+    isPro = userInfo.isPro;
+    proExpiry = userInfo.proExpiry;
+  }
   let dispatch = useDispatch();
 
   const demoteUser = async () => {
@@ -48,7 +52,7 @@ const NavBar = () => {
       userId: userInfo._id,
     });
     await dispatch(setUser(res.data.result));
-    navigate(`/${userInfo.role}/home`);
+    // navigate(`/${userInfo.role}/home`);
     dispatch(openModal());
     Success("your pro has expired !!!! ");
   };
@@ -68,7 +72,7 @@ const NavBar = () => {
         return () => clearTimeout(timer);
       }
     }
-  }, [userInfo]);
+  }, [isPro, proExpiry]);
 
   const handleUpgrade = async () => {
     dispatch(openModal());
@@ -99,8 +103,8 @@ const NavBar = () => {
           </Link>
           {userInfo &&
             (userInfo?.isPro ? (
-              <div className="bg-red-500 ms-1 px-2 py-0 rounded-full font-extrabold">
-                pro
+              <div className="bg-yellow-700 ms-2 px-2 py-1 rounded-sm font-extrabold text-black cursor-default">
+                Premium
               </div>
             ) : (
               <Button

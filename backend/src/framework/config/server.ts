@@ -1,4 +1,4 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import path from "path";
 import cookieParser from "cookie-parser";
@@ -12,7 +12,7 @@ import "../services/croneJobs";
 import dotenv from "dotenv";
 dotenv.config();
 
-const createServer = () => {
+const createServer = async () => {
   try {
     const corsOptions = {
       origin: process.env.ORIGIN || "*",

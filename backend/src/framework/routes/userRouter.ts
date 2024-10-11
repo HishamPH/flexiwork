@@ -1,7 +1,7 @@
 import express from "express";
 import AuthRepository from "../repository/authRepository";
 import UserRepository from "../repository/userRepository";
-import JwtTokenService from "../services/JwtToken";
+import JwtTokenService from "../services/jwtToken";
 import SendEmail from "../services/sendEmail";
 import AuthUseCase from "../../usecases/authUseCases";
 import UserUseCase from "../../usecases/userUseCases";
@@ -24,32 +24,37 @@ import ChatController from "../../controller/chatController";
 import Payment from "../services/payment";
 import PaymentUseCase from "../../usecases/paymentUseCases";
 
+import { SocketIo } from "../services/socketIo";
+import { AgendaScheduler } from "../services/agenda";
+
 const userRouter = express.Router();
 
-const authRepository = new AuthRepository();
+const socketIo = new SocketIo();
+const agendaScheduler = new AgendaScheduler(socketIo);
 
 const JwtToken = new JwtTokenService();
 const sendEmail = new SendEmail();
-const authUseCase = new AuthUseCase(authRepository, sendEmail, JwtToken);
-const authController = new AuthController(authUseCase);
-
 const payment = new Payment();
-
+const authRepository = new AuthRepository();
 const userRepository = new UserRepository();
-const paymentUseCase = new PaymentUseCase(userRepository, payment);
-const userUseCase = new UserUseCase(userRepository);
-const userController = new UserController(userUseCase, paymentUseCase);
-
 const jobRepository = new JobRepository();
-const jobUseCase = new JobUseCase(jobRepository);
-const jobController = new JobController(jobUseCase);
-
 const applicationRepository = new ApplicationRepository();
-const applicationUseCase = new ApplicationUseCase(applicationRepository);
-const applicationController = new ApplicationController(applicationUseCase);
-
 const chatRepository = new ChatRepository();
-const chatUseCase = new ChatUseCase(chatRepository);
+
+const authUseCase = new AuthUseCase(authRepository, sendEmail, JwtToken);
+const paymentUseCase = new PaymentUseCase(userRepository, payment);
+const userUseCase = new UserUseCase(userRepository, socketIo);
+const jobUseCase = new JobUseCase(jobRepository);
+const applicationUseCase = new ApplicationUseCase(
+  applicationRepository,
+  agendaScheduler
+);
+const chatUseCase = new ChatUseCase(chatRepository, socketIo);
+
+const authController = new AuthController(authUseCase);
+const userController = new UserController(userUseCase, paymentUseCase);
+const jobController = new JobController(jobUseCase);
+const applicationController = new ApplicationController(applicationUseCase);
 const chatController = new ChatController(chatUseCase);
 
 userRouter.post("/signup", (req, res, next) => {
@@ -100,18 +105,6 @@ userRouter.get("/recruiter/get-jobs/:id", userAuth, (req, res, next) => {
   jobController.getRecruiterJobs(req, res, next);
 });
 
-userRouter.get("/recruiter/get-applicants/:id", userAuth, (req, res, next) => {
-  jobController.getApplicants(req, res, next);
-});
-
-userRouter.post("/recruiter/application-status", userAuth, (req, res, next) => {
-  applicationController.changeStatus(req, res, next);
-});
-
-userRouter.get("/candidate/job-detail/:id", userAuth, (req, res, next) => {
-  jobController.getJob(req, res, next);
-});
-
 userRouter.put(
   "/candidate/apply-job/:id",
   userAuth,
@@ -120,6 +113,48 @@ userRouter.put(
     applicationController.applyJob(req, res, next);
   }
 );
+
+userRouter.get(
+  "/candidate/get-applications/:id",
+  userAuth,
+  (req, res, next) => {
+    applicationController.getApplications(req, res, next);
+  }
+);
+
+userRouter.get("/recruiter/get-applicants/:id", userAuth, (req, res, next) => {
+  jobController.getApplicants(req, res, next);
+});
+
+userRouter.post("/recruiter/application-status", userAuth, (req, res, next) => {
+  applicationController.changeStatus(req, res, next);
+});
+
+userRouter.post("/get-interviews", userAuth, proUserAuth, (req, res, next) => {
+  applicationController.getInterviews(req, res, next);
+});
+
+userRouter.post(
+  "/recruiter/update-interview",
+  userAuth,
+  proUserAuth,
+  (req, res, next) => {
+    applicationController.updateInterview(req, res, next);
+  }
+);
+
+userRouter.post(
+  "/recruiter/delete-interview",
+  userAuth,
+  proUserAuth,
+  (req, res, next) => {
+    applicationController.deleteInterview(req, res, next);
+  }
+);
+
+userRouter.get("/candidate/job-detail/:id", userAuth, (req, res, next) => {
+  jobController.getJob(req, res, next);
+});
 
 userRouter.post("/chat/get-messages/:id", userAuth, (req, res, next) => {
   chatController.getMessages(req, res, next);
@@ -144,14 +179,6 @@ userRouter.post("/chat/get-conversations", userAuth, (req, res, next) => {
 userRouter.post("/chat/send-message/:id", userAuth, (req, res, next) => {
   chatController.sendMessage(req, res, next);
 });
-
-userRouter.get(
-  "/candidate/get-applications/:id",
-  userAuth,
-  (req, res, next) => {
-    applicationController.getApplications(req, res, next);
-  }
-);
 
 userRouter.post("/upgrade-request", userAuth, (req, res, next) => {
   userController.upgradeUserRequest(req, res, next);

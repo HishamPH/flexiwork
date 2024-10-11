@@ -1,7 +1,7 @@
 import User from "../entity/userEntity";
 import IAuthRepository from "./interfaces/IAuthRepository";
 import SendEmail from "../framework/services/sendEmail";
-import JwtTokenService from "../framework/services/JwtToken";
+import JwtTokenService from "../framework/services/jwtToken";
 
 import dotenv from "dotenv";
 dotenv.config();

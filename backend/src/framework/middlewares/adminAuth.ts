@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { Secret, TokenExpiredError } from "jsonwebtoken";
-import JwtTokenService from "../services/JwtToken";
+import JwtTokenService from "../services/jwtToken";
 
 const jwtToken = new JwtTokenService();
 
@@ -41,7 +41,7 @@ export const adminAuth = async (
       try {
         const refreshToken = req.cookies.adminRefreshToken;
         if (!refreshToken) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "Refresh Token not Available",
             tokenExpired: true,
             isAdmin: true,
@@ -65,7 +65,7 @@ export const adminAuth = async (
       } catch (error) {
         console.log(error);
         if (error instanceof TokenExpiredError) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "RefreshToken Expired Login again",
             tokenExpired: true,
             isAdmin: true,

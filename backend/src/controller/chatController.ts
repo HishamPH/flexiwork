@@ -1,11 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import ChatUseCase from "../usecases/chatUseCases";
-import {
-  getReceiverSocketId,
-  io,
-  getAllReciverSocketId,
-  SocketEntry,
-} from "../framework/services/socketIo";
 
 class ChatController {
   private chatCase: ChatUseCase;
@@ -21,28 +15,6 @@ class ChatController {
         receiverId,
         message
       );
-      //socket io programs
-      const allSenderSocketId: SocketEntry[] = getAllReciverSocketId(senderId);
-
-      const receiverSocketId = getReceiverSocketId(receiverId);
-      const allReceiverSocketId: SocketEntry[] =
-        getAllReciverSocketId(receiverId);
-
-      if (allSenderSocketId?.length !== 0) {
-        allSenderSocketId.forEach((item: SocketEntry) => {
-          io.to(item.socketId).emit("newMessage", messageData);
-        });
-      }
-      if (receiverSocketId && allReceiverSocketId?.length !== 0) {
-        console.log("message emitted");
-
-        allReceiverSocketId.forEach((item: SocketEntry) => {
-          io.to(item.socketId).emit("newMessage", messageData);
-          io.to(item.socketId).emit("newNoti", messageData);
-        });
-        //io.to(receiverSocketId).emit("newMessage", messageData);
-      }
-
       return res.status(messageData?.statusCode).json({ ...messageData });
     } catch (err) {
       console.log(err);

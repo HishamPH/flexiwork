@@ -267,7 +267,7 @@ const ViewApplicants = () => {
                         <td className={classes}>
                           {isPro && (
                             <Button
-                              onClick={() => handleScheduleClick(userId, isPro)}
+                              onClick={() => handleScheduleClick(_id, isPro)}
                               className="bg-indigo-700 text-white px-3 py-3 rounded-sm hover:bg-indigo-400"
                             >
                               Schdule

@@ -4,6 +4,7 @@ interface Application {
   resume: string;
   status: string;
   jobId: string;
+  interview?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

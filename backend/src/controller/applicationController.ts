@@ -44,6 +44,45 @@ class ApplicationController {
       next(err);
     }
   }
+
+  async getInterviews(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId, applicationId } = req.body;
+      const result = await this.applicationCase.getInterviews(
+        userId,
+        applicationId
+      );
+      return res.status(result?.statusCode).json({ ...result });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  async updateInterview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { applicationId, interview } = req.body;
+      const result = await this.applicationCase.updateInterview(
+        applicationId,
+        interview
+      );
+      return res.status(result?.statusCode).json({ ...result });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  async deleteInterview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { applicationId } = req.body;
+      const result = await this.applicationCase.deleteInterview(applicationId);
+      return res.status(result?.statusCode).json({ ...result });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
 }
 
 export default ApplicationController;
