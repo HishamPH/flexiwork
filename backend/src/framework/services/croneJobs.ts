@@ -1,9 +1,7 @@
 import cron from "node-cron";
 import UserUseCase from "../../usecases/userUseCases";
 import UserRepository from "../repository/userRepository";
-import { SocketIo } from "./socketIo";
-
-const socketIo = new SocketIo();
+import { socketIo } from "./socketIo";
 
 const userRepository = new UserRepository();
 const userUserCase = new UserUseCase(userRepository, socketIo);

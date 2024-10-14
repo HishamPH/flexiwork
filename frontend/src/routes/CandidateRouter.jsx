@@ -9,6 +9,8 @@ import MessageContainer from "../components/chat/MessageContainer";
 import ApplicationsPage from "../pages/candidate/ApplicationsPage";
 import Chat from "../components/Chat";
 import CandidateLayout from "../Layouts/CandidateLayout";
+import Meetings from "../pages/Meetings";
+import ProRoute from "./privateRoutes/ProRoute";
 
 const CandidateRouter = () => {
   return (
@@ -22,6 +24,9 @@ const CandidateRouter = () => {
           <Route path=":id" element={<MessageContainer />} />
         </Route>
         <Route path="applications" element={<ApplicationsPage />} />
+        <Route element={<ProRoute />}>
+          <Route path="meetings" element={<Meetings />} />
+        </Route>
       </Route>
     </Routes>
   );

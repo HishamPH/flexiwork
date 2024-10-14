@@ -62,6 +62,8 @@ class UserUseCase {
   async updateProStatus(): Promise<any> {
     try {
       const result = await this.iUserRepository.updateProStatus();
+      await this.iSocket.demoteUser(result);
+
       return result;
     } catch (err) {
       console.log(err);

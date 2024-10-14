@@ -29,13 +29,14 @@ const Notifications = () => {
   const notificationRef = useRef(null);
 
   const handelNewNotification = (newMessage) => {
+    console.log("this is a notification");
     setNotifications((prev) => [newMessage.notification, ...prev]);
   };
 
   useEffect(() => {
     socket?.on("newNoti", handelNewNotification);
     socket?.on("meetAlert", (data) => {
-      alert("meeting will start in 5 minutes");
+      console.log(data);
     });
 
     return () => {

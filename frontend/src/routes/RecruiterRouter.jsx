@@ -7,9 +7,8 @@ import ViewApplicants from "../pages/recruiter/ViewApplicants";
 import RecruiterLayout from "../Layouts/RecruiterLayout";
 import RecruiterChat from "../pages/recruiter/RecruiterChat";
 import MessageContainer from "../components/chat/MessageContainer";
-import Meetings from "../pages/recruiter/Meetings";
+import Meetings from "../pages/Meetings";
 import InterviewScheduler from "../pages/recruiter/InterviewScheduler";
-
 import ProRoute from "./privateRoutes/ProRoute";
 
 const RecruiterRouter = () => {

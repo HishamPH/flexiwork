@@ -24,12 +24,10 @@ import ChatController from "../../controller/chatController";
 import Payment from "../services/payment";
 import PaymentUseCase from "../../usecases/paymentUseCases";
 
-import { SocketIo } from "../services/socketIo";
+import { socketIo } from "../services/socketIo";
 import { AgendaScheduler } from "../services/agenda";
 
 const userRouter = express.Router();
-
-const socketIo = new SocketIo();
 const agendaScheduler = new AgendaScheduler(socketIo);
 
 const JwtToken = new JwtTokenService();
@@ -134,6 +132,10 @@ userRouter.post("/get-interviews", userAuth, proUserAuth, (req, res, next) => {
   applicationController.getInterviews(req, res, next);
 });
 
+userRouter.get("/get-meetings/:id", userAuth, proUserAuth, (req, res, next) => {
+  applicationController.getMeetings(req, res, next);
+});
+
 userRouter.post(
   "/recruiter/update-interview",
   userAuth,
@@ -149,6 +151,15 @@ userRouter.post(
   proUserAuth,
   (req, res, next) => {
     applicationController.deleteInterview(req, res, next);
+  }
+);
+
+userRouter.get(
+  "/get-meeting-token/:id",
+  userAuth,
+  proUserAuth,
+  (req, res, next) => {
+    applicationController.getMeetingToken(req, res, next);
   }
 );
 

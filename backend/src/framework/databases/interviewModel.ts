@@ -21,8 +21,8 @@ const interviewSchema: Schema<IInterview> = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    start: { type: String, required: true },
-    to: { type: String, required: true },
+    start: { type: Date, required: true },
+    to: { type: Date, required: true },
     remarks: { type: String, required: false },
   },
   { timestamps: true }

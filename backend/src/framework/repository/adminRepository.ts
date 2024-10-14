@@ -73,6 +73,77 @@ class AdminRepository implements IAdminRepository {
       return false;
     }
   }
+
+  async getSummary(filter: string): Promise<any> {
+    try {
+      let matchStage = {};
+      let groupStage = {};
+      const now = new Date();
+
+      switch (filter) {
+        case "week":
+          const weekEnd = new Date(); // Today
+          const weekStart = new Date();
+          weekStart.setDate(weekEnd.getDate() - 6); // Start date is 6 days before today, making a total of 7 days
+
+          matchStage = {
+            "paymentDetails.date": { $gte: weekStart, $lte: weekEnd },
+          };
+          groupStage = {
+            _id: {
+              year: { $year: "$paymentDetails.date" },
+              month: { $month: "$paymentDetails.date" },
+              day: { $dayOfMonth: "$paymentDetails.date" },
+            },
+            totalAmount: { $sum: "$paymentDetails.amount" },
+          };
+          break;
+
+        case "month":
+          const till = new Date();
+          const monthStart = new Date(till);
+          monthStart.setDate(till.getDate() - 30);
+          matchStage = { "paymentDetails.date": { $gte: monthStart } };
+          groupStage = {
+            _id: {
+              day: { $dayOfMonth: "$paymentDetails.date" },
+              month: { $month: "$paymentDetails.date" },
+              year: { $year: "$paymentDetails.date" },
+            },
+            totalAmount: { $sum: "$paymentDetails.amount" },
+          };
+          break;
+        case "year":
+          const yearStart = new Date(now.getFullYear(), 0, 1);
+          matchStage = { "paymentDetails.date": { $gte: yearStart } };
+          groupStage = {
+            _id: { month: { $month: "$paymentDetails.date" } },
+            totalAmount: { $sum: "$paymentDetails.amount" },
+          };
+          break;
+        default:
+          return null;
+      }
+      const result = await userModel.aggregate([
+        { $unwind: "$paymentDetails" },
+        { $match: matchStage },
+        { $group: groupStage },
+        { $sort: { _id: 1 } },
+        //{ $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } },
+      ]);
+
+      const totalRecruiters = await userModel.countDocuments({
+        role: "recruiter",
+      });
+      const totalCandidates = await userModel.countDocuments({
+        role: "candidate",
+      });
+      return { result, totalCandidates, totalRecruiters };
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }
 
 export default AdminRepository;

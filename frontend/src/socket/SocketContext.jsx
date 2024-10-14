@@ -1,6 +1,9 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
+import { setUser } from "../redux/slices/userAuth";
+import { openModal } from "../redux/slices/modalSlice";
+import { Success, Failed } from "../helper/popup";
 
 const SocketContext = createContext();
 
@@ -15,11 +18,16 @@ const useSocketContext = () => {
 
 const SocketProvider = ({ children }) => {
   const { userInfo } = useSelector((state) => state.user);
-  const isLoggedIn = userInfo ? true : false;
-
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const dispatch = useDispatch();
+
+  const isLoggedIn = userInfo ? true : false;
+
   useEffect(() => {
+    if (window.location.pathname.includes("/admin")) {
+      return;
+    }
     if (userInfo) {
       const socketUrl = "http://localhost:3000";
       const socket = io(socketUrl, {
@@ -33,12 +41,17 @@ const SocketProvider = ({ children }) => {
       socket.on("getOnlineUsers", (users) => {
         setOnlineUsers(users);
       });
-      socket.on("proUserDemoted", (data) => {
-        console.log(data, "this user is demoted successfully");
+      socket.on("userStatus", (data) => {
+        if (data.isPro !== userInfo.isPro) {
+          dispatch(openModal());
+          Success("the user is demoted");
+          dispatch(setUser(data));
+        }
       });
 
       return () => {
         socket.close();
+        console.log("socket has closed successfully");
       };
     } else {
       if (socket) {

@@ -4,7 +4,7 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-const PDFViewer = ({ isOpen, onClose, pdfFile }) => {
+const PDFViewer = ({ isOpen, onClose, pdfFile, app }) => {
   const [numPages, setNumPages] = useState(null);
   // const [workerSrc, setWorkerSrc] = useState("");
 
@@ -29,18 +29,54 @@ const PDFViewer = ({ isOpen, onClose, pdfFile }) => {
     <>
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg p-4 w-[900px] h-[700px]">
+          <div className="bg-white rounded-lg p-4 w-[900px] h-5/6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">PDF Viewer</h2>
               <button onClick={onClose} className="text-red-500">
                 Close
               </button>
             </div>
+            <div className="my-5 w-1/2">
+              <label className="text-gray-600 text-sm mb-1">
+                What motivates you to apply for this position?
+              </label>
+              <input
+                type="text"
+                name="motivation"
+                value={app?.motivation}
+                className="border border-gray-300 rounded-md p-2 w-full"
+                disabled
+              />
+            </div>
+            <div className="my-5 w-1/2">
+              <label className="text-gray-600 text-sm mb-1">
+                What motivates you to apply for this position?
+              </label>
+              <input
+                type="text"
+                name="motivation"
+                value={app?.challenge}
+                className="border border-gray-300 rounded-md p-2 w-full"
+                disabled
+              />
+            </div>
+            <div className="my-5 w-1/2">
+              <label className="text-gray-600 text-sm mb-1">
+                What motivates you to apply for this position?
+              </label>
+              <input
+                type="text"
+                name="motivation"
+                value={app?.expectedSalary}
+                className="border border-gray-300 rounded-md p-2 w-full"
+                disabled
+              />
+            </div>
             {/* PDF Viewer */}
             <iframe
               src={`/api/images/${pdfFile}`}
               frameBorder="0"
-              className="w-full h-[600px]"
+              className="w-full h-1/2"
             ></iframe>
             {/* <Document
               file={`/api/images${pdfFile}`}

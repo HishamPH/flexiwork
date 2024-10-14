@@ -45,7 +45,7 @@ const TABLE_HEAD = [
 
 const ViewApplicants = () => {
   const { userInfo } = useSelector((state) => state.user);
-
+  const [app, setApp] = useState(null);
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [currentPdf, setCurrentPdf] = useState("");
@@ -134,13 +134,15 @@ const ViewApplicants = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const openResumeModal = (pdfPath) => {
+  const openResumeModal = (pdfPath, data) => {
     setCurrentPdf(pdfPath);
+    setApp(data);
     setOpen(true);
   };
 
   const closeResumeModal = () => {
     setOpen(false);
+    setApp(null);
     setCurrentPdf(null);
   };
 
@@ -207,7 +209,20 @@ const ViewApplicants = () => {
               </thead>
               <tbody>
                 {currentItems.map(
-                  ({ _id, candidateId, jobId, resume, status }, index) => {
+                  (
+                    {
+                      _id,
+                      candidateId,
+                      jobId,
+                      resume,
+                      status,
+                      challenge,
+                      motivation,
+                      expectedSalary,
+                    },
+                    item,
+                    index
+                  ) => {
                     const isLast = index === applicants.length - 1;
                     const classes = isLast
                       ? "p-4"
@@ -249,7 +264,13 @@ const ViewApplicants = () => {
 
                         <td className={classes}>
                           <Button
-                            onClick={() => openResumeModal(resume)}
+                            onClick={() =>
+                              openResumeModal(resume, {
+                                challenge,
+                                motivation,
+                                expectedSalary,
+                              })
+                            }
                             className="bg-blue-gray-600 text-white px-3 py-3 rounded-sm hover:bg-blue-gray-400"
                           >
                             View Application
@@ -319,6 +340,7 @@ const ViewApplicants = () => {
       </Card>
 
       <PDFViewer
+        app={app}
         isOpen={open}
         onClose={closeResumeModal}
         pdfFile={currentPdf}

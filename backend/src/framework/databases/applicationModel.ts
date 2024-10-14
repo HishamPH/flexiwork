@@ -13,6 +13,9 @@ export interface IApplication {
   _id: string;
   candidateId: mongoose.Types.ObjectId;
   resume: string;
+  motivation: string;
+  challenge: string;
+  expectedSalary: string;
   status: string;
   jobId: mongoose.Types.ObjectId;
   interview?: mongoose.Types.ObjectId | null;
@@ -28,6 +31,18 @@ const applicationSchema: Schema<IApplication> = new mongoose.Schema(
       required: true,
     },
     resume: {
+      type: String,
+      required: true,
+    },
+    motivation: {
+      type: String,
+      required: true,
+    },
+    challenge: {
+      type: String,
+      required: true,
+    },
+    expectedSalary: {
       type: String,
       required: true,
     },

@@ -74,16 +74,16 @@ export default class UserRepository implements IUserRepository {
     try {
       const now = new Date();
 
-      // const futureDate = new Date(
-      //   now.getFullYear(),
-      //   now.getMonth(),
-      //   now.getDate() + 28,
-      //   0,
-      //   0,
-      //   0
-      // );
+      const futureDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0,
+        0,
+        0
+      );
 
-      const futureDate = new Date(now.getTime() + 100 * 60 * 1000);
+      // const futureDate = new Date(now.getTime() + 1 * 60 * 1000);
       const user = await userModel
         .findByIdAndUpdate(
           userId,
@@ -137,12 +137,17 @@ export default class UserRepository implements IUserRepository {
     console.log(new Date(Date.now()), "thw whole thing is awesome");
     try {
       const now = Date.now();
+      let updatedUsers = await userModel
+        .find({ proExpiry: { $lte: now }, isPro: true })
+        .select("_id");
+
+      const updatedIds = updatedUsers.map((user) => user._id);
+      await userModel.updateMany(
+        { _id: { $in: updatedIds } },
+        { $set: { isPro: false, proExpiry: null } }
+      );
       let users = await userModel
-        .updateMany(
-          { proExpiry: { $lt: now } },
-          { $set: { isPro: false, proExpiry: null } },
-          { new: true }
-        )
+        .find({ _id: { $in: updatedIds } })
         .select("-password -__v -paymentDetails -createdAt -updatedAt");
       return users;
     } catch (err) {

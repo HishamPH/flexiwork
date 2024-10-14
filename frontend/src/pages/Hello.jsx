@@ -1708,94 +1708,78 @@
 
 //===========================================================================================================
 
-import { useState } from "react";
+// const Hello = () => {
+//   return <div>Hello</div>;
+// };
+
+// export default Hello;
+//================================================================================================================
+
+import { useState, useRef, useEffect } from "react";
 import AgoraUIKit from "agora-react-uikit";
+import { Navigate } from "react-router-dom";
+import AgoraRTC from "agora-rtc-sdk-ng";
 
 const Hello = () => {
   const [videoCall, setVideoCall] = useState(true);
+  const [channel, setChannel] = useState(null);
+  const [token, setToken] = useState(null);
+
+  const agoraEngineRef = useRef(null);
 
   const rtcProps = {
     appId: import.meta.env.VITE_APP_ID,
     channel: import.meta.env.VITE_CHANNEL,
     token: import.meta.env.VITE_TOKEN,
+    logConfig: { level: 1 },
   };
 
   const callbacks = {
-    EndCall: () => setVideoCall(false),
+    EndCall: () => {
+      cleanupAgoraResources();
+      setVideoCall(false);
+    },
   };
-  const styleProps = {
-    container: {
-      backgroundColor: "#2d2d2d", // Dark gray background
-      height: "100%", // Full height to ensure proper display
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    localBtnContainer: {
-      backgroundColor: "transparent",
-      position: "absolute",
-      bottom: 20,
-      left: 399,
-      width: "30%",
-      borderRadius: 30,
-      padding: 10,
-      display: "flex",
-      justifyContent: "space-evenly",
-      alignItems: "center",
-    },
-    localBtnStyles: {
-      muteLocalAudio: {
-        backgroundColor: "#303134", // Gray background for mute button
-        color: "#fff",
-        borderRadius: "50%",
-        height: 50,
-        width: 50,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        cursor: "pointer",
-      },
-      muteLocalVideo: {
-        backgroundColor: "#303134",
-        color: "#fff",
-        borderRadius: "50%",
-        height: 50,
-        width: 50,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        cursor: "pointer",
-      },
-      endCall: {
-        backgroundColor: "#ea4335", // Google Meet's red color for hang-up
-        color: "#fff",
-        borderRadius: "50%",
-        height: 50,
-        width: 50,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        cursor: "pointer",
-      },
-    },
-    maxViewStyles: {
-      justifyContent: "center",
-      //alignItems: "center",
-      margin: 5,
-      borderRadius: 30,
-      backgroundColor: "#1c1c1e", // Dark gray background for the main video
-      position: "relative", // Make the main video container relative
-    },
-    pinnedVideoStyle: {
-      position: "absolute",
-      borderRadius: 8,
-      height: "20%", // Smaller size for the pinned video
-      width: "20%",
 
-      bottom: 10, // Position it inside the main video container
-      right: 10, // Adjust right positioning to be within the container
-      border: "2px solid #ffffff44", // Add a subtle border
-    },
+  useEffect(() => {
+    const initializeAgora = async () => {
+      agoraEngineRef.current = AgoraRTC.createClient({
+        mode: "rtc",
+        codec: "vp8",
+      });
+      await agoraEngineRef.current.join(
+        rtcProps.appId,
+        rtcProps.channel,
+        rtcProps.token,
+        null
+      );
+    };
+    initializeAgora();
+    return () => {
+      cleanupAgoraResources();
+    };
+  }, []);
+
+  const cleanupAgoraResources = () => {
+    if (agoraEngineRef.current) {
+      agoraEngineRef.current.leave();
+      agoraEngineRef.current.removeAllListeners();
+      agoraEngineRef.current = null;
+    }
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      devices.forEach((device) => {
+        if (device.kind === "videoinput" || device.kind === "audioinput") {
+          navigator.mediaDevices
+            .getUserMedia({
+              video: device.kind === "videoinput",
+              audio: device.kind === "audioinput",
+            })
+            .then((mediaStream) => {
+              mediaStream.getTracks().forEach((track) => track.stop());
+            });
+        }
+      });
+    });
   };
 
   return videoCall ? (
@@ -1807,8 +1791,458 @@ const Hello = () => {
       />
     </div>
   ) : (
-    <h3 onClick={() => setVideoCall(true)}>Join</h3>
+    <Navigate to="/recruiter/meetings" />
   );
 };
 
+const styleProps = {
+  container: {
+    backgroundColor: "#2d2d2d", // Dark gray background
+    height: "100%", // Full height to ensure proper display
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  localBtnContainer: {
+    backgroundColor: "transparent",
+    position: "absolute",
+    bottom: 20,
+    left: 399,
+    width: "30%",
+    borderRadius: 30,
+    padding: 10,
+    display: "flex",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  localBtnStyles: {
+    muteLocalAudio: {
+      backgroundColor: "#303134", // Gray background for mute button
+      color: "#fff",
+      borderRadius: "50%",
+      height: 50,
+      width: 50,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      cursor: "pointer",
+    },
+    muteLocalVideo: {
+      backgroundColor: "#303134",
+      color: "#fff",
+      borderRadius: "50%",
+      height: 50,
+      width: 50,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      cursor: "pointer",
+    },
+    endCall: {
+      backgroundColor: "#ea4335", // Google Meet's red color for hang-up
+      color: "#fff",
+      borderRadius: "50%",
+      height: 50,
+      width: 50,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      cursor: "pointer",
+    },
+  },
+  maxViewStyles: {
+    justifyContent: "center",
+    //alignItems: "center",
+    margin: 5,
+    borderRadius: 30,
+    backgroundColor: "#1c1c1e", // Dark gray background for the main video
+    position: "relative", // Make the main video container relative
+  },
+  pinnedVideoStyle: {
+    position: "absolute",
+    borderRadius: 8,
+    height: "20%", // Smaller size for the pinned video
+    width: "20%",
+
+    bottom: 10, // Position it inside the main video container
+    right: 10, // Adjust right positioning to be within the container
+    border: "2px solid #ffffff44", // Add a subtle border
+  },
+};
+
 export default Hello;
+
+//=============================================================================================================
+
+// import React, { useEffect, useRef, useState } from "react";
+// import AgoraRTC from "agora-rtc-sdk-ng";
+// import { Navigate } from "react-router-dom";
+
+// const Hello = () => {
+//   const [videoCall, setVideoCall] = useState(true);
+//   const localVideoRef = useRef(null);
+//   const remoteVideoRef = useRef(null);
+//   const agoraClientRef = useRef(null);
+//   const localTracksRef = useRef({});
+
+//   const rtcProps = {
+//     appId: import.meta.env.VITE_APP_ID,
+//     channel: import.meta.env.VITE_CHANNEL,
+//     token: import.meta.env.VITE_TOKEN,
+//   };
+
+//   useEffect(() => {
+//     const initializeAgora = async () => {
+//       agoraClientRef.current = AgoraRTC.createClient({
+//         mode: "rtc",
+//         codec: "vp8",
+//       });
+
+//       // Join the channel
+//       await agoraClientRef.current.join(
+//         rtcProps.appId,
+//         rtcProps.channel,
+//         rtcProps.token
+//       );
+
+//       // Create local tracks
+//       const [microphoneTrack, cameraTrack] =
+//         await AgoraRTC.createMicrophoneAndCameraTracks();
+//       localTracksRef.current = { microphoneTrack, cameraTrack };
+
+//       // Publish local tracks
+//       await agoraClientRef.current.publish([microphoneTrack, cameraTrack]);
+
+//       // Display the local video
+//       if (localVideoRef.current) {
+//         cameraTrack.play(localVideoRef.current);
+//       }
+
+//       // Subscribe to remote users
+//       agoraClientRef.current.on("user-published", async (user, mediaType) => {
+//         await agoraClientRef.current.subscribe(user, mediaType);
+//         if (mediaType === "video") {
+//           const remoteVideoTrack = user.videoTrack;
+//           remoteVideoTrack.play(remoteVideoRef.current);
+//         }
+//       });
+//     };
+
+//     initializeAgora();
+
+//     // Cleanup when component unmounts
+//     return () => {
+//       cleanupAgoraResources();
+//     };
+//   }, []);
+
+//   const cleanupAgoraResources = async () => {
+//     if (agoraClientRef.current) {
+//       await agoraClientRef.current.leave();
+
+//       // Stop all local tracks
+//       const { microphoneTrack, cameraTrack } = localTracksRef.current;
+//       microphoneTrack.stop();
+//       microphoneTrack.close();
+//       cameraTrack.stop();
+//       cameraTrack.close();
+
+//       localTracksRef.current = {}; // Clear the local tracks
+//       agoraClientRef.current = null; // Clear the Agora client reference
+//     }
+//   };
+
+//   return videoCall ? (
+//     <div className="video-call-container">
+//       <div
+//         className="local-video"
+//         ref={localVideoRef}
+//         style={{ width: "400px", height: "300px", backgroundColor: "black" }}
+//       />
+//       <div
+//         className="remote-video"
+//         ref={remoteVideoRef}
+//         style={{ width: "400px", height: "300px", backgroundColor: "gray" }}
+//       />
+//       <button
+//         onClick={() => {
+//           setVideoCall(false);
+//           cleanupAgoraResources();
+//         }}
+//       >
+//         End Call
+//       </button>
+//     </div>
+//   ) : (
+//     <Navigate to="/recruiter/meetings" />
+//   );
+// };
+
+// export default Hello;
+
+//=========================================================================================================================
+
+// import React, { useState, useEffect } from "react";
+// import {
+//   BarChart,
+//   Bar,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+//   ResponsiveContainer,
+// } from "recharts";
+// import { Calendar, Filter } from "lucide-react";
+
+// import { Button } from "@material-tailwind/react";
+
+// import { HiOutlineUserGroup } from "react-icons/hi2";
+// import { FaRupeeSign } from "react-icons/fa";
+// import { HiOutlineAcademicCap } from "react-icons/hi";
+
+// import { Success, Failed } from "../../helper/popup";
+// import axiosInstance from "../../../interceptors/axiosInterceptors";
+
+// const AdminDashboard = () => {
+//   const [timeRange, setTimeRange] = useState("week");
+//   const [data, setData] = useState([]);
+
+//   useEffect(() => {
+//     fetchData(timeRange);
+//   }, [timeRange]);
+
+//   const fetchData = async (range) => {
+//     try {
+//       const res = await axiosInstance.get(`/admin/fetch-summary`, {
+//         params: {
+//           filter: range,
+//         },
+//       });
+//       const result = res.data.result;
+//       console.log(result);
+//       const data = result.map((item) => {
+//         if (timeRange === "week") {
+//           const daysOfWeek = [
+//             "Sunday",
+//             "Monday",
+//             "Tuesday",
+//             "Wednesday",
+//             "Thursday",
+//             "Friday",
+//             "Saturday",
+//           ];
+//           return {
+//             name: daysOfWeek[item._id.day - 1],
+//             totalAmount: item.totalAmount,
+//           };
+//         } else if (timeRange === "month") {
+//           return {
+//             name: `Day ${item._id.day}`,
+//             totalAmount: item.totalAmount,
+//           };
+//         } else if (timeRange === "year") {
+//           const months = [
+//             "Jan",
+//             "Feb",
+//             "Mar",
+//             "Apr",
+//             "May",
+//             "Jun",
+//             "Jul",
+//             "Aug",
+//             "Sep",
+//             "Oct",
+//             "Nov",
+//             "Dec",
+//           ];
+//           return {
+//             name: months[item._id.month - 1],
+//             totalAmount: item.totalAmount,
+//           };
+//         }
+//         //return item;
+//       });
+//       setData(data);
+//     } catch (err) {
+//       Failed(err.response ? err.response.data.message : err.message);
+//       console.log(err.message);
+//     }
+//   };
+
+//   const getXAxisDataKey = () => {
+//     switch (timeRange) {
+//       case "week":
+//         return "day";
+//       case "month":
+//         return "date";
+//       case "year":
+//         return "month";
+//       default:
+//         return "";
+//     }
+//   };
+
+//   const getXAxisProps = () => {
+//     const baseProps = {
+//       stroke: "#4B5563",
+//       tick: { fill: "#4B5563" },
+//     };
+
+//     switch (timeRange) {
+//       case "week":
+//         return { ...baseProps, interval: 0 };
+//       case "month":
+//         return {
+//           ...baseProps,
+//           angle: -90,
+//           textAnchor: "end",
+//           height: 60,
+//           interval: 0,
+//         };
+//       case "year":
+//         return { ...baseProps, interval: 0 };
+//       default:
+//         return baseProps;
+//     }
+//   };
+
+//   return (
+//     <div className="p-8">
+//       <div className="flex justify-between items-center mb-8">
+//         <h1 className="text-2xl font-semibold">Dashboard</h1>
+//       </div>
+
+//       {/* Stats Cards */}
+//       <div className="grid grid-cols-3 gap-6 mb-8">
+//         <div className="bg-white p-4 rounded-sm shadow-md">
+//           <h3 className="text-xl font-semibold text-blue-800">
+//             Revenue <span className="text-gray-400">| This Month</span>
+//           </h3>
+//           <div className="flex items-center mt-4">
+//             <div className="bg-green-100 rounded-full p-3 flex items-center justify-center">
+//               <FaRupeeSign size={32} className="text-green-700" />
+//             </div>
+//             <div className="ml-4">
+//               <p className="text-2xl font-bold text-blue-800">₹0</p>
+//               <div className="flex items-center text-green-500 mt-1">
+//                 <span className="text-sm">8% increase</span>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="bg-white p-4 rounded-sm shadow-md">
+//           <h3 className="text-xl font-semibold text-blue-800">
+//             Revenue <span className="text-gray-400">| This Month</span>
+//           </h3>
+//           <div className="flex items-center mt-4">
+//             <div className="bg-yellow-100 rounded-full p-3 flex items-center justify-center">
+//               <HiOutlineUserGroup size={32} className="text-yellow-800" />
+//             </div>
+//             <div className="ml-4">
+//               <p className="text-2xl font-bold text-blue-800">₹0</p>
+//               <div className="flex items-center text-green-500 mt-1">
+//                 <span className="text-sm">8% increase</span>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="bg-white p-4 rounded-sm shadow-md ">
+//           <h3 className="text-xl font-semibold text-blue-800">
+//             Revenue <span className="text-gray-400">| This Month</span>
+//           </h3>
+//           <div className="flex items-center mt-4">
+//             <div className="bg-green-100 rounded-full p-3 flex items-center justify-center">
+//               <HiOutlineAcademicCap size={32} />
+//             </div>
+//             <div className="ml-4">
+//               <p className="text-2xl font-bold text-blue-800">₹0</p>
+//               <div className="flex items-center text-green-500 mt-1">
+//                 <span className="text-sm">8% increase</span>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* well well welll */}
+
+//       <div className="w-full mx-auto mt-8 p-6 bg-white rounded-xl shadow-lg mb-8">
+//         <div className="flex justify-between items-center mb-6">
+//           <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+//             <Calendar className="mr-2 text-blue-500" />
+//             Revenue last {timeRange}
+//           </h2>
+//           <div className="flex items-center space-x-2">
+//             <Button
+//               onClick={() => setTimeRange("week")}
+//               className={timeRange === "week" ? "bg-gray-600" : ""}
+//             >
+//               week
+//             </Button>
+//             <Button
+//               onClick={() => setTimeRange("month")}
+//               className={timeRange === "month" ? "bg-gray-600" : ""}
+//             >
+//               month
+//             </Button>
+//             <Button
+//               onClick={() => setTimeRange("year")}
+//               className={timeRange === "year" ? "bg-gray-600" : ""}
+//             >
+//               year
+//             </Button>
+//           </div>
+//         </div>
+//         <div className="h-96">
+//           <ResponsiveContainer width="100%" height="100%">
+//             <BarChart
+//               data={data}
+//               margin={{
+//                 top: 5,
+//                 right: 30,
+//                 left: 20,
+//                 bottom: 5,
+//               }}
+//             >
+//               <CartesianGrid strokeDasharray="3 3" />
+//               <XAxis dataKey={getXAxisDataKey()} {...getXAxisProps()} />
+//               <YAxis stroke="#4B5563" tick={{ fill: "#4B5563" }} />
+//               <Tooltip
+//                 contentStyle={{
+//                   backgroundColor: "#F3F4F6",
+//                   border: "none",
+//                   borderRadius: "8px",
+//                   boxShadow:
+//                     "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+//                 }}
+//               />
+//               <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+//             </BarChart>
+//           </ResponsiveContainer>
+//         </div>
+//       </div>
+
+//       {/* Bottom Row */}
+//       <div className="grid grid-cols-3 gap-6">
+//         <div className="bg-white p-6 rounded-lg shadow">
+//           <h3 className="text-lg font-semibold mb-4">Candidates</h3>
+//           <div className="text-3xl font-bold mb-2">76</div>
+//           <div className="text-green-500">This Week 6.4% ↑</div>
+//         </div>
+//         <div className="bg-white p-6 rounded-lg shadow">
+//           <h3 className="text-lg font-semibold mb-4">total jobs</h3>
+//           <div className="text-3xl font-bold mb-2">34</div>
+//           <div>Jobs Opened</div>
+//         </div>
+//         <div className="bg-white p-6 rounded-lg shadow">
+//           <h3 className="text-lg font-semibold mb-4">Applicants Summary</h3>
+//           <div className="text-3xl font-bold mb-2">67</div>
+//           <div>Applicants</div>
+//           {/* Add progress bar component here */}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AdminDashboard;

@@ -172,4 +172,70 @@ export default class ApplicationRepository implements IApplicationRepository {
       return null;
     }
   }
+
+  async getMeetings(userId: string, query: any, role: any): Promise<any> {
+    try {
+      let filterCondition: any;
+      if (role === "candidate") {
+        filterCondition = {
+          candidate: userId,
+        };
+      } else {
+        filterCondition = {
+          recruiter: userId,
+        };
+      }
+
+      const now = new Date();
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+
+      const endOfToday = new Date();
+      endOfToday.setHours(23, 59, 59, 999);
+      if (query === "today") {
+        filterCondition.to = {
+          $gte: now,
+          $lte: endOfToday,
+        };
+      } else if (query === "completed") {
+        filterCondition.to = {
+          $lte: now,
+        };
+      }
+      console.log(filterCondition);
+      const meetings = await interviewModel.find(filterCondition).populate([
+        {
+          path: "recruiter",
+          select: "-password -paymentDetails -isBlocked -__v",
+        },
+        {
+          path: "candidate",
+          select: "-password -paymentDetails -isBlocked -__v",
+        },
+      ]);
+      return meetings;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async getInterview(interviewId: string): Promise<any> {
+    try {
+      const interview = await interviewModel.findById(interviewId).populate([
+        {
+          path: "recruiter",
+          select: "-password -paymentDetails -isBlocked -__v",
+        },
+        {
+          path: "candidate",
+          select: "-password -paymentDetails -isBlocked -__v",
+        },
+      ]);
+      return interview;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
 }

@@ -2,6 +2,7 @@ import Application from "../entity/applicationEntity";
 import IApplicationRepository from "./interfaces/IApplicationRepository";
 import Interview from "../entity/interviewEntity";
 import IAgendaScheduler from "./interfaces/IAgendaScheduler";
+import { generateToken } from "../framework/services/agoraio";
 
 interface ResponseType {
   _id?: string;
@@ -10,6 +11,7 @@ interface ResponseType {
   statusCode: number;
   message?: string;
   app?: Application | {} | null;
+  token?: any;
 }
 
 class ApplicationUseCase {
@@ -157,6 +159,58 @@ class ApplicationUseCase {
         statusCode: 200,
         message: "Interview deleted",
         result,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+
+  async getMeetings(
+    userId: string,
+    query: any,
+    role: any
+  ): Promise<ResponseType> {
+    try {
+      const result = await this.iApplicationRepository.getMeetings(
+        userId,
+        query,
+        role
+      );
+      return {
+        status: true,
+        statusCode: 200,
+        message: "meetins are fetched",
+        result,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+
+  async getMeetingToken(interviewId: string): Promise<ResponseType> {
+    try {
+      const result = await this.iApplicationRepository.getInterview(
+        interviewId
+      );
+      const { _id, start, to } = result;
+      const expire = (to - start) / 1000;
+      const token = await generateToken("flexiwork", 0, "candidate", expire);
+      return {
+        status: true,
+        statusCode: 200,
+        message: "meetins are fetched",
+        result,
+        token,
       };
     } catch (err) {
       console.log(err);

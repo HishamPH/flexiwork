@@ -11,11 +11,9 @@ import { HomeIcon } from "@heroicons/react/24/solid";
 
 import { Button } from "@material-tailwind/react";
 import { useParams } from "react-router-dom";
-import NavBar from "../../components/NavBar";
 
 import { useFormik } from "formik";
 import { Success, Failed } from "../../helper/popup";
-import CustomButton from "../../components/CustomButton";
 
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -26,6 +24,9 @@ const UserForm = ({ open, setOpen, jobId }) => {
 
   const initialValues = {
     resume: null,
+    motivation: "",
+    challenge: "",
+    expectedSalary: "",
   };
   const {
     handleChange,
@@ -123,11 +124,56 @@ const UserForm = ({ open, setOpen, jobId }) => {
                         </div>
                       </div>
                       <div className="mt-4">
-                        <CustomButton
-                          type="submit"
-                          containerStyles="inline-flex justify-center rounded-sm border border-transparent bg-blue-600 px-8 py-2 text-sm font-medium text-white hover:bg-[#1d4fd846] hover:text-[#1d4fd8] focus:outline-none "
-                          title={"Apply"}
+                        <label className="text-gray-600 text-sm mb-1">
+                          What motivates you to apply for this position?
+                        </label>
+                        <input
+                          type="text"
+                          name="motivation"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.motivation}
+                          className="border border-gray-300 rounded-md p-2 w-full"
+                          required
                         />
+                      </div>
+
+                      {/* Question 2: Challenge */}
+                      <div className="mt-4">
+                        <label className="text-gray-600 text-sm mb-1">
+                          Describe a challenging situation and how you handled
+                          it.
+                        </label>
+                        <input
+                          type="text"
+                          name="challenge"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.challenge}
+                          className="border border-gray-300 rounded-md p-2 w-full"
+                          required
+                        />
+                      </div>
+
+                      {/* Expected Salary */}
+                      <div className="mt-4">
+                        <label className="text-gray-600 text-sm mb-1">
+                          Expected Salary
+                        </label>
+                        <input
+                          type="number"
+                          name="expectedSalary"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.expectedSalary}
+                          className="border border-gray-300 rounded-md p-2 w-full"
+                          required
+                        />
+                      </div>
+                      <div className="mt-4">
+                        <Button type="submit" className="">
+                          Apply
+                        </Button>
                       </div>
                     </form>
                   </DialogPanel>

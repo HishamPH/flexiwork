@@ -30,11 +30,15 @@ import NotFound from "./pages/NotFound";
 import Hello from "./pages/Hello";
 import VideoCall from "./pages/videocall/VideoCall";
 import { useEffect, useState } from "react";
+import ProRoute from "./routes/privateRoutes/ProRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
-      <Route path="/video-call" element={<VideoCall />} />
+      <Route element={<ProRoute />}>
+        <Route path="/video-call/:id" element={<VideoCall />} />
+      </Route>
+
       <Route path="/hello" element={<Hello />} />
       <Route element={<ProtectedRoute />}>
         <Route index element={<LandingPage />} />

@@ -138,6 +138,23 @@ class AdminUseCase {
       };
     }
   }
+
+  async fetchSummary(filter: string): Promise<ResponseType> {
+    try {
+      const result = await this.iAdminRepository.getSummary(filter);
+      return {
+        statusCode: 200,
+        message: "summary collected",
+        ...result,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        statusCode: 500,
+        message: "Internal Server error",
+      };
+    }
+  }
 }
 
 export default AdminUseCase;

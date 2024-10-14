@@ -13,6 +13,8 @@ interface IApplicationRepository {
   deleteInterview(applicationId: string): Promise<{} | null>;
 
   getApplication(applicationId: string): Promise<{} | null>;
+  getMeetings(userId: string, query: any, role: any): Promise<any>;
+  getInterview(interviewId: string): Promise<any>;
 }
 
 export default IApplicationRepository;

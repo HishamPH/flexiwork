@@ -71,6 +71,17 @@ class AdminController {
       next(error);
     }
   }
+
+  async fetchSummary(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { filter } = req.query;
+      const result = await this.adminCase.fetchSummary(filter as string);
+      res.status(result.statusCode).json({ ...result });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }
 
 export default AdminController;

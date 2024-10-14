@@ -2,6 +2,8 @@ import { Server } from "socket.io";
 import http from "http";
 import express, { Application } from "express";
 import ISocketIo from "../../usecases/interfaces/ISocketIo";
+import IUserRepository from "../../usecases/interfaces/IUserRepository";
+import UserRepository from "../repository/userRepository";
 
 const app: Application = express();
 
@@ -13,10 +15,12 @@ export interface SocketEntry {
 }
 
 export class SocketIo implements ISocketIo {
+  private iUserRepository: IUserRepository;
   private ioInstance: Server;
   private userSocketMap: { [key: string]: string | undefined } = {};
   private socketMap: SocketEntry[] = [];
-  constructor() {
+  constructor(iUserRepository: IUserRepository) {
+    this.iUserRepository = iUserRepository;
     this.ioInstance = new Server(server, {
       cors: {
         origin: process.env.ORIGIN,
@@ -28,15 +32,23 @@ export class SocketIo implements ISocketIo {
 
   private setupListeners() {
     try {
-      this.ioInstance.on("connection", (socket) => {
-        console.log("socket connected with id", socket.id);
-        const userId: any = socket.handshake.query.userId as string | undefined;
-        if (userId != "undefined") {
+      this.ioInstance.on("connection", async (socket) => {
+        const userId = socket.handshake.query?.userId as string;
+
+        if (userId !== undefined) {
+          console.log(
+            "socket connected with id",
+            socket.id,
+            " with userId : ",
+            userId
+          );
           this.userSocketMap[userId] = socket.id;
           this.socketMap.push({
             socketId: socket.id,
             userId: userId,
           });
+          const user = await this.iUserRepository.findUser(userId);
+          this.ioInstance.to(socket.id).emit("userStatus", user);
         }
         this.ioInstance.emit("getOnlineUsers", Object.keys(this.userSocketMap));
 
@@ -103,7 +115,7 @@ export class SocketIo implements ISocketIo {
       users.forEach((user: any) => {
         const ids = this.getAllSocketId(user._id);
         ids.forEach((item) => {
-          this.ioInstance.to(item.socketId).emit("userDemoted", user);
+          this.ioInstance.to(item.socketId).emit("userStatus", user);
         });
       });
     } catch (err) {
@@ -111,5 +123,9 @@ export class SocketIo implements ISocketIo {
     }
   }
 }
+
+const userRepository = new UserRepository();
+
+export const socketIo = new SocketIo(userRepository);
 
 export { app, server };

@@ -59,47 +59,43 @@ const SideBar = () => {
           onClick={() => setIsOpen(!isOpen)}
           className="text-gray-500 hover:text-gray-700"
         >
-          <GiHamburgerMenu />
+          <GiHamburgerMenu size={12} />
         </button>
       </div>
       <nav className="mt-6 px-2">
         <NavItem
           to="/admin/dashboard"
-          icon={<MdDashboard />}
+          icon={<MdDashboard size={24} />}
           text="Dashboard"
         />
-        <NavItem to="/admin/recruiters" icon={<FaUsers />} text="Recruiters" />
-        <NavItem to="/admin/candidates" icon={<FaUser />} text="Candidates" />
-        {/* <NavItem to="/jobs" icon={<FaSuitcase />} text="Jobs" /> */}
         <NavItem
-          to="/admin/profile"
-          icon={<FaUserCircle />}
-          text="My Profile"
+          to="/admin/recruiters"
+          icon={<FaUsers size={24} />}
+          text="Recruiters"
         />
-        {isOpen && (
+        <NavItem
+          to="/admin/candidates"
+          icon={<FaUser size={24} />}
+          text="Candidates"
+        />
+        {/* <NavItem to="/jobs" icon={<FaSuitcase />} text="Jobs" /> */}
+      </nav>
+      {isOpen && (
+        <div className="mt-3 px-4">
+          <div className="text-xs font-semibold text-gray-400 mb-2">
+            Personal
+          </div>
+          <NavItem
+            to="/admin/profile"
+            icon={<FaUserCircle size={24} />}
+            text="My Profile"
+          />
           <Button
             onClick={handleLogout}
-            className="w-full bg-red-600 hover:bg-red-400 rounded-md"
+            className="w-full bg-red-600 hover:bg-red-400 rounded-md mt-2"
           >
             Logout
           </Button>
-        )}
-      </nav>
-      {isOpen && (
-        <div className="mt-6 px-4">
-          <div className="text-xs font-semibold text-gray-400 mb-2">
-            SETTINGS
-          </div>
-          <NavItem
-            to="/settings"
-            icon={<Cog6ToothIcon className="h-5 w-5" />}
-            text="Settings"
-          />
-          <NavItem
-            to="/help"
-            icon={<InformationCircleIcon className="h-5 w-5" />}
-            text="Help Center"
-          />
         </div>
       )}
     </aside>

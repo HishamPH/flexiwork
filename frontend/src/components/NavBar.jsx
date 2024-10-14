@@ -1,17 +1,13 @@
-import React, { memo, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
-import { setUser } from "../redux/slices/userAuth";
 
 import {
   UserCircleIcon,
   ArrowRightStartOnRectangleIcon,
   ChatBubbleLeftIcon,
   AcademicCapIcon,
+  VideoCameraIcon,
 } from "@heroicons/react/24/solid";
-
-import { Success, Failed } from "../helper/popup";
 import {
   Menu,
   MenuHandler,
@@ -22,57 +18,25 @@ import {
   Button,
 } from "@material-tailwind/react";
 
-import { FaCrown } from "react-icons/fa6";
-import { MdOutlineNotificationsActive } from "react-icons/md";
-
 import ProModal from "./ProModal";
 import { openModal } from "../redux/slices/modalSlice";
-
-import { useSocketContext } from "../socket/SocketContext";
-import axiosInstance from "../../interceptors/axiosInterceptors";
-
 import { useLogout } from "../hooks/useLogout";
-
-import { Dialog, Drawer } from "@material-tailwind/react";
-
 import Notifications from "./Notifications";
 
 const NavBar = () => {
   const { handleLogout, navigate } = useLogout();
   const { userInfo } = useSelector((state) => state.user);
-  let isPro, proExpiry;
-  if (userInfo) {
-    isPro = userInfo.isPro;
-    proExpiry = userInfo.proExpiry;
-  }
   let dispatch = useDispatch();
 
-  const demoteUser = async () => {
-    const res = await axiosInstance.post("/user/demote-user", {
-      userId: userInfo._id,
-    });
-    await dispatch(setUser(res.data.result));
-    // navigate(`/${userInfo.role}/home`);
-    dispatch(openModal());
-    Success("your pro has expired !!!! ");
-  };
-
-  useEffect(() => {
-    console.log(new Date(userInfo?.proExpiry));
-    if (userInfo && userInfo.isPro) {
-      const expiry = new Date(userInfo?.proExpiry);
-      const now = new Date();
-      const remaining = expiry - now;
-      if (userInfo.proExpiry && remaining < 0) {
-        demoteUser();
-      }
-      if (remaining > 0) {
-        console.log(remaining);
-        const timer = setTimeout(demoteUser, remaining);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [isPro, proExpiry]);
+  // const demoteUser = async () => {
+  //   const res = await axiosInstance.post("/user/demote-user", {
+  //     userId: userInfo._id,
+  //   });
+  //   await dispatch(setUser(res.data.result));
+  //   // navigate(`/${userInfo.role}/home`);
+  //   dispatch(openModal());
+  //   Success("your pro has expired !!!! ");
+  // };
 
   const handleUpgrade = async () => {
     dispatch(openModal());
@@ -128,11 +92,11 @@ const NavBar = () => {
                       <Avatar
                         variant="circular"
                         alt="tania andrew"
-                        className="cursor-pointer"
+                        className="cursor-default"
                         src={`/api/images/${userInfo.profilePic}`}
                       />
                     </MenuHandler>
-                    <MenuList className="p-1 bg-white">
+                    {/* <MenuList className="p-1 bg-white">
                       <Link to={`/recruiter/profile`}>
                         <MenuItem className="flex items-center gap-2 m-0">
                           <UserCircleIcon className="h-6 w-6" />
@@ -151,7 +115,7 @@ const NavBar = () => {
                           Sign Out
                         </Typography>
                       </MenuItem>
-                    </MenuList>
+                    </MenuList> */}
                   </Menu>
                 </>
               ) : (
@@ -187,6 +151,14 @@ const NavBar = () => {
                           <AcademicCapIcon className="h-6 w-6" />
                           <Typography variant="h6" className="font-medium">
                             Applications
+                          </Typography>
+                        </MenuItem>
+                      </Link>
+                      <Link to={`/candidate/meetings`}>
+                        <MenuItem className="flex items-center gap-2 m-0">
+                          <VideoCameraIcon className="h-6 w-6" />
+                          <Typography variant="h6" className="font-medium">
+                            Meetings
                           </Typography>
                         </MenuItem>
                       </Link>

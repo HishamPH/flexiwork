@@ -90,14 +90,15 @@ const InterviewScheduler = ({ applicant }) => {
       const end = new Date(start.getTime() + interviewData.duration * 60000);
       const now = new Date();
       now.setDate(now.getDate() + 1);
-      if (start < now) {
-        Failed("Interview requires atleast a days notice");
-        return;
-      }
-      if (isOverlapping(start, end)) {
-        Failed("the slot is not available");
-        return;
-      }
+      // if (start < now) {
+      //   Failed("Interview requires atleast a days notice");
+      //   return;
+      // }
+      // if (isOverlapping(start, end)) {
+      //   Failed("the slot is not available");
+      //   return;
+      // }
+
       const newInterview = {
         recruiter: userInfo._id,
         start: start,

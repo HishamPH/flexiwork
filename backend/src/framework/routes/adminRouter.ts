@@ -35,4 +35,8 @@ adminRouter.post("/block-user", adminAuth, (req, res, next) => {
   controller.blockUser(req, res, next);
 });
 
+adminRouter.get("/fetch-summary", adminAuth, (req, res, next) => {
+  controller.fetchSummary(req, res, next);
+});
+
 export default adminRouter;
