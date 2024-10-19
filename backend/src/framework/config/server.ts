@@ -10,9 +10,6 @@ import { app } from "../services/socketIo";
 import "../services/croneJobs";
 import logger from "./logger";
 
-// import dotenv from "dotenv";
-// dotenv.config();
-
 const createServer = async () => {
   try {
     const corsOptions = {
@@ -23,6 +20,7 @@ const createServer = async () => {
         "Origin,X-Requested-With,Content-Type,Accept,Authorization",
       optionsSuccessStatus: 200,
     };
+    console.log(corsOptions.origin);
     app.use(express.static(path.join(__dirname, "../../../public")));
     // Apply CORS middleware
     app.use(cors(corsOptions));
