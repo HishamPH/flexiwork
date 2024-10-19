@@ -30,6 +30,7 @@ const SocketProvider = ({ children }) => {
     }
     if (userInfo) {
       const socketUrl = import.meta.env.VITE_BACKEND;
+      console.log(socketUrl)
       const socket = io(socketUrl, {
         query: {
           userId: userInfo._id,
