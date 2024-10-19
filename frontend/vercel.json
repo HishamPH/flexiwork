@@ -3,6 +3,9 @@
     {
       "source": "/api/:path*", 
       "destination": "https://app.flexiwork.site/:path*"
+    },{
+      "source": "/(.*)", 
+      "destination": "/index.html"
     }
   ]
 }
