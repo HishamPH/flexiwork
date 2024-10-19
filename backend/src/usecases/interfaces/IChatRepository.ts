@@ -3,7 +3,7 @@ import Message from "../../entity/messageEntity";
 import Notification from "../../entity/notificationEntity";
 
 interface IChatRepsoitory {
-  findChat(senderId: string, receiverId: string): Promise<{} | null>;
+  findChat(senderId: string, receiverId: string): Promise<any>;
   createChat(senderId: string, receiverId: string): Promise<{} | null>;
   createMessage(
     senderId: string,

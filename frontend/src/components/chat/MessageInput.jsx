@@ -16,7 +16,8 @@ import { FaceSmileIcon } from "@heroicons/react/24/outline";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useSocketContext } from "../../socket/SocketContext";
 
-const MessageInput1 = ({ addMessage }) => {
+const MessageInput1 = ({ chat }) => {
+  console.log(chat);
   let { userInfo } = useSelector((state) => state.user);
   const { socket } = useSocketContext();
   let [message, setMessage] = useState("");

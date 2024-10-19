@@ -52,6 +52,11 @@ export class SocketIo implements ISocketIo {
         }
         this.ioInstance.emit("getOnlineUsers", Object.keys(this.userSocketMap));
 
+        socket.on("joinChat", (data) => {
+          socket.join(data.chat);
+          //console.log(Array.from(socket.rooms));
+        });
+
         socket.on("disconnect", () => {
           console.log("disconnected the socket with id ", socket.id);
           this.socketMap = this.socketMap.filter(
@@ -77,18 +82,19 @@ export class SocketIo implements ISocketIo {
     return this.userSocketMap[userId];
   }
 
-  async sendMessage(sender: string, receiver: string, data: any): Promise<any> {
+  async sendMessage(
+    sender: string,
+    receiver: string,
+    data: any,
+    roomId: string
+  ): Promise<any> {
     try {
+      const room = roomId.toString();
+      this.ioInstance.to(room).emit("newMessage", data);
       const allSender = this.getAllSocketId(sender);
       const allReceiver = this.getAllSocketId(receiver);
-      if (allSender?.length !== 0) {
-        allSender?.forEach((item: SocketEntry) => {
-          this.ioInstance.to(item.socketId).emit("newMessage", data);
-        });
-      }
       if (allReceiver?.length !== 0) {
         allReceiver?.forEach((item: SocketEntry) => {
-          this.ioInstance.to(item.socketId).emit("newMessage", data);
           this.ioInstance.to(item.socketId).emit("newNoti", data);
         });
       }

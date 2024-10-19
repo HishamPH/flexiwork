@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { Failed } from "../../helper/popup";
+import { Failed, Success } from "../../helper/popup";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -22,22 +22,27 @@ const MessageContainer = () => {
   const [receiver, setReceiver] = useState({});
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [chat, setChat] = useState(null);
   const { userInfo } = useSelector((state) => state.user);
   const { id } = useParams();
   const fetchRef = useRef(false);
 
   const handleNewMessage = (newMessage) => {
     const { senderId, receiverId } = newMessage.messageData;
-    console.log(senderId, id);
     if (senderId == userInfo._id || senderId == id) {
       setMessages((prevMessages) => [...prevMessages, newMessage.messageData]);
     }
   };
-
   useEffect(() => {
+    if (chat) {
+      socket.emit("joinChat", { chat });
+    }
     socket?.on("newMessage", handleNewMessage);
-    return () => socket?.off("newMessage", handleNewMessage);
-  }, [id]);
+    return () => {
+      socket?.off("newMessage", handleNewMessage);
+      if (chat) socket?.off("joinChat", () => console.log("chat closed"));
+    };
+  }, [id, chat]);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -55,6 +60,7 @@ const MessageContainer = () => {
         );
         setMessages(res.data.messages);
         setReceiver(res.data.participants[0]);
+        setChat(res.data._id);
         setLoading(false);
       } catch (err) {
         Failed(err.response ? err.response.data.message : err.message);
@@ -96,7 +102,7 @@ const MessageContainer = () => {
             </div>
           </div>
           <Messages messages={messages} />
-          <MessageInput1 addMessage={addMessage} />
+          <MessageInput1 addMessage={addMessage} chat={chat} />
         </div>
       )}
     </>

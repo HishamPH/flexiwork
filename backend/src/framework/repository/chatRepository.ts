@@ -7,7 +7,7 @@ import messageModel from "../databases/messageModel";
 import notificationModel from "../databases/notificationModel";
 
 export default class ChatRepository implements IChatRepsoitory {
-  async findChat(senderId: string, receiverId: string): Promise<{} | null> {
+  async findChat(senderId: string, receiverId: string): Promise<any> {
     try {
       const chat = await chatModel.findOne({
         participants: { $all: [senderId, receiverId] },

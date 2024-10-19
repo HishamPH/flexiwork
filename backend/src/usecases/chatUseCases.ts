@@ -42,10 +42,15 @@ class ChatUseCase {
         message
       );
 
-      await this.iSocket.sendMessage(senderId, receiverId, {
-        messageData,
-        notification,
-      });
+      await this.iSocket.sendMessage(
+        senderId,
+        receiverId,
+        {
+          messageData,
+          notification,
+        },
+        chat._id
+      );
 
       return {
         status: true,
