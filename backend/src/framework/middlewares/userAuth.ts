@@ -57,6 +57,7 @@ export const userAuth = async (
         message: "The user is blocked by Admin",
         tokenExpired: true,
       });
+      return;
     }
 
     next();

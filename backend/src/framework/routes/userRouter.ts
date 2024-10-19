@@ -7,7 +7,7 @@ import AuthUseCase from "../../usecases/authUseCases";
 import UserUseCase from "../../usecases/userUseCases";
 import AuthController from "../../controller/authController";
 import UserController from "../../controller/userController";
-import uploadImage, { uploadResume } from "../services/multer";
+import { uploadImage, uploadResume } from "../services/multer";
 import { userAuth } from "../middlewares/userAuth";
 import { proUserAuth } from "../middlewares/proUserAuth";
 import JobRepository from "../repository/jobRepository";
@@ -26,10 +26,12 @@ import PaymentUseCase from "../../usecases/paymentUseCases";
 
 import { socketIo } from "../services/socketIo";
 import { AgendaScheduler } from "../services/agenda";
+import GoogleAuth from "../services/googleAuth";
 
 const userRouter = express.Router();
 const agendaScheduler = new AgendaScheduler(socketIo);
 
+const googleAuth = new GoogleAuth();
 const JwtToken = new JwtTokenService();
 const sendEmail = new SendEmail();
 const payment = new Payment();
@@ -39,7 +41,12 @@ const jobRepository = new JobRepository();
 const applicationRepository = new ApplicationRepository();
 const chatRepository = new ChatRepository();
 
-const authUseCase = new AuthUseCase(authRepository, sendEmail, JwtToken);
+const authUseCase = new AuthUseCase(
+  authRepository,
+  sendEmail,
+  JwtToken,
+  googleAuth
+);
 const paymentUseCase = new PaymentUseCase(userRepository, payment);
 const userUseCase = new UserUseCase(userRepository, socketIo);
 const jobUseCase = new JobUseCase(jobRepository);
@@ -54,6 +61,10 @@ const userController = new UserController(userUseCase, paymentUseCase);
 const jobController = new JobController(jobUseCase);
 const applicationController = new ApplicationController(applicationUseCase);
 const chatController = new ChatController(chatUseCase);
+
+userRouter.post("/google/auth", (req, res, next) => {
+  authController.googleLogin(req, res, next);
+});
 
 userRouter.post("/signup", (req, res, next) => {
   authController.registerUser(req, res, next);
@@ -132,7 +143,7 @@ userRouter.post("/get-interviews", userAuth, proUserAuth, (req, res, next) => {
   applicationController.getInterviews(req, res, next);
 });
 
-userRouter.get("/get-meetings/:id", userAuth, proUserAuth, (req, res, next) => {
+userRouter.get("/get-meetings/:id", userAuth, (req, res, next) => {
   applicationController.getMeetings(req, res, next);
 });
 
@@ -157,7 +168,7 @@ userRouter.post(
 userRouter.get(
   "/get-meeting-token/:id",
   userAuth,
-  proUserAuth,
+  //proUserAuth,
   (req, res, next) => {
     applicationController.getMeetingToken(req, res, next);
   }

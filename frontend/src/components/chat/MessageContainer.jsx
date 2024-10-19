@@ -27,14 +27,17 @@ const MessageContainer = () => {
   const fetchRef = useRef(false);
 
   const handleNewMessage = (newMessage) => {
-    setMessages((prevMessages) => [...prevMessages, newMessage.messageData]);
+    const { senderId, receiverId } = newMessage.messageData;
+    console.log(senderId, id);
+    if (senderId == userInfo._id || senderId == id) {
+      setMessages((prevMessages) => [...prevMessages, newMessage.messageData]);
+    }
   };
 
   useEffect(() => {
     socket?.on("newMessage", handleNewMessage);
-    console.log("Hello");
     return () => socket?.off("newMessage", handleNewMessage);
-  }, [setMessages, socket]);
+  }, [id]);
 
   useEffect(() => {
     const getMessages = async () => {

@@ -8,9 +8,10 @@ import session from "express-session";
 import { EventEmitter } from "events";
 import { app } from "../services/socketIo";
 import "../services/croneJobs";
+import logger from "./logger";
 
-import dotenv from "dotenv";
-dotenv.config();
+// import dotenv from "dotenv";
+// dotenv.config();
 
 const createServer = async () => {
   try {
@@ -45,6 +46,7 @@ const createServer = async () => {
     app.use("/admin", adminRouter);
     //error middle ware
     app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+      logger.error("something went wrong", err);
       console.error(err);
       res.status(500).send("Internal server error! from backend side");
     });

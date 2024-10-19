@@ -29,7 +29,7 @@ const SocketProvider = ({ children }) => {
       return;
     }
     if (userInfo) {
-      const socketUrl = "http://localhost:3000";
+      const socketUrl = import.meta.env.VITE_BACKEND;
       const socket = io(socketUrl, {
         query: {
           userId: userInfo._id,
@@ -43,9 +43,9 @@ const SocketProvider = ({ children }) => {
       });
       socket.on("userStatus", (data) => {
         if (data.isPro !== userInfo.isPro) {
+          dispatch(setUser(data));
           dispatch(openModal());
           Success("the user is demoted");
-          dispatch(setUser(data));
         }
       });
 

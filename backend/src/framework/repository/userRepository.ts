@@ -74,16 +74,16 @@ export default class UserRepository implements IUserRepository {
     try {
       const now = new Date();
 
-      const futureDate = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,
-        0,
-        0,
-        0
-      );
+      // const futureDate = new Date(
+      //   now.getFullYear(),
+      //   now.getMonth(),
+      //   now.getDate() + 1,
+      //   0,
+      //   0,
+      //   0
+      //);
 
-      // const futureDate = new Date(now.getTime() + 1 * 60 * 1000);
+      const futureDate = new Date(now.getTime() + 100 * 60 * 1000);
       const user = await userModel
         .findByIdAndUpdate(
           userId,

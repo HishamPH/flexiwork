@@ -79,12 +79,7 @@ const RecruiterSidebar = () => {
               text={"Meetings"}
               icon={<VideoCameraIcon className="h-5 w-5" />}
             />
-            <ListItem>
-              <ListItemPrefix>
-                <Cog6ToothIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Settings
-            </ListItem>
+
             <ListItem
               className="text-white bg-red-900 hover:bg-red-700 selected:bg-black"
               onClick={handleLogout}
@@ -136,15 +131,20 @@ const RecruiterSidebar = () => {
               to={"chats"}
               text={"Chats"}
               icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}
-              chipValue={14}
             />
-            <ListItem>
-              <ListItemPrefix>
-                <Cog6ToothIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Settings
-            </ListItem>
-            <ListItem>
+            <NavItem
+              onClick={handleClick}
+              pro={true}
+              chipValue={"pro"}
+              to={"meetings"}
+              text={"Meetings"}
+              icon={<VideoCameraIcon className="h-5 w-5" />}
+            />
+
+            <ListItem
+              className="text-white bg-red-900 hover:bg-red-700 selected:bg-black"
+              onClick={handleLogout}
+            >
               <ListItemPrefix>
                 <PowerIcon className="h-5 w-5" />
               </ListItemPrefix>

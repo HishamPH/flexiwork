@@ -142,73 +142,68 @@ const JobListing = () => {
           Post Job
         </Button>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-3 bg-white p-3 h-[525px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-3 bg-gray-100 p-3">
         {currentJobs.map((job) => {
           const { _id, jobName, isActive } = job;
           return (
-            <div key={_id} className="flex-row justify-between">
-              <Card className="flex-row justify-between">
-                <div className="flex-col m-4 justify-between">
-                  <Typography variant="h5" className="mb-5">
-                    {jobName}
-                  </Typography>
-                  <div>
-                    <Chip
-                      size="md"
-                      value={isActive ? `open` : `closed`}
-                      className={`w-max mb-3 rounded-sm ${
-                        isActive
-                          ? "text-green-800 bg-green-100"
-                          : "text-red-800 bg-red-100"
-                      }`}
-                    />
-                  </div>
-                  <Link to={`/recruiter/jobs/applicants/${_id}`}>
-                    <Button className="rounded-full">Applicants</Button>
-                  </Link>
+            <Card className="flex-row justify-between" key={_id}>
+              <div className="flex-col m-4 justify-between">
+                <Typography variant="h5" className="mb-5">
+                  {jobName}
+                </Typography>
+                <div>
+                  <Chip
+                    size="md"
+                    value={isActive ? `open` : `closed`}
+                    className={`w-max mb-3 rounded-sm ${
+                      isActive
+                        ? "text-green-800 bg-green-100"
+                        : "text-red-800 bg-red-100"
+                    }`}
+                  />
                 </div>
-                <div className="flex-col justify-end gap-3">
-                  <div>
-                    <Tooltip content="Edit Job">
-                      <IconButton
-                        variant="text"
-                        onClick={() => handleEdit(job)}
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
+                <Link to={`/recruiter/jobs/applicants/${_id}`}>
+                  <Button className="rounded-full">Applicants</Button>
+                </Link>
+              </div>
+              <div className="flex-col justify-end gap-3">
+                <div>
+                  <Tooltip content="Edit Job">
+                    <IconButton variant="text" onClick={() => handleEdit(job)}>
+                      <PencilIcon className="h-4 w-4" />
+                    </IconButton>
+                  </Tooltip>
+                </div>
 
-                  <div>
-                    <Tooltip content="Delete Job">
-                      <IconButton
-                        variant="text"
-                        onClick={() => handleDelete(_id, setJobs)}
-                      >
-                        <TrashIcon className="h-4 w-4 text-red-800" />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                  <div className="m-2">
-                    {isActive ? (
-                      <button
-                        onClick={() => handleBlock(_id, setJobs)}
-                        className="bg-red-800 text-white px-3 py-1 rounded-sm hover:bg-red-400"
-                      >
-                        close
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleBlock(_id, setJobs)}
-                        className="bg-green-800 text-white px-3 py-1 rounded-sm hover:bg-green-400"
-                      >
-                        open
-                      </button>
-                    )}
-                  </div>
+                <div>
+                  <Tooltip content="Delete Job">
+                    <IconButton
+                      variant="text"
+                      onClick={() => handleDelete(_id, setJobs)}
+                    >
+                      <TrashIcon className="h-4 w-4 text-red-800" />
+                    </IconButton>
+                  </Tooltip>
                 </div>
-              </Card>
-            </div>
+                <div className="m-2">
+                  {isActive ? (
+                    <button
+                      onClick={() => handleBlock(_id, setJobs)}
+                      className="bg-red-800 text-white px-3 py-1 rounded-sm hover:bg-red-400"
+                    >
+                      close
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleBlock(_id, setJobs)}
+                      className="bg-green-800 text-white px-3 py-1 rounded-sm hover:bg-green-400"
+                    >
+                      open
+                    </button>
+                  )}
+                </div>
+              </div>
+            </Card>
           );
         })}
       </div>

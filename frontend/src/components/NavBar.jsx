@@ -22,6 +22,7 @@ import ProModal from "./ProModal";
 import { openModal } from "../redux/slices/modalSlice";
 import { useLogout } from "../hooks/useLogout";
 import Notifications from "./Notifications";
+import { Success } from "../helper/popup";
 
 const NavBar = () => {
   const { handleLogout, navigate } = useLogout();
@@ -65,7 +66,7 @@ const NavBar = () => {
             <div className="w-8 h-8 bg-indigo-600 rounded-full mr-2"></div>
             <span className="text-xl font-bold">FlexiWork</span>
           </Link>
-          {userInfo &&
+          {userInfo?.role === "recruiter" &&
             (userInfo?.isPro ? (
               <div className="bg-yellow-700 ms-2 px-2 py-1 rounded-sm font-extrabold text-black cursor-default">
                 Premium

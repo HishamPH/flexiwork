@@ -6,7 +6,7 @@ export interface IUser {
   _id: string;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   role: string;
   isBlocked: boolean;
   profilePic: string;
@@ -34,10 +34,19 @@ export interface IUser {
   }[];
   createdAt: Date;
   updatedAt: Date;
+  googleId?: string;
+  isGoogle: boolean;
 }
 
 const userSchema: Schema<IUser> = new mongoose.Schema(
   {
+    googleId: {
+      type: String,
+    },
+    isGoogle: {
+      type: Boolean,
+      default: false,
+    },
     name: {
       type: String,
       required: true,
@@ -48,7 +57,6 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
     },
     role: {
       type: String,
@@ -148,7 +156,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 );
 
 userSchema.pre<IUser>("save", async function (next) {
-  this.password = await bcrypt.hash(this.password, 10);
+  if (this.password) this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 userSchema.index({ name: "text" });

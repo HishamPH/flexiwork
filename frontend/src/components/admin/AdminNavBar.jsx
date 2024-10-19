@@ -25,7 +25,7 @@ const AdminNavBar = () => {
         {/* Notification Icon */}
         {/* Profile Menu */}
         <div className="font-bold me-3">Admin</div>
-        <Avatar src="http://localhost:3000/images/user.png" />
+        <Avatar src="/api/images/user.png" />
       </div>
     </nav>
   );

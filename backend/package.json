@@ -6,12 +6,15 @@
   "scripts": {
     "start": "node dist/app.js",
     "dev": "nodemon src/app.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.670.0",
+    "@aws-sdk/s3-request-presigner": "^3.673.0",
     "agenda": "^5.0.0",
     "agora-access-token": "^2.0.4",
     "bcryptjs": "^2.4.3",
@@ -23,9 +26,11 @@
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "express-session": "^1.18.0",
+    "google-auth-library": "^9.14.2",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "moment": "^2.30.1",
+    "mongodb": "^6.9.0",
     "mongoose": "^8.5.2",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
@@ -33,9 +38,11 @@
     "nodemailer": "^6.9.14",
     "razorpay": "^2.9.4",
     "socket.io": "^4.8.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "winston": "^3.15.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.12.0",
     "@types/agenda": "^3.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/body-parser": "^1.19.5",
@@ -53,8 +60,11 @@
     "@typescript-eslint/eslint-plugin": "^8.8.1",
     "@typescript-eslint/parser": "^8.8.1",
     "eslint": "^9.12.0",
+    "eslint-define-config": "^2.1.0",
+    "globals": "^15.11.0",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.8.1"
   }
 }

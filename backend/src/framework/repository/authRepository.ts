@@ -64,4 +64,22 @@ export default class AuthRepository implements IAuthRepository {
   async loginUser(hashPass: string, password: string): Promise<boolean> {
     return bcrypt.compare(password, hashPass);
   }
+
+  async createGoogleUser(user: any): Promise<User | null> {
+    try {
+      const { name, email, sub, role } = user;
+      const savedUser = await userModel.create({
+        name,
+        email,
+        role,
+        googleId: sub,
+        isGoogle: true,
+      });
+      if (savedUser) return savedUser;
+      return null;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }

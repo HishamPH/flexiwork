@@ -2,6 +2,7 @@ import User from "../entity/userEntity";
 import IAuthRepository from "./interfaces/IAuthRepository";
 import SendEmail from "../framework/services/sendEmail";
 import JwtTokenService from "../framework/services/jwtToken";
+import IGoogleAuth from "./interfaces/IGoogleAuth";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -22,14 +23,17 @@ class AuthUseCase {
   private iAuthRepository: IAuthRepository;
   private sendEmail: SendEmail;
   private JwtToken: JwtTokenService;
+  private iGoogleAuth: IGoogleAuth;
   constructor(
     iAuthRepository: IAuthRepository,
     sendEmail: SendEmail,
-    jwtToken: JwtTokenService
+    jwtToken: JwtTokenService,
+    iGoogleAuth: IGoogleAuth
   ) {
     this.iAuthRepository = iAuthRepository;
     this.sendEmail = sendEmail;
     this.JwtToken = jwtToken;
+    this.iGoogleAuth = iGoogleAuth;
   }
 
   async registrationUser(user: User): Promise<ResponseType> {
@@ -162,6 +166,77 @@ class AuthUseCase {
     }
   }
 
+  async googleLogin(token: string, userRole: string): Promise<ResponseType> {
+    try {
+      const googleUser = await this.iGoogleAuth.verifyToken(token);
+      let user = await this.iAuthRepository.findByEmail(googleUser.email);
+      if (!user) {
+        googleUser.role = userRole;
+        user = await this.iAuthRepository.createGoogleUser(googleUser);
+        console.log(
+          "creatging the users peacefully!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        );
+      }
+
+      if (user) {
+        const {
+          _id,
+          name,
+          email,
+          role,
+          profilePic,
+          location,
+          contact,
+          about,
+          education,
+          workExperience,
+          isPro,
+          proExpiry,
+        } = user;
+        const result = {
+          _id,
+          name,
+          email,
+          role,
+          profilePic,
+          location,
+          contact,
+          about,
+          education,
+          workExperience,
+          isPro,
+          proExpiry,
+        };
+        const accessToken = await this.JwtToken.SignInAccessToken({
+          id: _id,
+          role: role,
+        });
+        const refreshToken = await this.JwtToken.SignInRefreshToken({
+          id: _id,
+          role: role,
+        });
+        return {
+          statusCode: 200,
+          message: "User registered SuccessFully",
+          result,
+          accessToken,
+          refreshToken,
+        };
+      }
+      return {
+        statusCode: 403,
+        message: "google login failed",
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: false,
+        statusCode: 500,
+        message: "Internal server Error",
+      };
+    }
+  }
+
   async resendOtp(user: User): Promise<ResponseType> {
     try {
       const code = Math.floor(100000 + Math.random() * 9000).toString();
@@ -217,10 +292,14 @@ class AuthUseCase {
             message: "User Blocked contact admin",
           };
         }
-        const isValid = await this.iAuthRepository.loginUser(
-          emailExists.password,
-          password
-        );
+        let isValid;
+        if (emailExists.password) {
+          isValid = await this.iAuthRepository.loginUser(
+            emailExists.password,
+            password
+          );
+        }
+
         if (isValid) {
           const accessToken = await this.JwtToken.SignInAccessToken({
             id: emailExists._id,

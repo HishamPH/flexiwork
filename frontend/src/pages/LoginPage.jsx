@@ -62,6 +62,32 @@ const LoginPage = () => {
       }
     },
   });
+
+  const handleGoogleSuccess = async (item) => {
+    try {
+      const res = await axiosInstance.post(
+        "/user/google/auth",
+        { credential: item.credential, role: selectedRole },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res?.status === 200) {
+        let data = res.data.result;
+        dispatch(setUser(data));
+        if (data.role === "candidate") navigate("/candidate/home");
+        else navigate("/recruiter/home");
+      }
+    } catch (err) {
+      Failed(err.response ? err.response.data.message : err.message);
+      console.log(err.message);
+    }
+  };
+
+  const handleGoogleError = async () => {};
+
   const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
   return (
     <>
@@ -181,11 +207,9 @@ const LoginPage = () => {
           </div>
 
           <GoogleLogin
-            // onSuccess={handleLogin}
-            className="w-full bg-red-500 text-white py-3 rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Login with Google
-          </GoogleLogin>
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+          />
 
           <p className="mt-4 text-center text-sm text-gray-600">
             Don't have an account?{" "}

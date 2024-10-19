@@ -2,7 +2,7 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   role: string;
   isBlocked: boolean;
   profilePic: string;
@@ -30,6 +30,8 @@ interface User {
   }[];
   createdAt: Date;
   updatedAt: Date;
+  googleId?: string;
+  isGoogle: boolean;
 }
 
 export default User;

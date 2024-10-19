@@ -8,6 +8,27 @@ class AuthController {
     this.authCase = authCase;
   }
 
+  async googleLogin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { credential, role } = req.body;
+      const user = await this.authCase.googleLogin(credential, role);
+      if (user.accessToken && user.refreshToken) {
+        res.cookie("refreshToken", user.refreshToken, {
+          httpOnly: true,
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+        res.cookie("accessToken", user.accessToken, {
+          httpOnly: true,
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+      }
+      return res.status(user?.statusCode).json({ ...user });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
   async registerUser(req: Request, res: Response, next: NextFunction) {
     try {
       const userData = req.body;

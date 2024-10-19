@@ -8,12 +8,14 @@ const ProRoute = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (userInfo && !userInfo.isPro) {
+    if (userInfo && !userInfo.isPro && userInfo.role === "recruiter") {
       dispatch(openModal());
     }
   }, [userInfo, dispatch]);
 
   if (userInfo && userInfo.isPro) {
+    return <Outlet />;
+  } else if (userInfo && userInfo.role === "candidate") {
     return <Outlet />;
   } else {
     return <Navigate to="/" />;

@@ -24,9 +24,9 @@ const CandidateRouter = () => {
           <Route path=":id" element={<MessageContainer />} />
         </Route>
         <Route path="applications" element={<ApplicationsPage />} />
-        <Route element={<ProRoute />}>
-          <Route path="meetings" element={<Meetings />} />
-        </Route>
+        {/* <Route element={<ProRoute />}> */}
+        <Route path="meetings" element={<Meetings />} />
+        {/* </Route> */}
       </Route>
     </Routes>
   );
