@@ -202,9 +202,10 @@ class ApplicationUseCase {
       const result = await this.iApplicationRepository.getInterview(
         interviewId
       );
+      console.log(interviewId);
       const { _id, start, to } = result;
       const expire = (to - start) / 1000;
-      const token = await generateToken("flexiwork", 0, "candidate", expire);
+      const token = await generateToken(interviewId, 0, "candidate", expire);
       return {
         status: true,
         statusCode: 200,

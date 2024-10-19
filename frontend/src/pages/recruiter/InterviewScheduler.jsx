@@ -94,10 +94,10 @@ const InterviewScheduler = ({ applicant }) => {
       //   Failed("Interview requires atleast a days notice");
       //   return;
       // }
-      if (isOverlapping(start, end)) {
-        Failed("the slot is not available");
-        return;
-      }
+      // if (isOverlapping(start, end)) {
+      //   Failed("the slot is not available");
+      //   return;
+      // }
 
       const newInterview = {
         recruiter: userInfo._id,

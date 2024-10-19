@@ -87,7 +87,7 @@ const Meetings = () => {
           <option value="completed">Completed</option>
         </select>
       </div>
-      <ul className="overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+      <ul className="overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-4">
         {meetings.length === 0 ? (
           <div>No meetings to show</div>
         ) : (

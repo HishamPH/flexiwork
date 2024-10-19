@@ -13,7 +13,7 @@ const VideoCall = () => {
 
   const rtcProps = {
     appId: import.meta.env.VITE_APP_ID,
-    channel: import.meta.env.VITE_CHANNEL,
+    channel: id,
   };
 
   const endCall = async () => {
