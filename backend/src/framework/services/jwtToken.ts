@@ -2,20 +2,6 @@ import jwt, { JwtPayload, Secret, TokenExpiredError } from "jsonwebtoken";
 import IJwtToken from "../../usecases/interfaces/IJwtToken";
 import User from "../../entity/userEntity";
 
-import dotenv from "dotenv";
-dotenv.config();
-
-interface Response {
-  statusCode: number;
-  message: string;
-  id?: string | JwtPayload;
-}
-interface DecodedToken {
-  user: string;
-  iat: number;
-  exp: number;
-}
-
 class JwtTokenService implements IJwtToken {
   async SignInAccessToken(user: {}): Promise<string> {
     try {

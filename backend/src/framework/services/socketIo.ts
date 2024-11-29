@@ -54,7 +54,6 @@ export class SocketIo implements ISocketIo {
 
         socket.on("joinChat", (data) => {
           socket.join(data.chat);
-          //console.log(Array.from(socket.rooms));
         });
 
         socket.on("disconnect", () => {

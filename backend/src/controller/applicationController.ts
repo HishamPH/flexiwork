@@ -99,7 +99,11 @@ class ApplicationController {
   async getMeetingToken(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const result = await this.applicationCase.getMeetingToken(id);
+      const { role } = req.query;
+      const result = await this.applicationCase.getMeetingToken(
+        id,
+        role as string
+      );
       return res.status(result?.statusCode).json({ ...result });
     } catch (err) {
       console.log(err);

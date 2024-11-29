@@ -1,10 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import AgoraUIKit from "agora-react-uikit";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+
+import AgoraRTC from "agora-rtc-sdk-ng";
+AgoraRTC.setLogLevel(4);
 import Loader from "../../helper/Loader";
 import axiosInstance from "../../../interceptors/axiosInterceptors";
+import { useSelector } from "react-redux";
 
 const VideoCall = () => {
+  const { userInfo } = useSelector((state) => state.user);
   const [videoCall, setVideoCall] = useState(true);
   const [loading, setLoading] = useState(false);
   const agoraKit = useRef(null);
@@ -17,23 +22,6 @@ const VideoCall = () => {
   };
 
   const endCall = async () => {
-    //if (agoraKit.current) {
-    // alert(agoraKit.current);
-    // const { localAudioTrack, localVideoTrack } = agoraKit.current.rtcEngine;
-    // if (localVideoTrack) {
-    //   await localVideoTrack.setEnabled(false);
-    //   await localVideoTrack.stop();
-    //   await localVideoTrack.close();
-    // }
-    // if (localAudioTrack) {
-    //   await localAudioTrack.setEnabled(false);
-    //   await localAudioTrack.stop();
-    //   await localAudioTrack.close();
-    // }
-
-    // agoraKit.current.destroy();
-    // agoraKit.current = null;
-    //}
     navigate("/recruiter/meetings");
     window.location.reload();
     setVideoCall(false);
@@ -46,7 +34,11 @@ const VideoCall = () => {
   useEffect(() => {
     const fetchMeeting = async () => {
       try {
-        const res = await axiosInstance.get(`/user/get-meeting-token/${id}`);
+        const res = await axiosInstance.get(`/user/get-meeting-token/${id}`, {
+          params: {
+            role: userInfo.role,
+          },
+        });
         rtcProps.token = res.data.token;
         setVideoCall(true);
       } catch (err) {
@@ -73,7 +65,8 @@ const VideoCall = () => {
         rtcProps={rtcProps}
         callbacks={callbacks}
         styleProps={styleProps}
-        ref={agoraKit} // Pass the ref to AgoraUIKit
+        enableLog={false}
+        //ref={agoraKit} // Pass the ref to AgoraUIKit
       />
     </div>
   ) : (

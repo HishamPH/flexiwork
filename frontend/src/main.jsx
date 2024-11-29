@@ -12,6 +12,8 @@ import { SocketProvider } from "./socket/SocketContext.jsx";
 import AgoraRTC, { AgoraRTCProvider } from "agora-rtc-react";
 const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
+AgoraRTC.setLogLevel(4);
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>

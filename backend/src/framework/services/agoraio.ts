@@ -15,20 +15,10 @@ export const generateToken = async (
       );
     }
 
-    const RTCrole =
-      role === "recruiter" ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER;
+    const RTCrole = RtcRole.PUBLISHER;
 
     const currentTime = Math.floor(Date.now() / 1000);
     const privilegeExpireTime = currentTime + expire;
-
-    console.log(
-      appId,
-      appCeritificate,
-      channelName,
-      uid,
-      RTCrole,
-      privilegeExpireTime
-    );
 
     const token = RtcTokenBuilder.buildTokenWithUid(
       appId,
@@ -38,7 +28,6 @@ export const generateToken = async (
       RTCrole,
       privilegeExpireTime
     );
-
     return token;
   } catch (err) {
     console.log(err);

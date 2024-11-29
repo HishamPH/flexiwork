@@ -202,7 +202,6 @@ export default class ApplicationRepository implements IApplicationRepository {
           $lte: now,
         };
       }
-      console.log(filterCondition);
       const meetings = await interviewModel.find(filterCondition).populate([
         {
           path: "recruiter",

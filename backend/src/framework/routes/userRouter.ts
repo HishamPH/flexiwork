@@ -29,8 +29,8 @@ import { AgendaScheduler } from "../services/agenda";
 import GoogleAuth from "../services/googleAuth";
 
 const userRouter = express.Router();
-const agendaScheduler = new AgendaScheduler(socketIo);
 
+const agendaScheduler = new AgendaScheduler(socketIo);
 const googleAuth = new GoogleAuth();
 const JwtToken = new JwtTokenService();
 const sendEmail = new SendEmail();

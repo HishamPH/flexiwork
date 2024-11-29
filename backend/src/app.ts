@@ -7,7 +7,7 @@ config();
 const startServer = async () => {
   try {
     await connectDB();
-    const app = createServer();
+    await createServer();
     const port = process.env.PORT;
     server?.listen(port, async () => {
       console.log("server is running at port ", port);
